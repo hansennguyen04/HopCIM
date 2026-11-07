@@ -83,6 +83,11 @@ def tool_output(*cmd):
         return "not available"
 
 
+def project_path(p):
+    """A path as seen from the project folder, wherever this clone is."""
+    return f"hopcim/{p.relative_to(ROOT)}" if p.is_relative_to(ROOT) else str(p.relative_to(PROJECT))
+
+
 def tree_hash(root):
     """Files, names and contents: sha256 over 'relative path, file hash' in sorted order."""
     h = hashlib.sha256()
@@ -185,7 +190,7 @@ def artefacts():
             e["carries"] = BITSTREAM_USE[p.name]
         bits[p.name] = e
     elfs = {p.name: sha(p) for p in sorted(HW.glob("*.elf"))}
-    models = {k: {"path": str(p.relative_to(PROJECT)), "sha256": sha(p)} for k, p in MODELS.items()}
+    models = {k: {"path": project_path(p), "sha256": sha(p)} for k, p in MODELS.items()}
     tree, n = tree_hash(DATASET)
     return dict(bitstreams=bits, elfs=elfs, models=models,
                 dataset={"name": "Google Speech Commands v2, test split as used by the MLPerf Tiny preprocessing",
