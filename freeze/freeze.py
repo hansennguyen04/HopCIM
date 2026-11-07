@@ -24,7 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-PROJECT = ROOT.parent
+PROJECT = Path(os.environ.get("HOPCIM_PROJECT", ROOT.parent))   # set it to check a clone made elsewhere
 HW = PROJECT / "planenest" / "hw"
 XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
