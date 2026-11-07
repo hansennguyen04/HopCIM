@@ -17,7 +17,7 @@ A **pass** on tile `t`:
 
 This is the timing of a `b`-cycle bit-serial macro with a fixed 5-cycle pipeline. The emulation cannot go below 8 cycles, so `D ≥ 8`.
 
-**Capacity.** 64 tiles = 64 KiB of resident weights (enough for the KWS DS-CNN plus the MFCC matrices, ~35 KiB). Weights are written as 32-bit words (4 weights).
+**Capacity.** 64 tiles = 64 KiB of resident weights (enough for the KWS DS-CNN plus the MFCC matrices, ~35 KiB). Later, the mapped network needed 69 tiles, so the engine has had 128 since R6. This specification keeps its text as frozen before the RTL. Weights are written as 32-bit words (4 weights).
 
 ## 2. How the FPGA emulates it (claim boundary)
 

@@ -179,7 +179,8 @@ Ranges are over the five stream groups.
   read, and a skipped position also skips its requantisation, its parameter reads and its control cycles.
 - **Not counted:** the added control logic. At 5,000 gate equivalents that is about 0.3 µW of leakage.
 - **Against plain 80 ms:** 40 ms with reuse is 62.0 µW, and plain 80 ms is 57.9 µW with no memory and no
-  RTL. Reuse is worth building only if 80 ms cannot be made to work on real speech.
+  RTL. Reuse is worth building only if 80 ms loses on real speech and reuse still wins after the stronger
+  modelling (`HOPCIM_PROPOSAL.md` §15.2).
 
 The savings come from synthetic streams, not real speech. The worst case stays a full recompute.
 

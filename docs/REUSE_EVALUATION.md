@@ -210,9 +210,11 @@ If built: only the simple mode with one cache, at a decision every 2 hops, proba
 (§6). Rough effort: 4–6 weeks including verification. Feature comparison and value-aware propagation do
 not earn their cost.
 
-One test should come first. Plain 80 ms is estimated at 58 µW, with no memory and no RTL, against 62 µW
-for 40 ms with reuse. Reuse earns its 4–6 weeks only if 80 ms cannot be made to work on real speech, and
-a trace run can show that (`LIVE_AUDIO.md` §9).
+**Priority: low (2026-11-07).** Meeting the conditions does not make it the next step. It is one candidate
+for an optional extension, chosen only after the novelty audit, the same-audio test, the timing sensitivity
+and the energy validation (`HOPCIM_PROPOSAL.md` §15.2). Plain 80 ms is estimated at 58 µW, with no memory
+and no RTL, against 62 µW for 40 ms with reuse, so reuse earns its 4–6 weeks only if 80 ms loses on real
+speech and reuse still wins after the stronger modelling.
 
 ## 9. Related work
 

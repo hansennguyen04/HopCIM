@@ -3,7 +3,7 @@
 **Exact, model-preserving MFCC and keyword spotting on a digital compute-in-memory accelerator inside an open RISC-V microcontroller**
 
 Master's thesis direction, NYCU · CIM × RISC-V · thesis due June 2027
-Version 1.0, 2026-10-27 · Living document. Design and result details are in the linked specifications.
+Version 1.1, 2026-11-07 (first version 2026-10-27) · Living document. Design and result details are in the linked specifications.
 
 Evidence labels used throughout:
 
@@ -46,7 +46,7 @@ Evidence labels used throughout:
 - a signal-processing front-end, the MFCC: FFT, magnitude, mel filterbank, log and DCT;
 - a small neural network, here the MLPerf Tiny DS-CNN.
 
-A compute-in-memory (CIM) accelerator makes the network's multiply-accumulates (MACs) cheap. The MFCC then becomes the bottleneck: on our RISC-V MCU it is 78–92 % of the remaining per-hop work [M+E].
+A compute-in-memory (CIM) accelerator makes the network's multiply-accumulates (MACs) cheap. The MFCC then becomes the bottleneck: a census model of streaming hops on our RISC-V MCU gave 78–92 % of the remaining per-hop work [M+E]. Measured later, this holds only once the network's data movement has also left the CPU: with the CPU orchestrating the network, the front-end is about 1 % of the cycles [M] (H1, §7).
 
 Existing CIM KWS chips avoid this in one of two ways:
 - they leave the MFCC outside the CIM;
@@ -82,13 +82,15 @@ The front-end and the network then share one CIM. Existing MFCC-trained models d
   decimator, front-end, window path and network give one decision per 20 ms hop with the CPU
   asleep. The CPU does 263 cycles per decision; at 15.36 MHz that is 0.09 % of the hop. On real
   microphone audio, the board's logits equal the golden model's. The lowest real-time clock,
-  5.12 MHz, runs on the board with no overrun. Spoken keywords are detected live (22 events in an
-  informal 80-s test). The end-to-end comparison is in `EVALUATION.md`.
+  5.12 MHz, runs on the board with no overrun. In a scripted test with one speaker, 48 of 50 spoken
+  keywords were correct at a decision every 20 ms and 47 of 50 at 40 ms (`LIVE_AUDIO.md` §9). The
+  end-to-end comparison is in `EVALUATION.md`.
 
-**What remains:**
-1. a scripted spoken-keyword test at the board, for an accuracy figure;
-2. one remaining manual literature search (IEEE Xplore);
-3. repositioning the thesis claim after the H4 result (§13a).
+**What remains** (order and reasons in §15.2):
+1. the manual IEEE Xplore search, and repositioning the thesis claim after the H4 result (§13a);
+2. whether a decision every 80 ms can work on real speech;
+3. how far the results depend on the assumed macro timing and capacity;
+4. more live evidence: several speakers and false alarms per hour.
 
 The plan (§11) completes these by April 2027 and leaves May–June for writing.
 
@@ -302,13 +304,13 @@ From the novelty assessment (`research_discovery/20261026_application_driven/NOV
 
 ## 7. Hypotheses
 
-Thresholds are frozen before the final runs, as was done for gate 2 (`kws_gate/GATE2_MANIFEST.md`).
+Thresholds are frozen before the final runs, as was done for gate 2 (`kws_gate/GATE2_MANIFEST.md`). The hypotheses and their falsification lines below stand as written on 2026-10-27; only the Status column changes. H1 and H3 did not come out as written, and that is recorded here rather than reworded.
 
 | ID | Hypothesis [H] | Falsified if | Status |
 |---|---|---|---|
-| **H1** (bottleneck) | With the network on the CIM, the CPU-side front-end is ≥ 70 % of per-hop CPU cycles | < 50 %, measured on the board | Supported by the census model (78–92 %) and by R4b (the MAC-only offload leaves 146k cycles/frame). The final board measurement with the network on the CIM is open |
+| **H1** (bottleneck) | With the network on the CIM, the CPU-side front-end is ≥ 70 % of per-hop CPU cycles | < 50 %, measured on the board | **Holds only with the network's data movement also off the CPU** [M]. As first built, with the CPU orchestrating the network (configuration B, `EVALUATION.md`), the front-end is 146,364 of 13.17 M cycles: **1.1 %, falsified in that configuration**. With the layer sequencer and a CPU front-end it is 91–98 % (146,364 against 459 for the network and 2,120–14k for the window path; composed from measured parts, not one run). The census figure of 78–92 % came from a model of streaming hops of about 205k cycles, far less network work than the full-window inference built here |
 | **H2** (fidelity) | The integer CIM-MFCC keeps the unchanged int8 DS-CNN within 0.3 pp of float MFCC on the GSC test set | Δ < −0.3 pp | **Passed:** 91.78 % vs 91.66 % (Δ +0.12 pp, p = 0.44); bit-exact in hardware |
-| **H3** (CPU-light) | Per-hop CPU-active cycles fall ≥ 20× against the CPU-orchestrated CIM baseline, and the real-time clock requirement f_min falls below 1 MHz | < 5×, or f_min ≥ 2 MHz | **Front-end alone: 21.8× against R4b, 24× against CPU-only** [M]. The full pipeline and f_min are open |
+| **H3** (CPU-light) | Per-hop CPU-active cycles fall ≥ 20× against the CPU-orchestrated CIM baseline, and the real-time clock requirement f_min falls below 1 MHz | < 5×, or f_min ≥ 2 MHz | **Not supported as written** [M]. CPU half **far exceeded**: 13.17 M → 263 CPU-active cycles per hop, about 50,000× (≥ 20× required). f_min half **falsified**: measured 5.12 MHz, against a target below 1 MHz and a failure line of 2 MHz. A hop without the network needs about 7.8k cycles (≈ 0.4 MHz), but a decision hop runs the whole network inside one hop, 97.7k cycles at worst, and the microphone needs an integer multiple of 1.024 MHz. Running the network every k hops does not lower this (`LIVE_AUDIO.md` §9) |
 | **H4** (cost) | The logic added to run the front-end on the CIM costs no more (LUT + DSP + BRAM) than a dedicated FFT/MFCC block on the same FPGA | It costs more, with no capacity or flexibility gain to offset it | **Not supported.** At matched design style, B3 costs 1,447 LUT, 8 DSP, 2 RAMB18; `cim_fe` costs 1,530 LUT, 7 DSP, 4 RAMB18, plus 6 KiB of CIM. Both pass the accuracy gate. Details: `B3_BASELINE.md` |
 | **H5** (end-to-end) | Front-end + DS-CNN on one CIM gives the same accuracy as the TFLite int8 reference (bit-exact), in real time at 15 MHz | Accuracy differs, or real time is missed | Accuracy: **met** (bit-exact with the reference kernels, 91.80 %). Real time: **met** on the board. The network takes 5.69 ms per inference at 15 MHz with the CPU asleep (`SEQUENCER.md`); CPU-orchestrated it was 11.8–13.0 M cycles. With the window path in hardware (R5b), a streaming decision every 20 ms hop takes 6.5–6.8 ms of hardware time and 600 CPU-active cycles beyond copying the samples (`WINDOW_PATH.md`) |
 | H6 (optional) | A shared CIM-MFCC beats per-model learned CIM front-ends once *k* always-on models share it | — | Optional extension |
@@ -363,7 +365,7 @@ The exactness rules, each checked against the golden model:
 
 Specification: `ENGINE_SPEC.md`.
 
-- 64 resident tiles of 64 rows × 16 int8 columns (64 KiB). Inputs are 1–24 bits wide; accumulators are 48 bits wide.
+- 128 resident tiles since R6 (64 before), each 64 rows × 16 int8 columns, 1 KiB; the design uses 69, one active per pass. How a real chip would organise them is an open assumption (`ENERGY_ESTIMATE.md` §6). Inputs are 1–24 bits wide; accumulators are 48 bits wide.
 - Timing contract: a pass accepted at cycle t0 delivers its results at t0 + D + 5, and the next pass may start at t0 + D, with D = max(8, b). This models a bit-serial 64-row digital macro in which one input bit-plane takes one cycle.
 - FPGA emulation: 32 BRAM banks plus 128 DSPs compute 8 rows × 16 columns per cycle. Results are bit-exact and the cycles seen by the SoC are exactly those of the modelled macro. FPGA power and LUTs are not CIM energy or area.
 
@@ -371,11 +373,11 @@ Specification: `ENGINE_SPEC.md`.
 
 ```mermaid
 flowchart LR
-    MIC["PDM mic (Nexys)"] -.->|planned: CIC + FIR in hardware| RING
+    MIC["PDM mic (Nexys)"] -->|"CIC + FIR in hardware (R7)"| RING
     CPU["CV32E20 RISC-V core"] -->|"OBI: weights, samples, control"| EP
     subgraph EP["CIM endpoint (X-HEEP, flag use_cim)"]
         RING["audio ring<br/>1024 x 16 bit"] --> FE["front-end unit cim_fe<br/>window, block exponent,<br/>twiddles, isqrt, log2"]
-        FE <-->|"x vectors / results"| ENG["CIM engine<br/>64 tiles of 64 x 16 int8<br/>bit-serial inputs"]
+        FE <-->|"x vectors / results"| ENG["CIM engine<br/>128 tiles of 64 x 16 int8<br/>bit-serial inputs"]
         SEQ["layer sequencer + requant<br/>(R6b)"] <--> ENG
         FE --> LRAW["lraw[40]"]
     end
@@ -385,18 +387,19 @@ flowchart LR
 
 | Block | Status | Cost (Vivado OOC, xc7a100t, 15 MHz) |
 |---|---|---|
-| `cim_engine` (R1) | Done, verified | 2,015 LUT, 1,648 FF, 32 RAMB18, 128 DSP |
-| `cim_endpoint` with CPU port (R2) | Done | 2,314 LUT, 2,519 FF, 32 RAMB18, 128 DSP |
+| `cim_engine` (R1, 128 tiles since R6) | Done, verified | 2,018 LUT, 1,648 FF, 32 RAMB36, 128 DSP |
+| `cim_endpoint` with CPU port (R2) | Done | Complete endpoint in the last row |
 | X-HEEP integration (R3): FuseSoC flag `use_cim`, direct CPU-port tap, IRQ line 3 | Done, on board | — |
-| `cim_fe` hardware front-end, frame path (R5a) | Done, on board | 1,907 LUT, 1,953 FF, 4 RAMB18, 7 DSP |
-| Endpoint with front-end and ring | Done, on board | 4,176 LUT, 4,474 FF, 37 RAMB18, 135 DSP, +40.8 ns slack |
+| `cim_fe` hardware front-end, frame path (R5a) | Done, on board | 1,530 LUT, 345 FF, 4 RAMB18, 7 DSP |
 | Window path in hardware (R5b): window-max tracking, lraw ring, DCT + requant | Done, on board | `cim_seq` with it: 2,443 LUT, 1,982 FF, 11.5 BRAM tiles, 9 DSP |
-| DS-CNN on the CIM: layer sequencer + requantisation epilogue (R6b) | Done, on board | `cim_seq` 1,176 LUT, 894 FF, 9.5 BRAM tiles, 3 DSP |
-| Live audio path (R7): PDM microphone, CIC + FIR + DC blocker at exactly 16 kHz, hop controller | Done, on board | `cim_audio` 1,021 LUT, 846 FF, 1 DSP; endpoint 7,617 LUT, 5,811 FF, 46 BRAM tiles, 145 DSP |
+| DS-CNN on the CIM: layer sequencer + requantisation epilogue (R6b) | Done, on board | Included in `cim_seq` above |
+| Live audio path (R7): PDM microphone, CIC + FIR + DC blocker at exactly 16 kHz, hop controller | Done, on board | `cim_audio` 1,026 LUT, 850 FF, 1 DSP. **Complete endpoint with `cim_fe`: 7,635 LUT, 5,819 FF, 46 BRAM tiles, 145 DSP, +46.9 ns** |
 
-### 8.6 Planned: the network on the same CIM
+### 8.6 The network on the same CIM: the plan of 2026-10-27
 
-Layer shapes are taken from the TFLite model [M]; tile and pass counts are estimates [E].
+Kept as written when the network was still planned. **Outcome:** 128 tiles; every tile and pass count below confirmed exactly [M]; 85,420 cycles per inference with the sequencer (`SEQUENCER.md`).
+
+Layer shapes are taken from the TFLite model [M].
 
 | Layer | Shape | MACs | Tiles (64 × 16) | Passes/inference |
 |---|---|---:|---:|---:|
@@ -452,7 +455,7 @@ IDs follow the round-5 report; its B2 and B4 (software-driver and windowing vari
 | CIM capacity used (tiles/KiB); bytes moved over the bus | Mapping tools, firmware |
 | Optional: FAR/FRR on long concatenated streams | Streaming runs |
 
-**Measurement caveat.** On the FPGA the X-HEEP clock gate is a pass-through, so `mcycle` keeps counting during WFI sleep. True CPU-active time needs a sleep-cycle counter, which is planned for Phase 1.
+**Measurement caveat.** On the FPGA the X-HEEP clock gate is a pass-through, so `mcycle` keeps counting during WFI sleep. True CPU-active time therefore uses `mcountinhibit` around WFI plus the endpoint's `CYCLES` register, validated on the board (§15.1).
 
 ### 9.4 Verification methodology
 
@@ -518,16 +521,16 @@ Derived from these numbers: with R5a the front-end uses about 0.95 ms of each 20
 
 ## 11. Work plan and timeline
 
-Today is 2026-10-27; the thesis is due in June 2027.
+The plan of 2026-10-27, with what has happened since (status 2026-11-07). The thesis is due in June 2027. The current order of work is in §15.2.
 
 | Phase | When | Work | Exit gate |
 |---|---|---|---|
 | 0 | Oct 2026 | Gates; R1–R5a; board | **Done** |
-| **1: close the evidence gaps** | Nov 2026 | (a) Manual IEEE Xplore search (student, ~1 h)<br>(b) **B3 dedicated MFCC baseline** on the same FPGA and bus, accuracy gated<br>(c) Sleep counter + WFI/IRQ path for true CPU-active time | **Gate B:** novelty still holds; H4 answered. If B3 is clearly cheaper overall, reposition the thesis as "when reuse pays" (capacity vs logic) rather than "reuse always wins" |
+| **1: close the evidence gaps** | Nov 2026 | (a) Manual IEEE Xplore search (student, ~1 h)<br>(b) **B3 dedicated MFCC baseline** on the same FPGA and bus, accuracy gated<br>(c) Sleep counter + WFI/IRQ path for true CPU-active time | **Gate B:** novelty still holds; H4 answered. If B3 is clearly cheaper overall, reposition the thesis as "when reuse pays" (capacity vs logic) rather than "reuse always wins". (b), (c) done Oct 2026: H4 not supported, see §13a. **(a) still open** |
 | **2: network on the CIM** | Dec 2026 – Jan 2027 | (a) Integer reference of the int8 DS-CNN, bit-exact against TFLite on all 4,890 clips<br>(b) Tile mapping and the capacity decision (64 → 128 tiles, or depthwise on a vector unit)<br>(c) CPU-orchestrated network firmware (baseline B1 for the network)<br>(d) Hardware layer sequencer + requantisation epilogue (R6) | **Gate C:** end-to-end bit-exact; accuracy identical to TFLite. (a)–(d) done early, Oct 2026: network bit-exact on the board, 5.69 ms per inference with the sequencer |
 | **3: window path + streaming** | Feb 2027 | (a) R5b: window-max tracking, lraw ring, DCT + requant in hardware<br>(b) Cheaper sample input<br>(c) Per-hop schedule (inference every *k* hops)<br>(d) End-to-end per-hop CPU-active cycles and f_min | H1, H3, H5 answered. (a), (b), (d) done early, Oct 2026 (the sample input is the R7 audio path); (c) done Nov 2026 (`LIVE_AUDIO.md` §9) |
-| **4: live demo** | Mar 2027 | PDM → hardware CIC/FIR → ring at exactly 16 kHz (15.36 MHz clock: VCO 960 MHz, M = 48, D = 5, O = 62.5); detection on LEDs/UART; CPU asleep; optional FAR/FRR | **Gate D:** real-time live demo. Fallback: audio replayed over UART. Done early, Oct 2026 (`LIVE_AUDIO.md`); the scripted accuracy test is ready |
-| 5: evaluation | Apr 2027 | All baselines and ablations; freeze results; optional extensions (B5 learned front-end, H6 shared front-end) | Results frozen |
+| **4: live demo** | Mar 2027 | PDM → hardware CIC/FIR → ring at exactly 16 kHz (15.36 MHz clock: VCO 960 MHz, M = 48, D = 5, O = 62.5); detection on LEDs/UART; CPU asleep; optional FAR/FRR | **Gate D:** real-time live demo. Fallback: audio replayed over UART. Done early, Oct 2026 (`LIVE_AUDIO.md`); scripted test with one speaker done 2026-11-07 (§9 there) |
+| 5: evaluation | Apr 2027 | All baselines and ablations; freeze results; optional extensions (B5 learned front-end, H6 shared front-end) | Results frozen. First freeze 2026-11-07 (`freeze/RESULTS.md`) |
 | 6: writing | May 2027 | Thesis; paper draft | — |
 | — | Jun 2027 | Buffer; defence | — |
 
@@ -538,12 +541,13 @@ Today is 2026-10-27; the thesis is due in June 2027.
 | Risk | Likelihood | Mitigation |
 |---|---|---|
 | A paper already computes the standard MFCC on a CIM (not yet covered by the Xplore search) | Low–medium | Run the search now (Phase 1a). If one exists, contributions 2 and 3 (§13) and the B3 comparison remain; narrow further |
-| B3 (dedicated block) is cheaper than CIM reuse | Medium | Report it honestly. The question becomes when reuse pays (CIM capacity vs logic, flexibility, sharing across models) — still a publishable trade-off study |
-| Depthwise layers map poorly onto 64 × 16 tiles | Medium | Block-diagonal mapping (measured cost), a 128-tile CIM, or a small vector unit for depthwise (as in RV-Flash) |
+| B3 (dedicated block) is cheaper than CIM reuse | **Happened** (H4) | Report it honestly. The question becomes when reuse pays (CIM capacity vs logic, flexibility, sharing across models) — still a publishable trade-off study |
+| Depthwise layers map poorly onto 64 × 16 tiles | **Resolved** | Block-diagonal mapping on a 128-tile CIM |
+| The assumed macro timing or capacity does not match real silicon | Medium–high | Timing sensitivity sweep (§15.2 step 4); tile organisation in `ENERGY_ESTIMATE.md` §6. No public macro can stand in for it on the FPGA |
 | TFLite rounding details break exactness | Medium | Build and verify the integer reference against TFLite logits first (Phase 2a) |
-| Real time missed with the full network | Low–medium | Wider gathers in the sequencer; inference every *k* hops; streaming per-layer computation |
-| Live-mic domain shift lowers demo accuracy | Medium | GSC test-set accuracy stays the primary metric; the demo is qualitative |
-| FPGA resources or timing | Low | Currently 61 % LUT, 57 % DSP, 40 % BRAM, +16.6 ns slack at 15 MHz |
+| Real time missed with the full network | **Resolved** | Met on the board, down to 5.12 MHz |
+| Live-mic domain shift lowers demo accuracy | Medium | GSC test-set accuracy stays the primary metric. One speaker so far: 48 of 50 keywords; more speakers and false alarms per hour are planned (§15.2 step 6) |
+| FPGA resources or timing | Low | Currently 67 % LUT, 61 % DSP, 61 % BRAM, +15.1 ns slack at 15.36 MHz |
 | Schedule | Medium | Phases ordered by research value; Phase 4 and the options can shrink |
 
 ---
@@ -609,6 +613,8 @@ sequencer, depthwise data movement and requantisation on the CIM.
 
 ### 15.1 Status (2026-11-07)
 
+Every claim here is checked against its evidence by `freeze/freeze.py check` (`freeze/RESULTS.md`).
+
 | Component | Status |
 |---|---|
 | Direction, novelty gate, accuracy gate | ✅ Passed |
@@ -617,6 +623,7 @@ sequencer, depthwise data movement and requantisation on the CIM.
 | Front-end on the CIM, CPU-orchestrated (R4b) | ✅ Bit-exact on the board; the 1.1× Amdahl result |
 | Hardware front-end, frame path (R5a) | ✅ Bit-exact on the board; 21.8× fewer CPU-active cycles |
 | Dedicated MFCC baseline B3 | ✅ Built, gated (91.60 %), bit-exact; **H4 not supported** (`B3_BASELINE.md`) |
+| Frozen results (2026-11-07) | ✅ Git repository `hopcim/`, tag `freeze-2026-11-07`; bitstreams, ELFs, models and the dataset pinned by hash (`freeze/MANIFEST.json`); X-HEEP changes as a verified patch on its base commit. ⏳ Private remote and off-machine backup (student) |
 | Sleep accounting (`mcountinhibit` around WFI + endpoint `CYCLES`) | ✅ Board = simulation: CPU-active 4,743 vs wall 12,257 cycles per frame, with the CPU asleep in WFI during the front-end |
 | DS-CNN integer reference | ✅ Bit-exact with TFLite reference kernels on all 4,890 clips |
 | DS-CNN on the CIM, CPU-orchestrated (R6a) | ✅ Bit-exact on the board, 20 clips, 20/20 correct; 11.8–13.0 M cycles per inference, depthwise 73–75 % (`NETWORK.md`) |
@@ -632,27 +639,30 @@ sequencer, depthwise data movement and requantisation on the CIM.
 
 ### 15.2 Next steps, in order
 
-1. **Student, about 1 hour.** Run the IEEE Xplore search, and discuss the repositioning (§13a)
-   with the advisor. The two search strings:
+The project has moved from building to making its claims defensible, so new RTL is no longer the default next step. Order set on 2026-11-07:
+
+1. **Freeze and version.** ✅ Done 2026-11-07 (`freeze/`). Run `freeze/freeze.py` again after any step that changes a claim. ⏳ Student: add a private remote and back up `planenest/hw/bitstreams/`, because the repository pins bitstreams by hash and everything is on one disk so far.
+2. **Novelty audit and repositioning (student, the search about 1 hour).** This decides whether the core system is enough novelty or another contribution is needed. Run the IEEE Xplore search, and discuss §13a with the advisor. The two search strings:
    ```
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing" OR "computing-on-memory" OR "processing-in-memory") AND (FFT OR "Fourier" OR MFCC OR "Mel" OR spectrogram) AND ("keyword spotting" OR speech OR audio)
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing") AND ("FFT" OR "fast Fourier transform" OR "DFT")
    ```
-2. **Decide on the 80-ms question** (about 5 min of speaking, after a small firmware change): one run
-   at 20 ms that logs every decision's class. Each word can then be scored at every rate and hold rule
-   on identical audio (`LIVE_AUDIO.md` §9).
-3. **Then decide on the activation-reuse RTL** (4–6 weeks). Both conditions now hold in the model
-   (`REUSE_EVALUATION.md` §8). If 80 ms works on real speech, it reaches about the same power with no
-   memory and no RTL, so build reuse only if it does not.
-4. Then the evaluation extras (Phase 5: e.g., false alarms per hour, several speakers) and the writing
-   (Phase 6).
+3. **The same-audio experiment at 20, 40 and 80 ms.** One run at 20 ms logs every decision. Since decisions are bit-exact across rates, every rate, phase and confirmation rule can then be scored on identical speech. This decides whether 80 ms is viable (`LIVE_AUDIO.md` §9).
+4. **CIM timing sensitivity.** Parameterise the macro's issue interval and result latency, and report how latency and f_min vary across assumptions taken from published macros. Student: cycle counts, clock and macro size from Chih et al. and Colonnade. This is one of the largest remaining validity risks.
+5. **Energy validation.** Run ZigZag-IMC itself and compare it with the transcribed equations. A scoped open ASIC flow can replace the coarse digital logic; it does not validate a 28-nm macro. Everything keeps its estimate label.
+6. **More live evidence.** If 40 ms stays the operating point: 20 against 40 ms with several speakers, and false alarms per hour.
+7. **Verification polish.** Assertions, Verilator coverage, and a targeted post-synthesis smoke test of the full endpoint.
+8. **Only then, an optional architecture extension:** activation reuse (`REUSE_EVALUATION.md` §8), a dataflow optimisation, or none. Choose from the evidence, not because the thesis needs more RTL.
+
+Writing (Phase 6) runs alongside steps 4–8.
 
 ### 15.3 Points to discuss with the advisor
 
 - Is the narrowed claim (§4.5) the right thesis claim, and how does it relate to the group's earlier CIM KWS work?
 - Energy estimates are preferred if a published tool can do them, as an additional result (2026-11-07). Is the estimate in `ENERGY_ESTIMATE.md`, with its stated limits, the form that is wanted?
-- If the estimate is kept: does it justify 4–6 weeks of activation-reuse RTL (`REUSE_EVALUATION.md` §8)?
-- Which baselines does the committee expect: a dedicated FFT block (planned), a learned front-end (optional), or others?
+- Is the core system enough novelty for the thesis, or does it need an architecture extension (§15.2 step 8)?
+- H1 and H3 did not come out as written (§7). How should the thesis present them?
+- Which baselines does the committee expect: a dedicated FFT block (built, B3), a learned front-end (optional), or others?
 
 ---
 
@@ -722,9 +732,10 @@ sequencer, depthwise data movement and requantisation on the CIM.
 | `hopcim/model/` | Golden models (`mfcc_int.py`, `cim_map.py`), table and vector generators, accuracy re-gate (`gate2_int.py`) |
 | `hopcim/sw/` | Driver `cim.h`, generated `mfcc_tables.h` |
 | `hopcim/docs/` | This proposal and the specifications |
+| `hopcim/freeze/` | Frozen results: claims and evidence (`RESULTS.md`), hashes (`MANIFEST.json`), `freeze.py`; snapshots of the X-HEEP changes, board scripts and logs, the accuracy gate, novelty documents, tool versions |
 | `kws_gate/` | Gate scripts, pretrained MLPerf Tiny models, GSC test set, novelty searches |
 | `planenest/hw/x-heep/` | X-HEEP with the HopCIM integration (flag `use_cim`, symlink `hw/ip/hopcim`); apps `cim_smoke`, `hopcim_mfcc`, `hopcim_fe`; local BSCANE2 fix |
-| `planenest/hw/bitstreams/` | Bitstreams with SHA-256 sums; current: `xheep_nexys_bscan_pdm_cim_fe.bit` |
+| `planenest/hw/bitstreams/` | Bitstreams with SHA-256 sums; current: `xheep_nexys_bscan_cim128k.bit` |
 
 ## Appendix B — How to reproduce
 
@@ -733,15 +744,15 @@ cd ~/APlus_Project
 # accuracy re-gate and mapping self-test
 ~/venvs/kwsgate/bin/python hopcim/model/gate2_int.py
 ~/venvs/planenest/bin/python -c "import sys; sys.path.insert(0,'hopcim/model'); import cim_map; cim_map.self_test(4890)"
-# unit testbenches (Verilator)
-hopcim/sim/run_engine_tb.sh; hopcim/sim/run_endpoint_tb.sh; hopcim/sim/run_fe_tb.sh
+# all frozen claims against their evidence, then the RTL regression (Verilator, about 10 min)
+python3 hopcim/freeze/freeze.py check
+hopcim/sim/run_all.sh
 # SoC simulation
 cd planenest/hw/x-heep && source .venv/bin/activate && make verilator-build FUSESOC_FLAGS=--flag=use_cim
 ~/APlus_Project/hopcim/sim/run_soc.sh hopcim_fe          # also: cim_smoke, hopcim_mfcc
 # FPGA bitstream and board run
-make vivado-fpga FPGA_BOARD=nexys-a7-100t "FUSESOC_FLAGS=--flag=use_bscane_xilinx --flag=use_cim"
-make app PROJECT=hopcim_fe TARGET=nexys-a7-100t
-../board_run.sh sw/build/main.elf ../bitstreams/xheep_nexys_bscan_pdm_cim_fe.bit
+make vivado-fpga FPGA_BOARD=nexys-a7-100t "FUSESOC_FLAGS=--flag=use_bscane_xilinx --flag=use_cim --flag=use_cim_mic"
+cd .. && ./board_run.sh hopcim_live_nexys.elf bitstreams/xheep_nexys_bscan_cim128k.bit
 ```
 
 ## Appendix C — Engineering lessons
