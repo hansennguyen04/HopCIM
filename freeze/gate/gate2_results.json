@@ -1,0 +1,32 @@
+{
+  "n": 4890,
+  "accuracy": {
+    "int8|ref|reference": 91.65644171779141,
+    "int8|ref|round": 91.86094069529652,
+    "int8|cim|reference": 91.79959100204499,
+    "int8|cim|round": 91.94274028629856,
+    "float32|ref|-": 91.86094069529652,
+    "float32|cim|-": 91.88139059304703
+  },
+  "delta_int8_reference_quant": 0.14314928425358175,
+  "delta_int8_round_quant": 0.0817995910020386,
+  "delta_float32": 0.02044989775050965,
+  "mcnemar_int8": [
+    17,
+    24,
+    0.34888887944907765
+  ],
+  "mcnemar_float32": [
+    5,
+    6,
+    1.0
+  ],
+  "feature_abs_error_in_input_steps": {
+    "mean": 0.03372221712568841,
+    "p50": 0.011597038434011237,
+    "p99": 0.3501827287064352,
+    "max": 9.226296368029356,
+    "frac_below_half_step": 0.9946433788239222
+  },
+  "gate_pass": true
+}

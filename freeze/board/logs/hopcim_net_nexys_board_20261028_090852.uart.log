@@ -1,0 +1,29 @@
+clip 0: label 0 predicted 0, 11797008 cycles
+clip 1: label 0 predicted 0, 11796105 cycles
+clip 2: label 1 predicted 1, 11804504 cycles
+clip 3: label 1 predicted 1, 11798299 cycles
+clip 4: label 2 predicted 2, 11802451 cycles
+clip 5: label 3 predicted 3, 11801090 cycles
+clip 6: label 3 predicted 3, 11806941 cycles
+clip 7: label 4 predicted 4, 11799336 cycles
+clip 8: label 4 predicted 4, 11804667 cycles
+clip 9: label 5 predicted 5, 11797151 cycles
+clip 10: label 6 predicted 6, 11800960 cycles
+clip 11: label 6 predicted 6, 11792620 cycles
+clip 12: label 7 predicted 7, 11791634 cycles
+clip 13: label 7 predicted 7, 11802333 cycles
+clip 14: label 8 predicted 8, 11801067 cycles
+clip 15: label 9 predicted 9, 11798197 cycles
+clip 16: label 9 predicted 9, 11800146 cycles
+clip 17: label 10 predicted 10, 11796290 cycles
+clip 18: label 10 predicted 10, 11790801 cycles
+clip 19: label 11 predicted 11, 11793089 cycles
+tiles: 61 network tiles built and loaded in 464059 cycles
+conv1            637546 cyc/inference
+depthwise x4    8528600 cyc/inference
+pointwise x4    2596847 cyc/inference
+avg pool          34223 cyc/inference
+fc                 1507 cyc/inference
+total          11798724 cyc/inference, 7501 CIM passes
+HopCIM net: 20 clips, logit mismatches 0, prediction = golden 20, correct 20 -> PASS
+done

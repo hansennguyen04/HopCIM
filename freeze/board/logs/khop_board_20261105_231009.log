@@ -1,0 +1,69 @@
+=== k = 1: live, 60 s
+microphone: 1024 samples, min -151 max 103 mean 0 rms 53
+[10 s] 500 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+[20 s] 1000 decisions (6 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+[30 s] 1500 decisions (12 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+[40 s] 2000 decisions (18 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+[50 s] 2500 decisions (24 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+    hopcim_live_nexys_board_20261105_231010.uart.log
+=== k = 1: recording against the golden model
+recording: hops 100 .. 174 (24000 samples, 1.50 s) at 15360000 Hz, overrun 0
+  min -194 max 203 mean 0.6 rms 52.8
+      0 -  100 Hz:  29.6 % of the power
+    100 -  300 Hz:  59.0 % of the power
+    300 - 1000 Hz:   9.8 % of the power
+   1000 - 2000 Hz:   0.7 % of the power
+   2000 - 4000 Hz:   0.8 % of the power
+   4000 - 6000 Hz:   0.3 % of the power
+   6000 - 8000 Hz:   0.0 % of the power
+  strongest bins: 62 Hz, 94 Hz, 125 Hz, 156 Hz, 188 Hz
+decisions: 74 recorded, one every 1 hops (0 with hop != 49 + (count - 1) k); 25 with the window inside the recording: 0 differ from the golden model
+  classes: _unknown_ 74
+    hopcim_micrec_nexys_board_20261105_231119.uart.log
+=== k = 2: live, 60 s
+network every 2 hops (40 ms); a keyword needs 3 decisions in a row
+microphone: 1024 samples, min -132 max 142 mean 0 rms 56
+[10 s] 250 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 288)
+[20 s] 500 decisions (2 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 288)
+[30 s] 750 decisions (4 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 288)
+[40 s] 1000 decisions (6 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 288)
+[50 s] 1250 decisions (8 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 288)
+    hopcim_live_k2_nexys_board_20261105_231254.uart.log
+=== k = 2: recording against the golden model
+recording: hops 100 .. 174 (24000 samples, 1.50 s) at 15360000 Hz, overrun 0
+  min -181 max 175 mean 0.5 rms 51.1
+      0 -  100 Hz:  32.9 % of the power
+    100 -  300 Hz:  55.4 % of the power
+    300 - 1000 Hz:   8.2 % of the power
+   1000 - 2000 Hz:   1.2 % of the power
+   2000 - 4000 Hz:   1.5 % of the power
+   4000 - 6000 Hz:   0.7 % of the power
+   6000 - 8000 Hz:   0.0 % of the power
+  strongest bins: 62 Hz, 94 Hz, 125 Hz, 156 Hz, 188 Hz
+decisions: 37 recorded, one every 2 hops (0 with hop != 49 + (count - 1) k); 13 with the window inside the recording: 0 differ from the golden model
+  classes: _unknown_ 37
+    hopcim_micrec_k2_nexys_board_20261105_231404.uart.log
+=== k = 4: live, 60 s
+network every 4 hops (80 ms); a keyword needs 2 decisions in a row
+microphone: 1024 samples, min -149 max 119 mean -4 rms 51
+[10 s] 125 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 266 cycles (max 289)
+[20 s] 250 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 266 cycles (max 289)
+[30 s] 375 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 266 cycles (max 289)
+[40 s] 500 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 266 cycles (max 289)
+[50 s] 625 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 266 cycles (max 289)
+    hopcim_live_k4_nexys_board_20261105_231538.uart.log
+=== k = 4: recording against the golden model
+recording: hops 100 .. 174 (24000 samples, 1.50 s) at 15360000 Hz, overrun 0
+  min -164 max 204 mean 0.3 rms 52.5
+      0 -  100 Hz:  32.5 % of the power
+    100 -  300 Hz:  57.8 % of the power
+    300 - 1000 Hz:   8.1 % of the power
+   1000 - 2000 Hz:   0.8 % of the power
+   2000 - 4000 Hz:   0.6 % of the power
+   4000 - 6000 Hz:   0.2 % of the power
+   6000 - 8000 Hz:   0.0 % of the power
+  strongest bins: 62 Hz, 94 Hz, 125 Hz, 156 Hz, 188 Hz
+decisions: 19 recorded, one every 4 hops (0 with hop != 49 + (count - 1) k); 7 with the window inside the recording: 0 differ from the golden model
+  classes: _unknown_ 19
+    hopcim_micrec_k4_nexys_board_20261105_231648.uart.log
+summary: khop_board_20261105_231009.log; recordings all exact

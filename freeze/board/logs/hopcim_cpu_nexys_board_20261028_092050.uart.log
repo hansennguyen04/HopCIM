@@ -1,0 +1,4 @@
+clip 0: logits exact, 47975795 cycles
+clip 1: logits exact, 47974484 cycles
+per inference (mean of 2): conv1 6355274, depthwise 7876911, pointwise 33012301, pool 715657, fc 14658, total 47974801 cycles
+HopCIM CPU-only network: 2 clips, 0 wrong -> PASS

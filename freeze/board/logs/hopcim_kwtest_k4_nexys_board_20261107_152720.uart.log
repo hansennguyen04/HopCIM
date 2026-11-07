@@ -1,0 +1,145 @@
+HopCIM live: listening at 16 kHz (system clock 15360000 Hz)
+network every 4 hops (80 ms); a keyword needs 2 decisions in a row
+LEDs: LD10-LD13 keyword 1 (down) .. 10 (yes), LD14 not silence, LD0 blinks at 1 Hz
+microphone: 1024 samples, min -128 max 128 mean 2 rms 57
+KWTEST rounds 5 trials 65 period 200 lead 250
+Say each word once when it appears, 20-50 cm from the board; say nothing at (stay quiet).
+The first word comes in 5 s.
+[1/65] (stay quiet) @252
+[2/65] say: yes @452
+>> yes @560
+[3/65] say: house (not a keyword) @652
+[4/65] say: on @852
+>> up @912
+>> on @924
+[5/65] say: off @1052
+>> up @1096
+>> off @1116
+>> up @1136
+[6/65] say: bird (not a keyword) @1252
+[7/65] say: go @1452
+>> no @1516
+>> go @1552
+[8/65] say: right @1652
+>> right @1704
+[9/65] say: no @1852
+>> no @1900
+[10/65] say: stop @2052
+>> stop @2104
+>> up @2144
+[11/65] say: down @2252
+>> down @2312
+>> go @2352
+[12/65] say: up @2452
+>> up @2496
+[13/65] say: left @2652
+>> left @2696
+[14/65] say: seven (not a keyword) @2852
+[15/65] say: go @3052
+>> no @3120
+>> no @3208
+>> go @3240
+[16/65] say: down @3252
+>> no @3268
+>> down @3312
+[17/65] say: happy (not a keyword) @3452
+[18/65] say: no @3652
+>> no @3708
+[19/65] (stay quiet) @3852
+[20/65] say: left @4052
+[21/65] say: stop @4252
+>> stop @4432
+[22/65] say: off @4452
+>> up @4476
+>> up @4496
+>> off @4556
+>> up @4564
+[23/65] say: right @4652
+>> right @4696
+[24/65] say: yes @4852
+>> yes @4896
+[25/65] say: on @5052
+[26/65] say: up @5252
+[27/65] say: go @5452
+>> up @5476
+>> no @5512
+>> go @5548
+[28/65] say: dog (not a keyword) @5652
+>> stop @5748
+>> up @5788
+[29/65] say: off @5852
+>> off @5948
+>> up @5956
+[30/65] say: left @6052
+>> right @6108
+>> left @6116
+[31/65] say: no @6252
+>> no @6376
+[32/65] (stay quiet) @6452
+[33/65] say: yes @6652
+[34/65] say: up @6852
+>> up @6928
+[35/65] say: down @7052
+>> down @7108
+>> go @7148
+[36/65] say: on @7252
+>> on @7344
+[37/65] say: wow (not a keyword) @7452
+[38/65] say: stop @7652
+>> stop @7704
+>> up @7748
+[39/65] say: right @7852
+>> right @7900
+[40/65] say: off @8052
+>> up @8120
+[41/65] say: tree (not a keyword) @8252
+[42/65] say: go @8452
+[43/65] say: on @8652
+>> go @8656
+>> on @8724
+[44/65] say: left @8852
+>> left @8896
+[45/65] say: down @9052
+>> down @9180
+[46/65] say: stop @9252
+>> stop @9316
+>> up @9356
+[47/65] (stay quiet) @9452
+[48/65] say: up @9652
+[49/65] say: cat (not a keyword) @9852
+[50/65] say: no @10052
+>> no @10116
+[51/65] say: right @10252
+>> right @10324
+[52/65] say: yes @10452
+>> yes @10512
+[53/65] say: on @10652
+>> up @10696
+>> on @10704
+[54/65] (stay quiet) @10852
+[55/65] say: zero (not a keyword) @11052
+[56/65] say: yes @11252
+>> yes @11300
+[57/65] say: go @11452
+>> go @11508
+>> no @11524
+>> go @11540
+[58/65] say: marvin (not a keyword) @11652
+[59/65] say: up @11852
+>> up @11904
+[60/65] say: off @12052
+>> up @12124
+[61/65] say: no @12252
+>> no @12308
+[62/65] say: stop @12452
+>> stop @12524
+[63/65] say: down @12652
+>> go @12708
+>> down @12720
+[64/65] say: right @12852
+>> right @12892
+[65/65] say: left @13052
+>> left @13092
+end @13252: 3313 decisions (0 missed while printing), 70 keywords, overrun 0; CPU-active per decision 233 cycles (max 259)
+    classes: down 49 go 45 left 44 no 109 off 16 on 43 right 62 stop 66 up 131 yes 47 _unknown_ 2701
+done

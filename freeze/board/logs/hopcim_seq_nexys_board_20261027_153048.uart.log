@@ -1,0 +1,27 @@
+clip 0: class 5 (label 0), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 1: class 5 (label 0), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 2: class 5 (label 1), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 3: class 5 (label 1), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 4: class 4 (label 2), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 5: class 4 (label 3), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 6: class 5 (label 3), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 7: class 5 (label 4), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 8: class 4 (label 4), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 9: class 5 (label 5), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 10: class 5 (label 6), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 11: class 5 (label 6), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 12: class 5 (label 7), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 13: class 5 (label 7), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 14: class 5 (label 8), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 15: class 5 (label 9), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 16: class 4 (label 9), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 17: class 5 (label 10), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 18: class 5 (label 10), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+clip 19: class 5 (label 11), logits WRONG, sequencer 85420 cycles, CPU-active 9677
+setup (61 tiles built and loaded, 640 parameter entries): 443536 cycles, once
+sequencer per inference (go -> interrupt): 85420..85420 cycles
+CPU-active per decision, whole window (147 FEAT words, go, wake, class and logits): 9677..9679 cycles, mean 9678
+CPU-active per decision, streaming step (3 FEAT words, go, wake, class and logits): 459..459 cycles
+wall per decision, whole window: max 95040 cycles
+60 runs (20 clips: FEAT in order, as a ring, streaming step): 60 with wrong logits or class; predictions = golden 2/20, = label 2/20
+HopCIM seq: 60 of 60 runs wrong -> FAIL

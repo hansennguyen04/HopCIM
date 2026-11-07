@@ -1,0 +1,5 @@
+Verilator: Verilator 5.040 2025-08-30 rev v5.040
+RISC-V GCC: riscv64-unknown-elf-gcc (SiFive GCC 10.1.0-2020.08.2) 10.1.0
+Vivado: vivado v2024.1 (64-bit)
+Python, system: Python 3.10.12
+Kernel: Linux 6.8.0-138-generic x86_64

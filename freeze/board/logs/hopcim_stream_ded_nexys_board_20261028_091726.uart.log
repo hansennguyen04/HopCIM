@@ -1,0 +1,4 @@
+classes of the 51 decisions: 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 11 11 11 11 11 11 11 11 11 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+per decision hop, CPU-active: copying 320 samples 3847 cycles (mean); everything else 600..600 (mean 600)
+per decision hop, wall: 98604..98604 cycles (new frame only), 103116..103116 (all 49 frames, 16 hops)
+HopCIM stream: 100 hops, 51 decisions, 0 hop and 0 decision mismatches -> PASS

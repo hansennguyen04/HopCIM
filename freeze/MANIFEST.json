@@ -1,0 +1,153 @@
+{
+ "tag": "freeze-2026-11-07",
+ "note": "Hashes of everything the frozen results depend on that is not in this repository.",
+ "tools": [
+  "Verilator: Verilator 5.040 2025-08-30 rev v5.040",
+  "RISC-V GCC: riscv64-unknown-elf-gcc (SiFive GCC 10.1.0-2020.08.2) 10.1.0",
+  "Vivado: vivado v2024.1 (64-bit)",
+  "Python, system: Python 3.10.12",
+  "Kernel: Linux 6.8.0-138-generic x86_64"
+ ],
+ "sources": {
+  "xheep_base_commit": "b3eb3c8d626d3debe8e5cf99ecff32a5a31549fd",
+  "xheep_patch_sha256": "398117808b018a25fd35eb30adb9fbac300dec643f15462d96caacb86d53cbbf",
+  "xheep_overlay": {
+   "files": 31,
+   "tree_sha256": "a9c8dbac1dc0b81ff798bfd008060bcb49b5d564df5f2d14b6b9000692cd12ae"
+  },
+  "xheep_generated_system_sha256": "ceffa165d848c845ee9e203709ab2d8bcbb5fe03dfbeab1d7eb70897ae411d7b"
+ },
+ "bitstreams": {
+  "xheep_nexys_bscan.bit": {
+   "sha256": "7eedec4e49e1652ad5253489a4e03f85836ee194cbaf8e8bb7109a8769fa68d1",
+   "bytes": 3825915
+  },
+  "xheep_nexys_bscan_cim128k.bit": {
+   "sha256": "b7102d5dff2e7e7883dae7310a9295537007f8ea968bffb7d27e6c0085ab49d9",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "2af09c2343f7fe910b10d29feee944872639db6a0b76c81bc99eb2acc96e85c5",
+   "carries": "every-k-hops option; the speaker test at 20, 40, 80 ms; the current live design (15.36 MHz)"
+  },
+  "xheep_nexys_bscan_cim128mic.bit": {
+   "sha256": "3a9c6ff42bd7630ecd102b93b9de93e275c39b22f6ea9c801d88245bdf75d51b",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "e40b1b7eebd65345283a8654f066a5f700a784bb12588f4b4c5ca0d5471da712",
+   "carries": "first live microphone path (R7, 15.36 MHz)"
+  },
+  "xheep_nexys_bscan_cim128mic5.bit": {
+   "sha256": "f7fb3d57ad1eb64ccb7b55db49d2e9eca2a5664cf6597d0fda0e92d8c555804a",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "e4825f849f5acb9f135362beaa14ebf44dd9ff40eb8d9d1976ae019cc53df4aa",
+   "carries": "lowest real-time clock (5.12 MHz)"
+  },
+  "xheep_nexys_bscan_pdm.bit": {
+   "sha256": "a967f74d8ab740fe313b8a746fc829789582fb64b63829275508e88cf6da4d56",
+   "bytes": 3825915
+  },
+  "xheep_nexys_bscan_pdm_cim.bit": {
+   "sha256": "21e501a29a46e0a11ae46ea88cf2ec5bc473afb057ff8f65b880c68ebd9c0c77",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "cbd19a827c09cf060096c2f5c879a35ba7697425ba05b9af523032a965220ecc"
+  },
+  "xheep_nexys_bscan_pdm_cim128_cim.bit": {
+   "sha256": "174ba126cd429fd3d43f7eb3ace2c5d8a733135ca75f79a8920b7f46d7a5c0d7",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "ee5a6f8729d6bc1c35b0ede2c3930c58254a6bd8cb634920d64ee399b32a208e"
+  },
+  "xheep_nexys_bscan_pdm_cim128_ded.bit": {
+   "sha256": "a238d89e0f8975902928b8e68bbbe8d02e236fc05af5e016a401320696d30968",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "5de637962b8dc8c3d92ad5504fa205143a2dc0c1589143a725b59c316580f9d5"
+  },
+  "xheep_nexys_bscan_pdm_cim128s_cim.bit": {
+   "sha256": "d250e6b965b50d6eb48219d93bee22c8135a575c300e4f7927007604863c4eff",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "f9b4a1700e3ed7a0980082762192f09a0936c0a591fdbb8890cb3e2fa3160836",
+   "carries": "layer sequencer (R6b), cim_fe"
+  },
+  "xheep_nexys_bscan_pdm_cim128s_ded.bit": {
+   "sha256": "2e21440263602ae7128b0ca1a7babf3b28481d64c69a0fdcbc5557196e9fd31a",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "fca2eecafdaa37cf5b335612b71f03058cc4be92ea3f80c73d24627f6d71f7cd",
+   "carries": "layer sequencer (R6b), B3"
+  },
+  "xheep_nexys_bscan_pdm_cim128w_cim.bit": {
+   "sha256": "590b6773486a64c3cdb4f489a4498919c15ea7ce2df8cb744462665cb9ab3d5e",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "ae9b64b9efd7624f175408043c3360527a7a9575dd2df4470357bcfbb7edc7f0",
+   "carries": "window path (R5b), cim_fe"
+  },
+  "xheep_nexys_bscan_pdm_cim128w_ded.bit": {
+   "sha256": "9159094280c226437cb9ca643af71b1b25f9152be33c80c124a34bbbaa3d6602",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "1972490c5a3f23934218d3dd59430d431596fa4749c4c261f9a4c5862f22380f",
+   "carries": "window path (R5b), B3"
+  },
+  "xheep_nexys_bscan_pdm_cim_fe.bit": {
+   "sha256": "39c90373414a559f467df1d7d8a384eb5ba3ab6cdd89c6b1f9844b9cf039e8b3",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "bf26079abaea725c1a0bfa068d18d7e5c87c773c4c722794d0a329ad5746b220"
+  },
+  "xheep_nexys_bscan_pdm_cim_nobufg.bit": {
+   "sha256": "832dcb849ef7036a51ca82a940609af2ace59075c68dceb47658fcaa849f69cb",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "1c44626143e392f3cccf5093273570c63aceb9aae92797fd01128a3b9a433b15"
+  },
+  "xheep_nexys_pmod_jtag.bit": {
+   "sha256": "a5bec31b5930b458aef08b0947eff95f08cad2f20ed7345a6638fe162c66afc9",
+   "bytes": 3825915
+  }
+ },
+ "elfs": {
+  "census_microbench_nexys.elf": "13991a37a2544200c1cb9d0782ab46e1f4ed53599e3261bf6797e369413218bc",
+  "cim_smoke_nexys.elf": "03051abeb195b8cfab372d8f10e7bc47f8cfa5411149a530be52ff6053479916",
+  "hello_world_nexys.elf": "2f59616b29d2f32e1ac611d5b14fde8ffc78f382cac9a2fbfea822914021b030",
+  "hopcim_cpu_nexys.elf": "0b327e67e5f1fb5d21e8d3c4d81f382f4f94b5115fe0717a4b3cc3f658528564",
+  "hopcim_fe_ded_nexys.elf": "84aecaceb38117dcd6bbe4631ad2f4ee4bb9103ef67881972ca536f2692dfebf",
+  "hopcim_fe_irq_ded_nexys.elf": "b850e324d4429528d44b18ae98a08cbffd1f4a8924cb41bef1b24fadca957dd9",
+  "hopcim_fe_irq_nexys.elf": "93915fee91d9e7fcb970da66fe2c2bf19e3ee1cd3fdd8bf4699c0ec3e4c5358f",
+  "hopcim_fe_nexys.elf": "c658f93c60bffbe94c51f88ffc85817422da4f8c5f031573333bc6d0dcd47af1",
+  "hopcim_kwtest_k2_nexys.elf": "46ba9357351e98a3290944e02036adb89776d9984dceda475cc6a08bea326a2a",
+  "hopcim_kwtest_k4_nexys.elf": "c6a5ca3651eee79a7b63b0deda20ff962fc1095e2a15e750a4a1c8cbe879634f",
+  "hopcim_kwtest_nexys.elf": "3ac55429a4c4c070df8bfb4ebdecc79d41f6b5b5cc5cd385610075d41d20c141",
+  "hopcim_live_k2_nexys.elf": "216d4ab6f9e0747b1dfa3c941c1979d89459b1fc2e185a0fc661b2b054c0b3da",
+  "hopcim_live_k4_nexys.elf": "82aebf63bddd7891607d07dff0291bb4361dc5697b803b0ea0e774e6d4b0d28a",
+  "hopcim_live_nexys.elf": "3af0e0414145aa4a2e59cd7a4a6911b7df5897449a5563c6a33749dcd7906a7d",
+  "hopcim_live_nexys_5m12.elf": "15175ed5f2f3d5aff12ba4c99a865fd18abb0291f3f0ccca46f61ae97eefbd9e",
+  "hopcim_mfcc_nexys.elf": "3c7da3c4e0273ad879c7d31b984f8e19a19106d52c2505dcda3c0664a5d181a1",
+  "hopcim_micrec_k2_nexys.elf": "c1256dac17ff38a5d446181958aedcf4ff989e6dc349e414f3f1eca94a6b6ac3",
+  "hopcim_micrec_k4_nexys.elf": "add9070a0a4d36ff693444671b9938dbc65a36cfa5b14dc051c3cd5c5434f342",
+  "hopcim_micrec_nexys.elf": "14ec2206671ee5c1b881473c2cbadfe568848c3e400f1f4f6916d0dcc08d12bc",
+  "hopcim_net1_nexys.elf": "db47f90a0e3e9b000362405138ab325e18aa99994823f115705398f2882c027c",
+  "hopcim_net_nexys.elf": "c4d9c7dd7234f7880e82395ee342f023fea795985243b1d0ead3700e8b17858c",
+  "hopcim_seq_dbg_nexys.elf": "d9403bf95dbb0121fc9204202a1b72b6feb8d33cc748a356feaa49aad7b2b1b0",
+  "hopcim_seq_nexys.elf": "e2a41cac353b1646e02abaeccb4ff0eca3f02fc82454240888b5a49cb0b2f348",
+  "hopcim_stream_ded_nexys.elf": "592a153adaee19338e2f4c7ec43f35bf896c6717094029405e4ff3a8d9262c65",
+  "hopcim_stream_nexys.elf": "4a7c08321256c19b425da37fbcd53a36924ebd74d505923af0d677b0b2dffb2c",
+  "pdm_capture_nexys.elf": "21970a1ec680232021ce1a5887c5cb5c6f0d6d406d6dfc1655b3a6e854fc5aee"
+ },
+ "models": {
+  "mlperf_tiny_kws_ref_int8": {
+   "path": "kws_gate/mlperf_tiny_kws/trained_models/kws_ref_model.tflite",
+   "sha256": "aeea436800704fce17b17292e4412630ad856e9d777c044c64ef748a880bd0ae"
+  },
+  "mlperf_tiny_kws_ref_float32": {
+   "path": "kws_gate/mlperf_tiny_kws/trained_models/kws_ref_model_float32.tflite",
+   "sha256": "e5004c6f1012246e33fa068d8488325538e0444073cd361f5a7edb40c73f12d2"
+  },
+  "dscnn_params": {
+   "path": "hopcim/model/dscnn_params.npz",
+   "sha256": "e1c12c7514d3516834b71d47398367e1db8089f7e9d651223d9c4efd6a3d6bae"
+  },
+  "mfcc_tables": {
+   "path": "hopcim/model/mfcc_tables.npz",
+   "sha256": "298861f6fdbdf89057be51c4daea64e50db9b85479c44aee5c40612576efc35f"
+  }
+ },
+ "dataset": {
+  "name": "Google Speech Commands v2, test split as used by the MLPerf Tiny preprocessing",
+  "path": "kws_gate/data/test",
+  "files": 4892,
+  "tree_sha256": "66b2d570e4eb6361850b08cabfdcc93f7ef63d3b2c4db7b04090e609b2c74739"
+ }
+}

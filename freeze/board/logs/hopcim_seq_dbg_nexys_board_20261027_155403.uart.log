@@ -1,0 +1,33 @@
+SEQ_ZP 0x000e8053, status 0x00000000
+after conv1: status 0x00000000
+  L0 p1 c0: got -115 exp -119
+  L0 p1 c2: got -122 exp -124
+  L0 p1 c5: got -125 exp -119
+  L0 p1 c6: got -111 exp -112
+  L0 p1 c7: got -119 exp -118
+  L0 p1 c10: got -118 exp -122
+  L0 p1 c11: got -127 exp -126
+  L0 p1 c15: got -125 exp -126
+  L0 p1 c17: got -126 exp -127
+  L0 p1 c18: got -127 exp -128
+L0: 1594/8000 wrong, 50/125 positions (4 on the border), per lane 274 241 207 223 235 179 235
+  p62 c0: acc -791, cpu -128, seq -128, golden -128
+  p62 c1: acc 650, cpu -127, seq -127, golden -127
+  p62 c2: acc 1551, cpu -122, seq -122, golden -122
+conv1 p62 via CPU path: 0/64 wrong; sequencer: 0/64 wrong
+  p0 c0: acc 2011, cpu -110, seq -110, golden -110
+  p0 c1: acc 2963, cpu -114, seq -114, golden -114
+  p0 c2: acc -17775, cpu -128, seq -128, golden -128
+conv1 p0 via CPU path: 0/64 wrong; sequencer: 0/64 wrong
+  L1 p0 c7: got -117 exp -116
+  L1 p0 c12: got -104 exp -105
+  L1 p0 c18: got -124 exp -126
+  L1 p0 c19: got -118 exp -123
+  L1 p0 c28: got -123 exp -117
+  L1 p0 c31: got -124 exp -123
+  L1 p0 c32: got -126 exp -127
+  L1 p0 c38: got -125 exp -127
+  L1 p0 c48: got -114 exp -112
+  L1 p0 c49: got -125 exp -126
+L1: 3311/8000 wrong, 125/125 positions (56 on the border), per lane 584 489 369 491 483 404 491
+full run: status 0x00000950, logits -93 -39 -39 -124 69 115 -57 -128 14 -66 -127 28 | golden 62 11 -56 -23 -21 26 -48 -2 -22 -39 -58 26

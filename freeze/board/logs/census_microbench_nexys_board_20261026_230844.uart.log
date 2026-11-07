@@ -1,0 +1,23 @@
+census_microbench start
+census_microbench: CV32E20 rv32imc, mcycle deltas
+dot8_naive            13326 cyc     1024 MAC    13.01 cyc/MAC
+dot8_wordload         11284 cyc     1024 MAC    11.01 cyc/MAC
+conv3x3_16x16       1861299 cyc   147456 MAC    12.62 cyc/MAC
+pw1x1_kws           5904347 cyc   512000 MAC    11.53 cyc/MAC
+dw3x3_kws           1351690 cyc    72000 MAC    18.77 cyc/MAC
+requant_simple        20509 cyc     1024 elem   20.02 cyc/elem
+requant_tflm          35883 cyc     1024 elem   35.04 cyc/elem
+cpu_copy_4KiB          9227 cyc     4096 B      2.25 cyc/B
+wall_read_overhead 57 cyc
+dma4KiB_cpu_active     2663 cyc     4096 B      0.65 cyc/B
+dma4KiB_wall           2666 cyc     4096 B      0.65 cyc/B
+dma64B_cpu_active     11072 cyc       16 xfer   692.00 cyc/xfer
+dma64B_wall           11072 cyc       16 xfer   692.00 cyc/xfer
+dma4B_cpu_active       9760 cyc       16 xfer   610.00 cyc/xfer
+dma4B_wall             9761 cyc       16 xfer   610.06 cyc/xfer
+fft512 mcycle 145141 wall 145141 (check mcycle==wall when no WFI)
+mmio_write              514 cyc       64 wr     8.03 cyc/wr
+mmio_read               577 cyc       64 rd     9.01 cyc/rd
+fft512_cplx_q15      145142 cyc        1 frame  145142.00 cyc/frame
+pwr_mel_log_dct       15632 cyc        1 frame  15632.00 cyc/frame
+done

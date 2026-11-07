@@ -1,0 +1,6 @@
+HopCIM live: listening at 16 kHz (system clock 15360000 Hz)
+microphone: 1024 samples, min 1028 max 1323 mean 1176 rms 69
+[10 s] 500 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 21 cycles (max 22)
+[20 s] 1000 decisions (4 missed while printing), 0 keywords, overrun 0; CPU-active per decision 21 cycles (max 22)
+[30 s] 1500 decisions (9 missed while printing), 0 keywords, overrun 0; CPU-active per decision 21 cycles (max 22)
+[40 s] 2000 decisions (14 missed while printing), 0 keywords, overrun 0; CPU-active per decision 21 cycles (max 22)

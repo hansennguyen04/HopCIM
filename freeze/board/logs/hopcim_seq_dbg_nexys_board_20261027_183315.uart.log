@@ -1,0 +1,13 @@
+SEQ_ZP 0x000e8053, status 0x00000000
+after conv1: status 0x00000000
+L0: 0/8000 wrong, 0/125 positions (0 on the border), per lane 0 0 0 0 0 0 0
+  p62 c0: acc -791, cpu -128, seq -128, golden -128
+  p62 c1: acc 650, cpu -127, seq -127, golden -127
+  p62 c2: acc 1551, cpu -122, seq -122, golden -122
+conv1 p62 via CPU path: 0/64 wrong; sequencer: 0/64 wrong
+  p0 c0: acc 2011, cpu -110, seq -110, golden -110
+  p0 c1: acc 2963, cpu -114, seq -114, golden -114
+  p0 c2: acc -17775, cpu -128, seq -128, golden -128
+conv1 p0 via CPU path: 0/64 wrong; sequencer: 0/64 wrong
+L1: 0/8000 wrong, 0/125 positions (0 on the border), per lane 0 0 0 0 0 0 0
+full run: status 0x00000900, logits 62 11 -56 -23 -21 26 -48 -2 -22 -39 -58 26 | golden 62 11 -56 -23 -21 26 -48 -2 -22 -39 -58 26

@@ -1,0 +1,5521 @@
+diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
+index f645e94..c9f0521 100644
+--- a/core-v-mini-mcu.core
++++ b/core-v-mini-mcu.core
+@@ -93,6 +93,7 @@ filesets:
+     depend:
+     - x-heep:x-heep:x-heep-fpga-support
+     - use_hls_example ? (epfl:ip:dot_product)
++    - use_cim ? (hopcim:ip:cim_endpoint)
+     files:
+     - hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+     file_type: systemVerilogSource
+@@ -270,6 +271,37 @@ parameters:
+       HLS) and pulls in epfl:ip:dot_product -- so without the flag,
+       building/simulating X-HEEP never requires Vitis HLS to be installed.
+     default: false
++  USE_CIM:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      Include the HopCIM endpoint (hopcim:ip:cim_endpoint, hw/ip/hopcim): on the testbench
++      external bus at 0xC0040000 in simulation, on the CPU data master's external-slave port
++      on the FPGA. Enable with `--flag use_cim`.
++    default: false
++  CIM_FE_DED:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM: use the dedicated MFCC front-end baseline B3 (mfcc_ded) instead of the CIM
++      front-end (cim_fe). Enable with `--flag use_cim_ded` in addition to `--flag use_cim`.
++    default: false
++  USE_CIM_MIC:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM on the Nexys A7: the HopCIM live audio path (R7) drives the on-board PDM
++      microphone (J5 clock, H5 data) instead of X-HEEP's pdm2pcm, and the system clock is
++      15.36 MHz (exactly 16 kHz audio). Enable with `--flag use_cim_mic`.
++    default: false
++  CIM_MIC_5M12:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM_MIC: a 5.12 MHz system clock and PDM clock divider 5 instead of 15.36 MHz and 15,
++      the lowest clock with a 1.024 MHz PDM clock at which every hop is still processed in time.
++      Enable with `--flag use_cim_mic5` in addition to `--flag use_cim_mic`.
++    default: false
+ 
+ scripts:
+   # Build utils
+@@ -361,6 +393,8 @@ targets:
+     - COMMON_CELLS_ASSERTS_OFF
+     - ASSERTS_OFF
+     - use_hls_example ? (USE_HLS_EXAMPLE=true)
++    - use_cim ? (USE_CIM=true)
++    - use_cim_ded ? (CIM_FE_DED=true)
+     tools:
+       modelsim:
+         vlog_options:
+@@ -481,6 +515,10 @@ targets:
+     - FPGA_SYNTHESIS=true
+     - FPGA_NEXYS=true
+     - NO_DDR_CLK_PORTS=true
++    - use_cim ? (USE_CIM=true)
++    - use_cim_ded ? (CIM_FE_DED=true)
++    - use_cim_mic ? (USE_CIM_MIC=true)
++    - use_cim_mic5 ? (CIM_MIC_5M12=true)
+     tools:
+       vivado:
+         part: xc7a100tcsg324-1
+diff --git a/hw/core-v-mini-mcu/core_v_mini_mcu.sv b/hw/core-v-mini-mcu/core_v_mini_mcu.sv
+index 9520647..cd56592 100644
+--- a/hw/core-v-mini-mcu/core_v_mini_mcu.sv
++++ b/hw/core-v-mini-mcu/core_v_mini_mcu.sv
+@@ -26,212 +26,212 @@ module core_v_mini_mcu #(
+     parameter type fifo_rsp_t = xheep_fifo_pkg::xheep_fifo_rsp_t
+ ) (
+ 
+-    input  logic rst_ni,
+-    input  logic clk_i,
+-    input  logic boot_select_i,
+-    input  logic jtag_tck_i,
+-    input  logic jtag_tms_i,
+-    input  logic jtag_trst_ni,
+-    input  logic jtag_tdi_i,
+-    output logic jtag_tdo_o,
+-    input  logic uart_rx_i,
+-    output logic uart_tx_o,
+-    output logic exit_valid_o,
+-    input  logic ddr_rcv_clk_i,
+-    output logic ddr_snd_clk_o,
+-    input  logic gpio_0_i,
+-    output logic gpio_0_o,
+-    output logic gpio_0_oe_o,
+-    input  logic gpio_1_i,
+-    output logic gpio_1_o,
+-    output logic gpio_1_oe_o,
+-    input  logic ddr_rcv_0_i,
+-    input  logic gpio_2_i,
+-    output logic gpio_2_o,
+-    output logic gpio_2_oe_o,
+-    input  logic ddr_rcv_1_i,
+-    input  logic gpio_3_i,
+-    output logic gpio_3_o,
+-    output logic gpio_3_oe_o,
+-    input  logic ddr_rcv_2_i,
+-    input  logic gpio_4_i,
+-    output logic gpio_4_o,
+-    output logic gpio_4_oe_o,
+-    input  logic gpio_5_i,
+-    output logic gpio_5_o,
+-    output logic gpio_5_oe_o,
+-    input  logic gpio_6_i,
+-    output logic gpio_6_o,
+-    output logic gpio_6_oe_o,
+-    input  logic ddr_rcv_3_i,
+-    input  logic gpio_7_i,
+-    output logic gpio_7_o,
+-    output logic gpio_7_oe_o,
+-    output logic ddr_snd_0_o,
+-    input  logic gpio_8_i,
+-    output logic gpio_8_o,
+-    output logic gpio_8_oe_o,
+-    output logic ddr_snd_1_o,
+-    input  logic gpio_9_i,
+-    output logic gpio_9_o,
+-    output logic gpio_9_oe_o,
+-    output logic ddr_snd_2_o,
+-    input  logic gpio_10_i,
+-    output logic gpio_10_o,
+-    output logic gpio_10_oe_o,
+-    output logic ddr_snd_3_o,
+-    input  logic gpio_11_i,
+-    output logic gpio_11_o,
+-    output logic gpio_11_oe_o,
+-    input  logic gpio_12_i,
+-    output logic gpio_12_o,
+-    output logic gpio_12_oe_o,
+-    input  logic spi_flash_sck_i,
+-    output logic spi_flash_sck_o,
+-    output logic spi_flash_sck_oe_o,
+-    input  logic spi_flash_cs_0_i,
+-    output logic spi_flash_cs_0_o,
+-    output logic spi_flash_cs_0_oe_o,
+-    input  logic spi_flash_cs_1_i,
+-    output logic spi_flash_cs_1_o,
+-    output logic spi_flash_cs_1_oe_o,
+-    input  logic spi_flash_sd_0_i,
+-    output logic spi_flash_sd_0_o,
+-    output logic spi_flash_sd_0_oe_o,
+-    input  logic spi_flash_sd_1_i,
+-    output logic spi_flash_sd_1_o,
+-    output logic spi_flash_sd_1_oe_o,
+-    input  logic spi_flash_sd_2_i,
+-    output logic spi_flash_sd_2_o,
+-    output logic spi_flash_sd_2_oe_o,
+-    input  logic spi_flash_sd_3_i,
+-    output logic spi_flash_sd_3_o,
+-    output logic spi_flash_sd_3_oe_o,
+-    input  logic spi_sck_i,
+-    output logic spi_sck_o,
+-    output logic spi_sck_oe_o,
+-    input  logic spi_cs_0_i,
+-    output logic spi_cs_0_o,
+-    output logic spi_cs_0_oe_o,
+-    input  logic spi_cs_1_i,
+-    output logic spi_cs_1_o,
+-    output logic spi_cs_1_oe_o,
+-    input  logic spi_sd_0_i,
+-    output logic spi_sd_0_o,
+-    output logic spi_sd_0_oe_o,
+-    input  logic spi_sd_1_i,
+-    output logic spi_sd_1_o,
+-    output logic spi_sd_1_oe_o,
+-    input  logic spi_sd_2_i,
+-    output logic spi_sd_2_o,
+-    output logic spi_sd_2_oe_o,
+-    input  logic spi_sd_3_i,
+-    output logic spi_sd_3_o,
+-    output logic spi_sd_3_oe_o,
+-    input  logic spi_slave_sck_i,
+-    input  logic gpio_13_i,
+-    output logic gpio_13_o,
+-    output logic gpio_13_oe_o,
+-    input  logic spi_slave_cs_i,
+-    input  logic gpio_14_i,
+-    output logic gpio_14_o,
+-    output logic gpio_14_oe_o,
+-    input  logic spi_slave_miso_i,
+-    output logic spi_slave_miso_o,
+-    output logic spi_slave_miso_oe_o,
+-    input  logic gpio_15_i,
+-    output logic gpio_15_o,
+-    output logic gpio_15_oe_o,
+-    input  logic spi_slave_mosi_i,
+-    input  logic gpio_16_i,
+-    output logic gpio_16_o,
+-    output logic gpio_16_oe_o,
+-    input  logic pdm2pcm_pdm_i,
+-    output logic pdm2pcm_pdm_o,
+-    output logic pdm2pcm_pdm_oe_o,
+-    input  logic gpio_17_i,
+-    output logic gpio_17_o,
+-    output logic gpio_17_oe_o,
+-    input  logic pdm2pcm_clk_i,
+-    output logic pdm2pcm_clk_o,
+-    output logic pdm2pcm_clk_oe_o,
+-    input  logic gpio_18_i,
+-    output logic gpio_18_o,
+-    output logic gpio_18_oe_o,
+-    input  logic i2s_sck_i,
+-    output logic i2s_sck_o,
+-    output logic i2s_sck_oe_o,
+-    input  logic gpio_19_i,
+-    output logic gpio_19_o,
+-    output logic gpio_19_oe_o,
+-    input  logic i2s_ws_i,
+-    output logic i2s_ws_o,
+-    output logic i2s_ws_oe_o,
+-    input  logic gpio_20_i,
+-    output logic gpio_20_o,
+-    output logic gpio_20_oe_o,
+-    input  logic i2s_sd_rx_i,
+-    input  logic gpio_21_i,
+-    output logic gpio_21_o,
+-    output logic gpio_21_oe_o,
+-    output logic i2s_sd_tx_o,
+-    input  logic gpio_22_i,
+-    output logic gpio_22_o,
+-    output logic gpio_22_oe_o,
+-    input  logic spi2_cs_0_i,
+-    output logic spi2_cs_0_o,
+-    output logic spi2_cs_0_oe_o,
+-    input  logic gpio_23_i,
+-    output logic gpio_23_o,
+-    output logic gpio_23_oe_o,
+-    input  logic spi2_cs_1_i,
+-    output logic spi2_cs_1_o,
+-    output logic spi2_cs_1_oe_o,
+-    input  logic gpio_24_i,
+-    output logic gpio_24_o,
+-    output logic gpio_24_oe_o,
+-    input  logic spi2_sck_i,
+-    output logic spi2_sck_o,
+-    output logic spi2_sck_oe_o,
+-    input  logic gpio_25_i,
+-    output logic gpio_25_o,
+-    output logic gpio_25_oe_o,
+-    input  logic spi2_sd_0_i,
+-    output logic spi2_sd_0_o,
+-    output logic spi2_sd_0_oe_o,
+-    input  logic gpio_26_i,
+-    output logic gpio_26_o,
+-    output logic gpio_26_oe_o,
+-    input  logic spi2_sd_1_i,
+-    output logic spi2_sd_1_o,
+-    output logic spi2_sd_1_oe_o,
+-    input  logic gpio_27_i,
+-    output logic gpio_27_o,
+-    output logic gpio_27_oe_o,
+-    input  logic spi2_sd_2_i,
+-    output logic spi2_sd_2_o,
+-    output logic spi2_sd_2_oe_o,
+-    input  logic gpio_28_i,
+-    output logic gpio_28_o,
+-    output logic gpio_28_oe_o,
+-    input  logic spi2_sd_3_i,
+-    output logic spi2_sd_3_o,
+-    output logic spi2_sd_3_oe_o,
+-    input  logic gpio_29_i,
+-    output logic gpio_29_o,
+-    output logic gpio_29_oe_o,
+-    input  logic i2c_scl_i,
+-    output logic i2c_scl_o,
+-    output logic i2c_scl_oe_o,
+-    input  logic gpio_31_i,
+-    output logic gpio_31_o,
+-    output logic gpio_31_oe_o,
+-    input  logic i2c_sda_i,
+-    output logic i2c_sda_o,
+-    output logic i2c_sda_oe_o,
+-    input  logic gpio_30_i,
+-    output logic gpio_30_o,
+-    output logic gpio_30_oe_o,
++      input logic rst_ni,
++          input logic clk_i,
++          input logic boot_select_i,
++          input logic jtag_tck_i,
++          input logic jtag_tms_i,
++          input logic jtag_trst_ni,
++          input logic jtag_tdi_i,
++          output logic jtag_tdo_o,
++          input logic uart_rx_i,
++          output logic uart_tx_o,
++          output logic exit_valid_o,
++          input logic ddr_rcv_clk_i,
++          output logic ddr_snd_clk_o,
++          input logic gpio_0_i,
++          output logic gpio_0_o,
++          output logic gpio_0_oe_o,
++          input logic gpio_1_i,
++          output logic gpio_1_o,
++          output logic gpio_1_oe_o,
++          input logic ddr_rcv_0_i,
++          input logic gpio_2_i,
++          output logic gpio_2_o,
++          output logic gpio_2_oe_o,
++          input logic ddr_rcv_1_i,
++          input logic gpio_3_i,
++          output logic gpio_3_o,
++          output logic gpio_3_oe_o,
++          input logic ddr_rcv_2_i,
++          input logic gpio_4_i,
++          output logic gpio_4_o,
++          output logic gpio_4_oe_o,
++          input logic gpio_5_i,
++          output logic gpio_5_o,
++          output logic gpio_5_oe_o,
++          input logic gpio_6_i,
++          output logic gpio_6_o,
++          output logic gpio_6_oe_o,
++          input logic ddr_rcv_3_i,
++          input logic gpio_7_i,
++          output logic gpio_7_o,
++          output logic gpio_7_oe_o,
++          output logic ddr_snd_0_o,
++          input logic gpio_8_i,
++          output logic gpio_8_o,
++          output logic gpio_8_oe_o,
++          output logic ddr_snd_1_o,
++          input logic gpio_9_i,
++          output logic gpio_9_o,
++          output logic gpio_9_oe_o,
++          output logic ddr_snd_2_o,
++          input logic gpio_10_i,
++          output logic gpio_10_o,
++          output logic gpio_10_oe_o,
++          output logic ddr_snd_3_o,
++          input logic gpio_11_i,
++          output logic gpio_11_o,
++          output logic gpio_11_oe_o,
++          input logic gpio_12_i,
++          output logic gpio_12_o,
++          output logic gpio_12_oe_o,
++          input logic spi_flash_sck_i,
++          output logic spi_flash_sck_o,
++          output logic spi_flash_sck_oe_o,
++          input logic spi_flash_cs_0_i,
++          output logic spi_flash_cs_0_o,
++          output logic spi_flash_cs_0_oe_o,
++          input logic spi_flash_cs_1_i,
++          output logic spi_flash_cs_1_o,
++          output logic spi_flash_cs_1_oe_o,
++          input logic spi_flash_sd_0_i,
++          output logic spi_flash_sd_0_o,
++          output logic spi_flash_sd_0_oe_o,
++          input logic spi_flash_sd_1_i,
++          output logic spi_flash_sd_1_o,
++          output logic spi_flash_sd_1_oe_o,
++          input logic spi_flash_sd_2_i,
++          output logic spi_flash_sd_2_o,
++          output logic spi_flash_sd_2_oe_o,
++          input logic spi_flash_sd_3_i,
++          output logic spi_flash_sd_3_o,
++          output logic spi_flash_sd_3_oe_o,
++          input logic spi_sck_i,
++          output logic spi_sck_o,
++          output logic spi_sck_oe_o,
++          input logic spi_cs_0_i,
++          output logic spi_cs_0_o,
++          output logic spi_cs_0_oe_o,
++          input logic spi_cs_1_i,
++          output logic spi_cs_1_o,
++          output logic spi_cs_1_oe_o,
++          input logic spi_sd_0_i,
++          output logic spi_sd_0_o,
++          output logic spi_sd_0_oe_o,
++          input logic spi_sd_1_i,
++          output logic spi_sd_1_o,
++          output logic spi_sd_1_oe_o,
++          input logic spi_sd_2_i,
++          output logic spi_sd_2_o,
++          output logic spi_sd_2_oe_o,
++          input logic spi_sd_3_i,
++          output logic spi_sd_3_o,
++          output logic spi_sd_3_oe_o,
++          input logic spi_slave_sck_i,
++          input logic gpio_13_i,
++          output logic gpio_13_o,
++          output logic gpio_13_oe_o,
++          input logic spi_slave_cs_i,
++          input logic gpio_14_i,
++          output logic gpio_14_o,
++          output logic gpio_14_oe_o,
++          input logic spi_slave_miso_i,
++          output logic spi_slave_miso_o,
++          output logic spi_slave_miso_oe_o,
++          input logic gpio_15_i,
++          output logic gpio_15_o,
++          output logic gpio_15_oe_o,
++          input logic spi_slave_mosi_i,
++          input logic gpio_16_i,
++          output logic gpio_16_o,
++          output logic gpio_16_oe_o,
++          input logic pdm2pcm_pdm_i,
++          output logic pdm2pcm_pdm_o,
++          output logic pdm2pcm_pdm_oe_o,
++          input logic gpio_17_i,
++          output logic gpio_17_o,
++          output logic gpio_17_oe_o,
++          input logic pdm2pcm_clk_i,
++          output logic pdm2pcm_clk_o,
++          output logic pdm2pcm_clk_oe_o,
++          input logic gpio_18_i,
++          output logic gpio_18_o,
++          output logic gpio_18_oe_o,
++          input logic i2s_sck_i,
++          output logic i2s_sck_o,
++          output logic i2s_sck_oe_o,
++          input logic gpio_19_i,
++          output logic gpio_19_o,
++          output logic gpio_19_oe_o,
++          input logic i2s_ws_i,
++          output logic i2s_ws_o,
++          output logic i2s_ws_oe_o,
++          input logic gpio_20_i,
++          output logic gpio_20_o,
++          output logic gpio_20_oe_o,
++          input logic i2s_sd_rx_i,
++          input logic gpio_21_i,
++          output logic gpio_21_o,
++          output logic gpio_21_oe_o,
++          output logic i2s_sd_tx_o,
++          input logic gpio_22_i,
++          output logic gpio_22_o,
++          output logic gpio_22_oe_o,
++          input logic spi2_cs_0_i,
++          output logic spi2_cs_0_o,
++          output logic spi2_cs_0_oe_o,
++          input logic gpio_23_i,
++          output logic gpio_23_o,
++          output logic gpio_23_oe_o,
++          input logic spi2_cs_1_i,
++          output logic spi2_cs_1_o,
++          output logic spi2_cs_1_oe_o,
++          input logic gpio_24_i,
++          output logic gpio_24_o,
++          output logic gpio_24_oe_o,
++          input logic spi2_sck_i,
++          output logic spi2_sck_o,
++          output logic spi2_sck_oe_o,
++          input logic gpio_25_i,
++          output logic gpio_25_o,
++          output logic gpio_25_oe_o,
++          input logic spi2_sd_0_i,
++          output logic spi2_sd_0_o,
++          output logic spi2_sd_0_oe_o,
++          input logic gpio_26_i,
++          output logic gpio_26_o,
++          output logic gpio_26_oe_o,
++          input logic spi2_sd_1_i,
++          output logic spi2_sd_1_o,
++          output logic spi2_sd_1_oe_o,
++          input logic gpio_27_i,
++          output logic gpio_27_o,
++          output logic gpio_27_oe_o,
++          input logic spi2_sd_2_i,
++          output logic spi2_sd_2_o,
++          output logic spi2_sd_2_oe_o,
++          input logic gpio_28_i,
++          output logic gpio_28_o,
++          output logic gpio_28_oe_o,
++          input logic spi2_sd_3_i,
++          output logic spi2_sd_3_o,
++          output logic spi2_sd_3_oe_o,
++          input logic gpio_29_i,
++          output logic gpio_29_o,
++          output logic gpio_29_oe_o,
++          input logic i2c_scl_i,
++          output logic i2c_scl_o,
++          output logic i2c_scl_oe_o,
++          input logic gpio_31_i,
++          output logic gpio_31_o,
++          output logic gpio_31_oe_o,
++          input logic i2c_sda_i,
++          output logic i2c_sda_o,
++          output logic i2c_sda_oe_o,
++          input logic gpio_30_i,
++          output logic gpio_30_o,
++          output logic gpio_30_oe_o,
+ 
+     // IDs
+     input logic [31:0] hart_id_i,
+@@ -248,28 +248,28 @@ module core_v_mini_mcu #(
+     output reg_req_t pad_req_o,
+     input  reg_rsp_t pad_resp_i,
+ 
+-    input  obi_req_t [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_req_i,
+-    output obi_rsp_t [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_resp_o,
++    input  obi_req_t  [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_req_i,
++    output obi_rsp_t  [EXT_XBAR_NMASTER_RND-1:0] ext_xbar_master_resp_o,
+ 
+-    input  reg_req_t [AO_SPC_NUM_RND:0] ext_ao_peripheral_slave_req_i,
++    input reg_req_t  [AO_SPC_NUM_RND:0] ext_ao_peripheral_slave_req_i,
+     output reg_rsp_t [AO_SPC_NUM_RND:0] ext_ao_peripheral_slave_resp_o,
+ 
+     // External slave ports
+-    output obi_req_t ext_core_instr_req_o,
+-    input obi_rsp_t ext_core_instr_resp_i,
+-    output obi_req_t ext_core_data_req_o,
+-    input obi_rsp_t ext_core_data_resp_i,
+-    output obi_req_t ext_debug_master_req_o,
+-    input obi_rsp_t ext_debug_master_resp_i,
+-    output obi_req_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_read_req_o,
+-    input obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_read_resp_i,
+-    output obi_req_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_write_req_o,
+-    input obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_write_resp_i,
+-    output obi_req_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_addr_req_o,
+-    input obi_rsp_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_addr_resp_i,
++    output obi_req_t  ext_core_instr_req_o,
++    input  obi_rsp_t  ext_core_instr_resp_i,
++    output obi_req_t  ext_core_data_req_o,
++    input  obi_rsp_t  ext_core_data_resp_i,
++    output obi_req_t  ext_debug_master_req_o,
++    input  obi_rsp_t  ext_debug_master_resp_i,
++    output obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_read_req_o,
++    input  obi_rsp_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_read_resp_i,
++    output obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_write_req_o,
++    input  obi_rsp_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_write_resp_i,
++    output obi_req_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_addr_req_o,
++    input  obi_rsp_t  [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] ext_dma_addr_resp_i,
+ 
+     output fifo_req_t [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] hw_fifo_req_o,
+-    input  fifo_rsp_t [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] hw_fifo_resp_i,
++    input fifo_rsp_t [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] hw_fifo_resp_i,
+ 
+     input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_stop_i,
+     input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] hw_fifo_done_i,
+@@ -277,8 +277,8 @@ module core_v_mini_mcu #(
+     output reg_req_t ext_peripheral_slave_req_o,
+     input  reg_rsp_t ext_peripheral_slave_resp_i,
+ 
+-    output logic [EXT_HARTS_RND-1:0] ext_debug_req_o,
+-    output logic ext_debug_reset_no,
++    output logic  [EXT_HARTS_RND-1:0] ext_debug_req_o,
++    output logic  ext_debug_reset_no,
+ 
+     // PLIC external interrupts
+     input logic [NEXT_INT_RND-1:0] intr_vector_ext_i,
+@@ -288,11 +288,11 @@ module core_v_mini_mcu #(
+     //power manager exposed to top level
+     //signals are unrolled to easy EDA tools
+     output logic cpu_subsystem_powergate_switch_no,
+-    input logic cpu_subsystem_powergate_switch_ack_ni,
++    input  logic cpu_subsystem_powergate_switch_ack_ni,
+     output logic peripheral_subsystem_powergate_switch_no,
+-    input logic peripheral_subsystem_powergate_switch_ack_ni,
++    input  logic peripheral_subsystem_powergate_switch_ack_ni,
+     output logic [EXT_DOMAINS_RND-1:0] external_subsystem_powergate_switch_no,
+-    input logic [EXT_DOMAINS_RND-1:0] external_subsystem_powergate_switch_ack_ni,
++    input  logic [EXT_DOMAINS_RND-1:0] external_subsystem_powergate_switch_ack_ni,
+     output logic [EXT_DOMAINS_RND-1:0] external_subsystem_powergate_iso_no,
+     output logic [EXT_DOMAINS_RND-1:0] external_subsystem_rst_no,
+     output logic ext_cpu_subsystem_rst_no,
+@@ -302,8 +302,8 @@ module core_v_mini_mcu #(
+     output logic [31:0] exit_value_o,
+ 
+     // External SPC interface
+-    input  logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_tx_i,
+-    input  logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_rx_i,
++    input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_tx_i,
++    input logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] ext_dma_slot_rx_i,
+     output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o
+ );
+ 
+@@ -315,7 +315,7 @@ module core_v_mini_mcu #(
+   localparam DM_HALTADDRESS = core_v_mini_mcu_pkg::DEBUG_START_ADDRESS + 32'h00000800; //debug rom code (section .text in linker) starts at 0x800
+ 
+   localparam JTAG_IDCODE = 32'h10001c05;
+-  localparam NRHARTS = EXT_HARTS + 1;  //external harts + single hart core-v-mini-mcu
++  localparam NRHARTS = EXT_HARTS + 1; //external harts + single hart core-v-mini-mcu
+   localparam BOOT_ADDR = core_v_mini_mcu_pkg::BOOTROM_START_ADDRESS;
+ 
+   // Log top level parameter values
+@@ -327,35 +327,35 @@ module core_v_mini_mcu #(
+ 
+   // masters signals
+   obi_req_t core_instr_req;
+-  obi_rsp_t core_instr_resp;
++  obi_rsp_t  core_instr_resp;
+   obi_req_t core_data_req;
+-  obi_rsp_t core_data_resp;
++  obi_rsp_t  core_data_resp;
+   obi_req_t debug_master_req;
+-  obi_rsp_t debug_master_resp;
+-  obi_req_t [1:0] dma_read_req;
+-  obi_rsp_t [1:0] dma_read_resp;
+-  obi_req_t [1:0] dma_write_req;
+-  obi_rsp_t [1:0] dma_write_resp;
+-  obi_req_t [1:0] dma_addr_req;
+-  obi_rsp_t [1:0] dma_addr_resp;
++  obi_rsp_t  debug_master_resp;
++  obi_req_t [1:0]dma_read_req;
++  obi_rsp_t  [1:0]dma_read_resp;
++  obi_req_t [1:0]dma_write_req;
++  obi_rsp_t  [1:0]dma_write_resp;
++  obi_req_t [1:0]dma_addr_req;
++  obi_rsp_t  [1:0]dma_addr_resp;
+ 
+ 
+   // ram signals
+   obi_req_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_req;
+-  obi_rsp_t [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_resp;
++  obi_rsp_t  [core_v_mini_mcu_pkg::NUM_BANKS-1:0] ram_slave_resp;
+ 
+   // w25q128jw controller signals
+   logic w25q128jw_controller_intr;
+ 
+   // debug signals
+   obi_req_t debug_slave_req;
+-  obi_rsp_t debug_slave_resp;
++  obi_rsp_t  debug_slave_resp;
+ 
+   // peripherals signals
+   obi_req_t ao_peripheral_slave_req;
+-  obi_rsp_t ao_peripheral_slave_resp;
++  obi_rsp_t  ao_peripheral_slave_resp;
+   obi_req_t peripheral_slave_req;
+-  obi_rsp_t peripheral_slave_resp;
++  obi_rsp_t  peripheral_slave_resp;
+ 
+   // signals to debug unit
+   logic debug_core_req;
+@@ -373,7 +373,7 @@ module core_v_mini_mcu #(
+ 
+   // Memory Map SPI Region
+   obi_req_t flash_mem_slave_req;
+-  obi_rsp_t flash_mem_slave_resp;
++  obi_rsp_t  flash_mem_slave_resp;
+ 
+   // rv_timer
+   logic [3:0] rv_timer_intr;
+@@ -388,10 +388,10 @@ module core_v_mini_mcu #(
+   power_manager_out_t memory_subsystem_pwr_ctrl_out[core_v_mini_mcu_pkg::NUM_BANKS-1:0];
+   power_manager_out_t external_subsystem_pwr_ctrl_out[EXT_DOMAINS_RND-1:0];
+ 
+-  power_manager_in_t cpu_subsystem_pwr_ctrl_in;
+-  power_manager_in_t peripheral_subsystem_pwr_ctrl_in;
+-  power_manager_in_t memory_subsystem_pwr_ctrl_in[core_v_mini_mcu_pkg::NUM_BANKS-1:0];
+-  power_manager_in_t external_subsystem_pwr_ctrl_in[EXT_DOMAINS_RND-1:0];
++  power_manager_in_t  cpu_subsystem_pwr_ctrl_in;
++  power_manager_in_t  peripheral_subsystem_pwr_ctrl_in;
++  power_manager_in_t  memory_subsystem_pwr_ctrl_in[core_v_mini_mcu_pkg::NUM_BANKS-1:0];
++  power_manager_in_t  external_subsystem_pwr_ctrl_in[EXT_DOMAINS_RND-1:0];
+ 
+   logic cpu_subsystem_rst_n;
+   logic cpu_subsystem_powergate_iso_n;
+@@ -407,44 +407,44 @@ module core_v_mini_mcu #(
+   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_clkgate_en_n;
+ 
+   //pwrgate exposed outside for UPF sim flow and switch cells
+-  assign cpu_subsystem_powergate_switch_no = cpu_subsystem_pwr_ctrl_out.pwrgate_en_n;
++  assign cpu_subsystem_powergate_switch_no    = cpu_subsystem_pwr_ctrl_out.pwrgate_en_n;
+   assign cpu_subsystem_pwr_ctrl_in.pwrgate_ack_n = cpu_subsystem_powergate_switch_ack_ni;
+   //isogate exposed outside for UPF sim flow and switch cells
+-  assign cpu_subsystem_powergate_iso_n = cpu_subsystem_pwr_ctrl_out.isogate_en_n;
+-  assign cpu_subsystem_rst_n = cpu_subsystem_pwr_ctrl_out.rst_n;
++  assign cpu_subsystem_powergate_iso_n                 = cpu_subsystem_pwr_ctrl_out.isogate_en_n;
++  assign cpu_subsystem_rst_n                  = cpu_subsystem_pwr_ctrl_out.rst_n;
+ 
+   //pwrgate exposed both outside for UPF sim flow
+   assign peripheral_subsystem_powergate_switch_no = peripheral_subsystem_pwr_ctrl_out.pwrgate_en_n;
+   assign peripheral_subsystem_pwr_ctrl_in.pwrgate_ack_n  = peripheral_subsystem_powergate_switch_ack_ni;
+   //isogate exposed outside for UPF sim flow and switch cells
+   assign peripheral_subsystem_powergate_iso_n = peripheral_subsystem_pwr_ctrl_out.isogate_en_n;
+-  assign peripheral_subsystem_rst_n = peripheral_subsystem_pwr_ctrl_out.rst_n;
+-  assign peripheral_subsystem_clkgate_en_n = peripheral_subsystem_pwr_ctrl_out.clkgate_en_n;
+-
+-  assign memory_subsystem_banks_powergate_switch_n[0] = memory_subsystem_pwr_ctrl_out[0].pwrgate_en_n;
+-  assign memory_subsystem_pwr_ctrl_in[0].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[0];
+-  //isogate exposed outside for UPF sim flow and switch cells
+-  assign memory_subsystem_banks_powergate_iso_n[0] = memory_subsystem_pwr_ctrl_out[0].isogate_en_n;
+-  assign memory_subsystem_banks_set_retentive_n[0] = memory_subsystem_pwr_ctrl_out[0].retentive_en_n;
+-  assign memory_subsystem_clkgate_en_n[0] = memory_subsystem_pwr_ctrl_out[0].clkgate_en_n;
+-  assign memory_subsystem_banks_powergate_switch_n[1] = memory_subsystem_pwr_ctrl_out[1].pwrgate_en_n;
+-  assign memory_subsystem_pwr_ctrl_in[1].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[1];
+-  //isogate exposed outside for UPF sim flow and switch cells
+-  assign memory_subsystem_banks_powergate_iso_n[1] = memory_subsystem_pwr_ctrl_out[1].isogate_en_n;
+-  assign memory_subsystem_banks_set_retentive_n[1] = memory_subsystem_pwr_ctrl_out[1].retentive_en_n;
+-  assign memory_subsystem_clkgate_en_n[1] = memory_subsystem_pwr_ctrl_out[1].clkgate_en_n;
+-  assign memory_subsystem_banks_powergate_switch_n[2] = memory_subsystem_pwr_ctrl_out[2].pwrgate_en_n;
+-  assign memory_subsystem_pwr_ctrl_in[2].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[2];
+-  //isogate exposed outside for UPF sim flow and switch cells
+-  assign memory_subsystem_banks_powergate_iso_n[2] = memory_subsystem_pwr_ctrl_out[2].isogate_en_n;
+-  assign memory_subsystem_banks_set_retentive_n[2] = memory_subsystem_pwr_ctrl_out[2].retentive_en_n;
+-  assign memory_subsystem_clkgate_en_n[2] = memory_subsystem_pwr_ctrl_out[2].clkgate_en_n;
+-  assign memory_subsystem_banks_powergate_switch_n[3] = memory_subsystem_pwr_ctrl_out[3].pwrgate_en_n;
+-  assign memory_subsystem_pwr_ctrl_in[3].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[3];
+-  //isogate exposed outside for UPF sim flow and switch cells
+-  assign memory_subsystem_banks_powergate_iso_n[3] = memory_subsystem_pwr_ctrl_out[3].isogate_en_n;
+-  assign memory_subsystem_banks_set_retentive_n[3] = memory_subsystem_pwr_ctrl_out[3].retentive_en_n;
+-  assign memory_subsystem_clkgate_en_n[3] = memory_subsystem_pwr_ctrl_out[3].clkgate_en_n;
++  assign peripheral_subsystem_rst_n           = peripheral_subsystem_pwr_ctrl_out.rst_n;
++  assign peripheral_subsystem_clkgate_en_n    = peripheral_subsystem_pwr_ctrl_out.clkgate_en_n;
++
++    assign memory_subsystem_banks_powergate_switch_n[0] = memory_subsystem_pwr_ctrl_out[0].pwrgate_en_n;
++    assign memory_subsystem_pwr_ctrl_in[0].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[0];
++    //isogate exposed outside for UPF sim flow and switch cells
++    assign memory_subsystem_banks_powergate_iso_n[0] = memory_subsystem_pwr_ctrl_out[0].isogate_en_n;
++    assign memory_subsystem_banks_set_retentive_n[0] = memory_subsystem_pwr_ctrl_out[0].retentive_en_n;
++    assign memory_subsystem_clkgate_en_n[0] = memory_subsystem_pwr_ctrl_out[0].clkgate_en_n;
++    assign memory_subsystem_banks_powergate_switch_n[1] = memory_subsystem_pwr_ctrl_out[1].pwrgate_en_n;
++    assign memory_subsystem_pwr_ctrl_in[1].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[1];
++    //isogate exposed outside for UPF sim flow and switch cells
++    assign memory_subsystem_banks_powergate_iso_n[1] = memory_subsystem_pwr_ctrl_out[1].isogate_en_n;
++    assign memory_subsystem_banks_set_retentive_n[1] = memory_subsystem_pwr_ctrl_out[1].retentive_en_n;
++    assign memory_subsystem_clkgate_en_n[1] = memory_subsystem_pwr_ctrl_out[1].clkgate_en_n;
++    assign memory_subsystem_banks_powergate_switch_n[2] = memory_subsystem_pwr_ctrl_out[2].pwrgate_en_n;
++    assign memory_subsystem_pwr_ctrl_in[2].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[2];
++    //isogate exposed outside for UPF sim flow and switch cells
++    assign memory_subsystem_banks_powergate_iso_n[2] = memory_subsystem_pwr_ctrl_out[2].isogate_en_n;
++    assign memory_subsystem_banks_set_retentive_n[2] = memory_subsystem_pwr_ctrl_out[2].retentive_en_n;
++    assign memory_subsystem_clkgate_en_n[2] = memory_subsystem_pwr_ctrl_out[2].clkgate_en_n;
++    assign memory_subsystem_banks_powergate_switch_n[3] = memory_subsystem_pwr_ctrl_out[3].pwrgate_en_n;
++    assign memory_subsystem_pwr_ctrl_in[3].pwrgate_ack_n = memory_subsystem_banks_powergate_switch_ack_n[3];
++    //isogate exposed outside for UPF sim flow and switch cells
++    assign memory_subsystem_banks_powergate_iso_n[3] = memory_subsystem_pwr_ctrl_out[3].isogate_en_n;
++    assign memory_subsystem_banks_set_retentive_n[3] = memory_subsystem_pwr_ctrl_out[3].retentive_en_n;
++    assign memory_subsystem_clkgate_en_n[3] = memory_subsystem_pwr_ctrl_out[3].clkgate_en_n;
+ 
+   for (genvar i = 0; i < EXT_DOMAINS_RND; i = i + 1) begin : gen_external_subsystem_pwr_gating
+     assign external_subsystem_powergate_switch_no[i]        = external_subsystem_pwr_ctrl_out[i].pwrgate_en_n;
+@@ -462,7 +462,7 @@ module core_v_mini_mcu #(
+   // SPI
+   logic spi_flash_intr, spi_intr, spi_rx_valid, spi_tx_ready;
+ 
+-  /* verilator lint_off UNDRIVEN */
++/* verilator lint_off UNDRIVEN */
+   // GPIO
+   logic [31:8] gpio_in;
+   logic [31:8] gpio_out;
+@@ -473,13 +473,15 @@ module core_v_mini_mcu #(
+   logic [7:0] gpio_ao_out;
+   logic [7:0] gpio_ao_oe;
+   logic [7:0] gpio_ao_intr;
+-  /* verilator lint_on UNDRIVEN */
++/* verilator lint_on UNDRIVEN */
+ 
+   // I2s
+   logic i2s_rx_valid;
+   logic i2s_tx_ready;
+ 
+-  assign intr = {irq_fast, 4'b0, irq_external, 3'b0, rv_timer_intr[0], 3'b0, irq_software, 3'b0};
++  assign intr = {
++    irq_fast, 4'b0, irq_external, 3'b0, rv_timer_intr[0], 3'b0, irq_software, 3'b0
++  };
+ 
+   assign fast_intr = {
+     intr_ext_peripheral_i,
+@@ -524,9 +526,9 @@ module core_v_mini_mcu #(
+   debug_subsystem #(
+       .NRHARTS    (NRHARTS),
+       .JTAG_IDCODE(JTAG_IDCODE),
+-      .SPI_SLAVE  (1),
+-      .obi_req_t  (obi_req_t),
+-      .obi_rsp_t  (obi_rsp_t)
++      .SPI_SLAVE(1),
++      .obi_req_t(obi_req_t),
++      .obi_rsp_t(obi_rsp_t)
+   ) debug_subsystem_i (
+       .clk_i,
+       .rst_ni,
+@@ -611,10 +613,10 @@ module core_v_mini_mcu #(
+ 
+   ao_peripheral_subsystem #(
+       .AO_SPC_NUM(AO_SPC_NUM),
+-      .obi_req_t (obi_req_t),
+-      .obi_rsp_t (obi_rsp_t),
+-      .reg_req_t (reg_req_t),
+-      .reg_rsp_t (reg_rsp_t)
++      .obi_req_t(obi_req_t),
++      .obi_rsp_t(obi_rsp_t),
++      .reg_req_t(reg_req_t),
++      .reg_rsp_t(reg_rsp_t)
+   ) ao_peripheral_subsystem_i (
+       .clk_i,
+       .rst_ni(rst_ni && debug_reset_n),
+@@ -631,13 +633,11 @@ module core_v_mini_mcu #(
+       .w25q128jw_controller_intr_o(w25q128jw_controller_intr),
+       .spi_flash_sck_o,
+       .spi_flash_sck_en_o(spi_flash_sck_oe_o),
+-      .spi_flash_csb_o({spi_flash_cs_1_o, spi_flash_cs_0_o}),
++      .spi_flash_csb_o({spi_flash_cs_1_o,spi_flash_cs_0_o}),
+       .spi_flash_csb_en_o({spi_flash_cs_1_oe_o, spi_flash_cs_0_oe_o}),
+-      .spi_flash_sd_o({spi_flash_sd_3_o, spi_flash_sd_2_o, spi_flash_sd_1_o, spi_flash_sd_0_o}),
+-      .spi_flash_sd_en_o({
+-        spi_flash_sd_3_oe_o, spi_flash_sd_2_oe_o, spi_flash_sd_1_oe_o, spi_flash_sd_0_oe_o
+-      }),
+-      .spi_flash_sd_i({spi_flash_sd_3_i, spi_flash_sd_2_i, spi_flash_sd_1_i, spi_flash_sd_0_i}),
++      .spi_flash_sd_o({spi_flash_sd_3_o,spi_flash_sd_2_o, spi_flash_sd_1_o, spi_flash_sd_0_o}),
++      .spi_flash_sd_en_o({spi_flash_sd_3_oe_o,spi_flash_sd_2_oe_o, spi_flash_sd_1_oe_o, spi_flash_sd_0_oe_o}),
++      .spi_flash_sd_i({spi_flash_sd_3_i,spi_flash_sd_2_i, spi_flash_sd_1_i, spi_flash_sd_0_i}),
+       .intr_i(intr),
+       .intr_vector_ext_i,
+       .core_sleep_i(core_sleep),
+@@ -684,10 +684,10 @@ module core_v_mini_mcu #(
+   );
+ 
+   peripheral_subsystem #(
+-      .obi_req_t(obi_req_t),
+-      .obi_rsp_t(obi_rsp_t),
+-      .reg_req_t(reg_req_t),
+-      .reg_rsp_t(reg_rsp_t)
++    .obi_req_t(obi_req_t),
++    .obi_rsp_t(obi_rsp_t),
++    .reg_req_t(reg_req_t),
++    .reg_rsp_t(reg_rsp_t)
+   ) peripheral_subsystem_i (
+       .clk_i,
+       .rst_ni(peripheral_subsystem_rst_n && debug_reset_n),
+@@ -709,11 +709,11 @@ module core_v_mini_mcu #(
+       .cio_sda_en_o(i2c_sda_oe_o),
+       .spi_sck_o(spi_sck_o),
+       .spi_sck_en_o(spi_sck_oe_o),
+-      .spi_csb_o({spi_cs_1_o, spi_cs_0_o}),
++      .spi_csb_o({spi_cs_1_o,spi_cs_0_o}),
+       .spi_csb_en_o({spi_cs_1_oe_o, spi_cs_0_oe_o}),
+-      .spi_sd_o({spi_sd_3_o, spi_sd_2_o, spi_sd_1_o, spi_sd_0_o}),
+-      .spi_sd_en_o({spi_sd_3_oe_o, spi_sd_2_oe_o, spi_sd_1_oe_o, spi_sd_0_oe_o}),
+-      .spi_sd_i({spi_sd_3_i, spi_sd_2_i, spi_sd_1_i, spi_sd_0_i}),
++      .spi_sd_o({spi_sd_3_o,spi_sd_2_o, spi_sd_1_o, spi_sd_0_o}),
++      .spi_sd_en_o({spi_sd_3_oe_o,spi_sd_2_oe_o, spi_sd_1_oe_o, spi_sd_0_oe_o}),
++      .spi_sd_i({spi_sd_3_i,spi_sd_2_i, spi_sd_1_i, spi_sd_0_i}),
+       .spi_intr_event_o(spi_intr),
+       .spi_rx_valid_o(spi_rx_valid),
+       .spi_tx_ready_o(spi_tx_ready),
+@@ -755,8 +755,8 @@ module core_v_mini_mcu #(
+ 
+   // Debug_req assign
+   if (NRHARTS == 1) begin : gen_single_hart_debug
+-    assign debug_core_req  = debug_req;
+-    assign ext_debug_req_o = 1'b0;
++    assign debug_core_req = debug_req;
++    assign ext_debug_req_o  = 1'b0;
+   end else begin : gen_multi_hart_debug
+     always @(*) begin
+       for (int i = 0; i < NRHARTS; i++) begin
+@@ -767,139 +767,139 @@ module core_v_mini_mcu #(
+   end
+ 
+   assign ext_cpu_subsystem_rst_no = cpu_subsystem_rst_n;
+-  assign ext_debug_reset_no       = debug_reset_n;
++  assign ext_debug_reset_no = debug_reset_n;
+ 
+-  assign pdm2pcm_pdm_o            = 0;
+-  assign pdm2pcm_pdm_oe_o         = 0;
++  assign pdm2pcm_pdm_o = 0;
++  assign pdm2pcm_pdm_oe_o = 0;
+ 
+ 
+-  assign gpio_ao_in[0]            = gpio_0_i;
+-  assign gpio_0_o                 = gpio_ao_out[0];
+-  assign gpio_0_oe_o              = gpio_ao_oe[0];
++        assign gpio_ao_in[0] = gpio_0_i;
++        assign gpio_0_o      = gpio_ao_out[0];
++        assign gpio_0_oe_o   = gpio_ao_oe[0];
+ 
+-  assign gpio_ao_in[1]            = gpio_1_i;
+-  assign gpio_1_o                 = gpio_ao_out[1];
+-  assign gpio_1_oe_o              = gpio_ao_oe[1];
++        assign gpio_ao_in[1] = gpio_1_i;
++        assign gpio_1_o      = gpio_ao_out[1];
++        assign gpio_1_oe_o   = gpio_ao_oe[1];
+ 
+-  assign gpio_ao_in[2]            = gpio_2_i;
+-  assign gpio_2_o                 = gpio_ao_out[2];
+-  assign gpio_2_oe_o              = gpio_ao_oe[2];
++        assign gpio_ao_in[2] = gpio_2_i;
++        assign gpio_2_o      = gpio_ao_out[2];
++        assign gpio_2_oe_o   = gpio_ao_oe[2];
+ 
+-  assign gpio_ao_in[3]            = gpio_3_i;
+-  assign gpio_3_o                 = gpio_ao_out[3];
+-  assign gpio_3_oe_o              = gpio_ao_oe[3];
++        assign gpio_ao_in[3] = gpio_3_i;
++        assign gpio_3_o      = gpio_ao_out[3];
++        assign gpio_3_oe_o   = gpio_ao_oe[3];
+ 
+-  assign gpio_ao_in[4]            = gpio_4_i;
+-  assign gpio_4_o                 = gpio_ao_out[4];
+-  assign gpio_4_oe_o              = gpio_ao_oe[4];
++        assign gpio_ao_in[4] = gpio_4_i;
++        assign gpio_4_o      = gpio_ao_out[4];
++        assign gpio_4_oe_o   = gpio_ao_oe[4];
+ 
+-  assign gpio_ao_in[5]            = gpio_5_i;
+-  assign gpio_5_o                 = gpio_ao_out[5];
+-  assign gpio_5_oe_o              = gpio_ao_oe[5];
++        assign gpio_ao_in[5] = gpio_5_i;
++        assign gpio_5_o      = gpio_ao_out[5];
++        assign gpio_5_oe_o   = gpio_ao_oe[5];
+ 
+-  assign gpio_ao_in[6]            = gpio_6_i;
+-  assign gpio_6_o                 = gpio_ao_out[6];
+-  assign gpio_6_oe_o              = gpio_ao_oe[6];
++        assign gpio_ao_in[6] = gpio_6_i;
++        assign gpio_6_o      = gpio_ao_out[6];
++        assign gpio_6_oe_o   = gpio_ao_oe[6];
+ 
+-  assign gpio_ao_in[7]            = gpio_7_i;
+-  assign gpio_7_o                 = gpio_ao_out[7];
+-  assign gpio_7_oe_o              = gpio_ao_oe[7];
++        assign gpio_ao_in[7] = gpio_7_i;
++        assign gpio_7_o      = gpio_ao_out[7];
++        assign gpio_7_oe_o   = gpio_ao_oe[7];
+ 
+-  assign gpio_in[8]               = gpio_8_i;
+-  assign gpio_8_o                 = gpio_out[8];
+-  assign gpio_8_oe_o              = gpio_oe[8];
++        assign gpio_in[8]  = gpio_8_i;
++        assign gpio_8_o    = gpio_out[8];
++        assign gpio_8_oe_o = gpio_oe[8];
+ 
+-  assign gpio_in[9]               = gpio_9_i;
+-  assign gpio_9_o                 = gpio_out[9];
+-  assign gpio_9_oe_o              = gpio_oe[9];
++        assign gpio_in[9]  = gpio_9_i;
++        assign gpio_9_o    = gpio_out[9];
++        assign gpio_9_oe_o = gpio_oe[9];
+ 
+-  assign gpio_in[10]              = gpio_10_i;
+-  assign gpio_10_o                = gpio_out[10];
+-  assign gpio_10_oe_o             = gpio_oe[10];
++        assign gpio_in[10]  = gpio_10_i;
++        assign gpio_10_o    = gpio_out[10];
++        assign gpio_10_oe_o = gpio_oe[10];
+ 
+-  assign gpio_in[11]              = gpio_11_i;
+-  assign gpio_11_o                = gpio_out[11];
+-  assign gpio_11_oe_o             = gpio_oe[11];
++        assign gpio_in[11]  = gpio_11_i;
++        assign gpio_11_o    = gpio_out[11];
++        assign gpio_11_oe_o = gpio_oe[11];
+ 
+-  assign gpio_in[12]              = gpio_12_i;
+-  assign gpio_12_o                = gpio_out[12];
+-  assign gpio_12_oe_o             = gpio_oe[12];
++        assign gpio_in[12]  = gpio_12_i;
++        assign gpio_12_o    = gpio_out[12];
++        assign gpio_12_oe_o = gpio_oe[12];
+ 
+-  assign gpio_in[13]              = gpio_13_i;
+-  assign gpio_13_o                = gpio_out[13];
+-  assign gpio_13_oe_o             = gpio_oe[13];
++        assign gpio_in[13]  = gpio_13_i;
++        assign gpio_13_o    = gpio_out[13];
++        assign gpio_13_oe_o = gpio_oe[13];
+ 
+-  assign gpio_in[14]              = gpio_14_i;
+-  assign gpio_14_o                = gpio_out[14];
+-  assign gpio_14_oe_o             = gpio_oe[14];
++        assign gpio_in[14]  = gpio_14_i;
++        assign gpio_14_o    = gpio_out[14];
++        assign gpio_14_oe_o = gpio_oe[14];
+ 
+-  assign gpio_in[15]              = gpio_15_i;
+-  assign gpio_15_o                = gpio_out[15];
+-  assign gpio_15_oe_o             = gpio_oe[15];
++        assign gpio_in[15]  = gpio_15_i;
++        assign gpio_15_o    = gpio_out[15];
++        assign gpio_15_oe_o = gpio_oe[15];
+ 
+-  assign gpio_in[16]              = gpio_16_i;
+-  assign gpio_16_o                = gpio_out[16];
+-  assign gpio_16_oe_o             = gpio_oe[16];
++        assign gpio_in[16]  = gpio_16_i;
++        assign gpio_16_o    = gpio_out[16];
++        assign gpio_16_oe_o = gpio_oe[16];
+ 
+-  assign gpio_in[17]              = gpio_17_i;
+-  assign gpio_17_o                = gpio_out[17];
+-  assign gpio_17_oe_o             = gpio_oe[17];
++        assign gpio_in[17]  = gpio_17_i;
++        assign gpio_17_o    = gpio_out[17];
++        assign gpio_17_oe_o = gpio_oe[17];
+ 
+-  assign gpio_in[18]              = gpio_18_i;
+-  assign gpio_18_o                = gpio_out[18];
+-  assign gpio_18_oe_o             = gpio_oe[18];
++        assign gpio_in[18]  = gpio_18_i;
++        assign gpio_18_o    = gpio_out[18];
++        assign gpio_18_oe_o = gpio_oe[18];
+ 
+-  assign gpio_in[19]              = gpio_19_i;
+-  assign gpio_19_o                = gpio_out[19];
+-  assign gpio_19_oe_o             = gpio_oe[19];
++        assign gpio_in[19]  = gpio_19_i;
++        assign gpio_19_o    = gpio_out[19];
++        assign gpio_19_oe_o = gpio_oe[19];
+ 
+-  assign gpio_in[20]              = gpio_20_i;
+-  assign gpio_20_o                = gpio_out[20];
+-  assign gpio_20_oe_o             = gpio_oe[20];
++        assign gpio_in[20]  = gpio_20_i;
++        assign gpio_20_o    = gpio_out[20];
++        assign gpio_20_oe_o = gpio_oe[20];
+ 
+-  assign gpio_in[21]              = gpio_21_i;
+-  assign gpio_21_o                = gpio_out[21];
+-  assign gpio_21_oe_o             = gpio_oe[21];
++        assign gpio_in[21]  = gpio_21_i;
++        assign gpio_21_o    = gpio_out[21];
++        assign gpio_21_oe_o = gpio_oe[21];
+ 
+-  assign gpio_in[22]              = gpio_22_i;
+-  assign gpio_22_o                = gpio_out[22];
+-  assign gpio_22_oe_o             = gpio_oe[22];
++        assign gpio_in[22]  = gpio_22_i;
++        assign gpio_22_o    = gpio_out[22];
++        assign gpio_22_oe_o = gpio_oe[22];
+ 
+-  assign gpio_in[23]              = gpio_23_i;
+-  assign gpio_23_o                = gpio_out[23];
+-  assign gpio_23_oe_o             = gpio_oe[23];
++        assign gpio_in[23]  = gpio_23_i;
++        assign gpio_23_o    = gpio_out[23];
++        assign gpio_23_oe_o = gpio_oe[23];
+ 
+-  assign gpio_in[24]              = gpio_24_i;
+-  assign gpio_24_o                = gpio_out[24];
+-  assign gpio_24_oe_o             = gpio_oe[24];
++        assign gpio_in[24]  = gpio_24_i;
++        assign gpio_24_o    = gpio_out[24];
++        assign gpio_24_oe_o = gpio_oe[24];
+ 
+-  assign gpio_in[25]              = gpio_25_i;
+-  assign gpio_25_o                = gpio_out[25];
+-  assign gpio_25_oe_o             = gpio_oe[25];
++        assign gpio_in[25]  = gpio_25_i;
++        assign gpio_25_o    = gpio_out[25];
++        assign gpio_25_oe_o = gpio_oe[25];
+ 
+-  assign gpio_in[26]              = gpio_26_i;
+-  assign gpio_26_o                = gpio_out[26];
+-  assign gpio_26_oe_o             = gpio_oe[26];
++        assign gpio_in[26]  = gpio_26_i;
++        assign gpio_26_o    = gpio_out[26];
++        assign gpio_26_oe_o = gpio_oe[26];
+ 
+-  assign gpio_in[27]              = gpio_27_i;
+-  assign gpio_27_o                = gpio_out[27];
+-  assign gpio_27_oe_o             = gpio_oe[27];
++        assign gpio_in[27]  = gpio_27_i;
++        assign gpio_27_o    = gpio_out[27];
++        assign gpio_27_oe_o = gpio_oe[27];
+ 
+-  assign gpio_in[28]              = gpio_28_i;
+-  assign gpio_28_o                = gpio_out[28];
+-  assign gpio_28_oe_o             = gpio_oe[28];
++        assign gpio_in[28]  = gpio_28_i;
++        assign gpio_28_o    = gpio_out[28];
++        assign gpio_28_oe_o = gpio_oe[28];
+ 
+-  assign gpio_in[29]              = gpio_29_i;
+-  assign gpio_29_o                = gpio_out[29];
+-  assign gpio_29_oe_o             = gpio_oe[29];
++        assign gpio_in[29]  = gpio_29_i;
++        assign gpio_29_o    = gpio_out[29];
++        assign gpio_29_oe_o = gpio_oe[29];
+ 
+-  assign gpio_in[31]              = gpio_31_i;
+-  assign gpio_31_o                = gpio_out[31];
+-  assign gpio_31_oe_o             = gpio_oe[31];
++        assign gpio_in[31]  = gpio_31_i;
++        assign gpio_31_o    = gpio_out[31];
++        assign gpio_31_oe_o = gpio_oe[31];
+ 
+-  assign gpio_in[30]              = gpio_30_i;
+-  assign gpio_30_o                = gpio_out[30];
+-  assign gpio_30_oe_o             = gpio_oe[30];
++        assign gpio_in[30]  = gpio_30_i;
++        assign gpio_30_o    = gpio_out[30];
++        assign gpio_30_oe_o = gpio_oe[30];
+ 
+ 
+ endmodule  // core_v_mini_mcu
+diff --git a/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc b/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
+index 15d3577..b0442c1 100644
+--- a/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
++++ b/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
+@@ -15,6 +15,7 @@ set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {exit_valid_
+ set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports {exit_value_o}];
+ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_led_o_OBUF]
+ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_led_o_OBUF]
++set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_i_IBUF]
+ 
+ ##Switches
+ set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {boot_select_i}]; #Sch=sw[2]
+@@ -82,8 +83,8 @@ set_property -dict { PACKAGE_PIN T10 IOSTANDARD LVCMOS33} [get_ports { spi_slave
+ set_property -dict { PACKAGE_PIN R10 IOSTANDARD LVCMOS33} [get_ports { spi_slave_cs_io }];
+ set_property -dict { PACKAGE_PIN K16 IOSTANDARD LVCMOS33} [get_ports { spi_slave_miso_io }];
+ set_property -dict { PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports { spi_slave_mosi_io }];
+-set_property -dict { PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }];
+-set_property -dict { PACKAGE_PIN T11 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }];
++set_property -dict { PACKAGE_PIN J5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }]; #Sch=m_clk (onboard PDM mic; M_LRSEL F5 left at default pull-down)
++set_property -dict { PACKAGE_PIN H5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }]; #Sch=m_data
+ set_property -dict { PACKAGE_PIN L18 IOSTANDARD LVCMOS33} [get_ports { i2s_sck_io }];
+ set_property -dict { PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports { i2s_ws_io }];
+ set_property -dict { PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports { i2s_sd_rx_io }];
+diff --git a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+index 0636329..33b1b35 100644
+--- a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
++++ b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+@@ -40,9 +40,23 @@ filesets:
+   ip-fpga-nexys:
+     files:
+     - scripts/nexys/generate_sram.tcl
++    file_type: tclSource
++
++  ip-fpga-nexys-clk15:
++    files:
+     - scripts/nexys/xilinx_generate_clk_wizard.tcl
+     file_type: tclSource
+ 
++  ip-fpga-nexys-clk15m36:                            # HopCIM live audio (use_cim_mic): 16 kHz exactly
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
++    file_type: tclSource
++
++  ip-fpga-nexys-clk5m12:                             # HopCIM live audio at 5.12 MHz (use_cim_mic5)
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
++    file_type: tclSource
++
+   ip-fpga-zcu104:
+     files:
+     - scripts/zcu104/generate_sram.tcl
+@@ -81,6 +95,11 @@ filesets:
+     - constraints/common/sync.xdc
+     file_type: xdc
+ 
++  xdc-fpga-bscan:
++    files:
++    - constraints/common/bscan.xdc
++    file_type: xdc
++
+   xdc-fpga-pynq-z2:
+     files:
+     - constraints/pynq-z2/pin_assign.xdc
+@@ -154,7 +173,11 @@ targets:
+     - target_pynq-z2 ? (xdc-fpga-pynq-z2)
+     - target_pynq-z2 ? (tcl-fpga-ps-utils)
+     - target_nexys-a7-100t ? (ip-fpga-nexys)
++    - target_nexys-a7-100t ? (!use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15)))
++    - target_nexys-a7-100t ? (use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15m36)))
++    - target_nexys-a7-100t ? (use_cim_mic5 ? (ip-fpga-nexys-clk5m12))
+     - target_nexys-a7-100t ? (xdc-fpga-nexys)
++    - use_bscane_xilinx ? (xdc-fpga-bscan)
+     - target_zcu104 ? (ip-fpga-zcu104)
+     - target_zcu104 ? (xdc-fpga-zcu104)
+     - target_zcu102 ? (ip-fpga-zcu102)
+diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+index ca0dbcd..8c335ac 100644
+--- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
++++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+@@ -595,6 +595,26 @@ module xilinx_core_v_mini_mcu_wrapper
+   xheep_obi_rsp_t [1:0] dotprod_gmem_obi_rsp;
+ `endif
+ 
++`ifdef USE_CIM
++`ifdef USE_HLS_EXAMPLE
++  $error("USE_CIM and USE_HLS_EXAMPLE both use the CPU data master's external-slave port");
++`endif
++  // HopCIM endpoint (hw/ip/hopcim) on the CPU data master's external-slave port, a 1-to-1 tap:
++  // every CPU access to 0xC000_0000-0xFFFF_FFFF reaches it and it decodes addr[17:0], so the
++  // simulation address 0xC004_0000 works unchanged. Its interrupt is external line 3, as in
++  // the testharness.
++  xheep_obi_req_t cim_obi_req;
++  xheep_obi_rsp_t cim_obi_rsp;
++  logic           cim_irq;
++  logic [core_v_mini_mcu_pkg::NEXT_INT-1:0] cim_intr_vector;
++  logic cim_pdm_clk, cim_pdm_data;                     // HopCIM live audio path (R7)
++
++  always_comb begin
++    cim_intr_vector    = '0;
++    cim_intr_vector[3] = cim_irq;
++  end
++`endif
++
+   x_heep_system #(
+ `ifdef USE_HLS_EXAMPLE
+       .EXT_XBAR_NMASTER(2)
+@@ -602,7 +622,11 @@ module xilinx_core_v_mini_mcu_wrapper
+   ) x_heep_system_i (
+       .hart_id_i('0),
+       .xheep_instance_id_i('0),
++`ifdef USE_CIM
++      .intr_vector_ext_i(cim_intr_vector),
++`else
+       .intr_vector_ext_i('0),
++`endif
+       .xif_compressed_if(ext_if),
+       .xif_issue_if(ext_if),
+       .xif_commit_if(ext_if),
+@@ -667,6 +691,21 @@ module xilinx_core_v_mini_mcu_wrapper
+       .ext_dma_write_resp_i('0),
+       .ext_dma_addr_req_o(),
+       .ext_dma_addr_resp_i('0),
++`elsif USE_CIM
++      .ext_xbar_master_req_i('0),
++      .ext_xbar_master_resp_o(),
++      .ext_core_instr_req_o(),
++      .ext_core_instr_resp_i('0),
++      .ext_core_data_req_o(cim_obi_req),
++      .ext_core_data_resp_i(cim_obi_rsp),
++      .ext_debug_master_req_o(),
++      .ext_debug_master_resp_i('0),
++      .ext_dma_read_req_o(),
++      .ext_dma_read_resp_i('0),
++      .ext_dma_write_req_o(),
++      .ext_dma_write_resp_i('0),
++      .ext_dma_addr_req_o(),
++      .ext_dma_addr_resp_i('0),
+ `else
+       .ext_xbar_master_req_i('0),
+       .ext_xbar_master_resp_o(),
+@@ -772,6 +811,10 @@ module xilinx_core_v_mini_mcu_wrapper
+       .spi2_sck_io(spi2_sck_o),
+       .pdm2pcm_clk_io,
+       .pdm2pcm_pdm_io,
++`ifdef USE_CIM_MIC                                    // the HopCIM live audio path drives the microphone
++      .cim_pdm_clk_i (cim_pdm_clk),
++      .cim_pdm_data_o(cim_pdm_data),
++`endif
+       .i2s_sck_io(i2s_sck_io),
+       .i2s_ws_io(i2s_ws_io),
+       .i2s_sd_rx_io(i2s_sd_rx_io),
+@@ -808,6 +851,36 @@ module xilinx_core_v_mini_mcu_wrapper
+       .gmem_b_obi_rsp_i(dotprod_gmem_obi_rsp[1])
+   );
+ `endif
++`endif
++
++`ifdef USE_CIM
++`ifdef CIM_MIC_5M12
++`ifndef USE_CIM_MIC
++  $error("CIM_MIC_5M12 (--flag use_cim_mic5) needs USE_CIM_MIC (--flag use_cim_mic)");
++`endif
++`endif
++  cim_endpoint #(
++      .TILES (128),
++`ifdef CIM_MIC_5M12
++      .PDM_CLKDIV(5),                                 // 5.12 MHz system clock: PDM clock 1.024 MHz
++`endif
++`ifdef CIM_FE_DED
++      .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
++`else
++      .FE_DED(1'b0)
++`endif
++  ) cim_endpoint_i (
++      .clk_i     (clk_gen),
++      .rst_ni    (rst_n),
++      .obi_req_i (cim_obi_req),
++      .obi_rsp_o (cim_obi_rsp),
++      .irq_o     (cim_irq),
++      .pdm_clk_o (cim_pdm_clk),
++      .pdm_data_i(cim_pdm_data)
++  );
++`ifndef USE_CIM_MIC                                   // with it, x_heep_system's pad ring routes J5 / H5
++  assign cim_pdm_data = 1'b0;
++`endif
+ `endif
+ 
+   assign exit_value_o = exit_value[0];
+diff --git a/hw/ip/boot_rom/Makefile b/hw/ip/boot_rom/Makefile
+index 53d44e8..d87c8ca 100644
+--- a/hw/ip/boot_rom/Makefile
++++ b/hw/ip/boot_rom/Makefile
+@@ -2,7 +2,7 @@
+ 
+ boot_rom = boot_rom.sv
+ 
+-GCC?=$(RISCV_XHEEP)/bin/$(COMPILER_PREFIX)elf-gcc
++GCC?=$(RISCV_XHEEP)/bin/$(COMPILER_PREFIX)elf-gcc -march=rv32imc -mabi=ilp32
+ OBJCOPY?=$(RISCV_XHEEP)/bin/$(COMPILER_PREFIX)elf-objcopy
+ OBJDUMP?=$(RISCV_XHEEP)/bin/$(COMPILER_PREFIX)elf-objdump
+ PYTHON?=python
+diff --git a/hw/ip/soc_ctrl/rtl/soc_ctrl_reg_pkg.sv b/hw/ip/soc_ctrl/rtl/soc_ctrl_reg_pkg.sv
+index 793b609..465af02 100644
+--- a/hw/ip/soc_ctrl/rtl/soc_ctrl_reg_pkg.sv
++++ b/hw/ip/soc_ctrl/rtl/soc_ctrl_reg_pkg.sv
+@@ -13,51 +13,61 @@ package soc_ctrl_reg_pkg;
+   // Typedefs for registers //
+   ////////////////////////////
+ 
+-  typedef struct packed {logic q;} soc_ctrl_reg2hw_exit_valid_reg_t;
++  typedef struct packed {
++    logic        q;
++  } soc_ctrl_reg2hw_exit_valid_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} soc_ctrl_reg2hw_exit_value_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } soc_ctrl_reg2hw_exit_value_reg_t;
+ 
+-  typedef struct packed {logic q;} soc_ctrl_reg2hw_boot_select_reg_t;
++  typedef struct packed {
++    logic        q;
++  } soc_ctrl_reg2hw_boot_select_reg_t;
+ 
+-  typedef struct packed {logic q;} soc_ctrl_reg2hw_boot_exit_loop_reg_t;
++  typedef struct packed {
++    logic        q;
++  } soc_ctrl_reg2hw_boot_exit_loop_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} soc_ctrl_reg2hw_boot_address_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } soc_ctrl_reg2hw_boot_address_reg_t;
+ 
+   typedef struct packed {
+-    logic d;
+-    logic de;
++    logic        d;
++    logic        de;
+   } soc_ctrl_hw2reg_boot_select_reg_t;
+ 
+   typedef struct packed {
+-    logic d;
+-    logic de;
++    logic        d;
++    logic        de;
+   } soc_ctrl_hw2reg_boot_exit_loop_reg_t;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    soc_ctrl_reg2hw_exit_valid_reg_t exit_valid;  // [66:66]
+-    soc_ctrl_reg2hw_exit_value_reg_t exit_value;  // [65:34]
+-    soc_ctrl_reg2hw_boot_select_reg_t boot_select;  // [33:33]
+-    soc_ctrl_reg2hw_boot_exit_loop_reg_t boot_exit_loop;  // [32:32]
+-    soc_ctrl_reg2hw_boot_address_reg_t boot_address;  // [31:0]
++    soc_ctrl_reg2hw_exit_valid_reg_t exit_valid; // [66:66]
++    soc_ctrl_reg2hw_exit_value_reg_t exit_value; // [65:34]
++    soc_ctrl_reg2hw_boot_select_reg_t boot_select; // [33:33]
++    soc_ctrl_reg2hw_boot_exit_loop_reg_t boot_exit_loop; // [32:32]
++    soc_ctrl_reg2hw_boot_address_reg_t boot_address; // [31:0]
+   } soc_ctrl_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    soc_ctrl_hw2reg_boot_select_reg_t boot_select;  // [3:2]
+-    soc_ctrl_hw2reg_boot_exit_loop_reg_t boot_exit_loop;  // [1:0]
++    soc_ctrl_hw2reg_boot_select_reg_t boot_select; // [3:2]
++    soc_ctrl_hw2reg_boot_exit_loop_reg_t boot_exit_loop; // [1:0]
+   } soc_ctrl_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] SOC_CTRL_EXIT_VALID_OFFSET = 6'h0;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_EXIT_VALUE_OFFSET = 6'h4;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_SELECT_OFFSET = 6'h8;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_EXIT_LOOP_OFFSET = 6'hc;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_ADDRESS_OFFSET = 6'h10;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_SYSTEM_FREQUENCY_HZ_OFFSET = 6'h14;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_ID_OFFSET = 6'h18;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_AO_PERIPHERAL_CONFIG_OFFSET = 6'h1c;
+-  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_PERIPHERAL_CONFIG_OFFSET = 6'h20;
++  parameter logic [BlockAw-1:0] SOC_CTRL_EXIT_VALID_OFFSET = 6'h 0;
++  parameter logic [BlockAw-1:0] SOC_CTRL_EXIT_VALUE_OFFSET = 6'h 4;
++  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_SELECT_OFFSET = 6'h 8;
++  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_EXIT_LOOP_OFFSET = 6'h c;
++  parameter logic [BlockAw-1:0] SOC_CTRL_BOOT_ADDRESS_OFFSET = 6'h 10;
++  parameter logic [BlockAw-1:0] SOC_CTRL_SYSTEM_FREQUENCY_HZ_OFFSET = 6'h 14;
++  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_ID_OFFSET = 6'h 18;
++  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_AO_PERIPHERAL_CONFIG_OFFSET = 6'h 1c;
++  parameter logic [BlockAw-1:0] SOC_CTRL_XHEEP_PERIPHERAL_CONFIG_OFFSET = 6'h 20;
+ 
+   // Register index
+   typedef enum int {
+@@ -73,16 +83,16 @@ package soc_ctrl_reg_pkg;
+   } soc_ctrl_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] SOC_CTRL_PERMIT[9] = '{
+-      4'b0001,  // index[0] SOC_CTRL_EXIT_VALID
+-      4'b1111,  // index[1] SOC_CTRL_EXIT_VALUE
+-      4'b0001,  // index[2] SOC_CTRL_BOOT_SELECT
+-      4'b0001,  // index[3] SOC_CTRL_BOOT_EXIT_LOOP
+-      4'b1111,  // index[4] SOC_CTRL_BOOT_ADDRESS
+-      4'b1111,  // index[5] SOC_CTRL_SYSTEM_FREQUENCY_HZ
+-      4'b1111,  // index[6] SOC_CTRL_XHEEP_ID
+-      4'b0001,  // index[7] SOC_CTRL_XHEEP_AO_PERIPHERAL_CONFIG
+-      4'b0011  // index[8] SOC_CTRL_XHEEP_PERIPHERAL_CONFIG
++  parameter logic [3:0] SOC_CTRL_PERMIT [9] = '{
++    4'b 0001, // index[0] SOC_CTRL_EXIT_VALID
++    4'b 1111, // index[1] SOC_CTRL_EXIT_VALUE
++    4'b 0001, // index[2] SOC_CTRL_BOOT_SELECT
++    4'b 0001, // index[3] SOC_CTRL_BOOT_EXIT_LOOP
++    4'b 1111, // index[4] SOC_CTRL_BOOT_ADDRESS
++    4'b 1111, // index[5] SOC_CTRL_SYSTEM_FREQUENCY_HZ
++    4'b 1111, // index[6] SOC_CTRL_XHEEP_ID
++    4'b 0001, // index[7] SOC_CTRL_XHEEP_AO_PERIPHERAL_CONFIG
++    4'b 0011  // index[8] SOC_CTRL_XHEEP_PERIPHERAL_CONFIG
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/ams/rtl/ams_reg_pkg.sv b/hw/ip_examples/ams/rtl/ams_reg_pkg.sv
+index 0475c8d..6666c74 100644
+--- a/hw/ip_examples/ams/rtl/ams_reg_pkg.sv
++++ b/hw/ip_examples/ams/rtl/ams_reg_pkg.sv
+@@ -13,29 +13,33 @@ package ams_reg_pkg;
+   // Typedefs for registers //
+   ////////////////////////////
+ 
+-  typedef struct packed {logic [1:0] q;} ams_reg2hw_sel_reg_t;
++  typedef struct packed {
++    logic [1:0]  q;
++  } ams_reg2hw_sel_reg_t;
+ 
+-  typedef struct packed {logic q;} ams_reg2hw_get_reg_t;
++  typedef struct packed {
++    logic        q;
++  } ams_reg2hw_get_reg_t;
+ 
+   typedef struct packed {
+-    logic d;
+-    logic de;
++    logic        d;
++    logic        de;
+   } ams_hw2reg_get_reg_t;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    ams_reg2hw_sel_reg_t sel;  // [2:1]
+-    ams_reg2hw_get_reg_t get;  // [0:0]
++    ams_reg2hw_sel_reg_t sel; // [2:1]
++    ams_reg2hw_get_reg_t get; // [0:0]
+   } ams_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    ams_hw2reg_get_reg_t get;  // [1:0]
++    ams_hw2reg_get_reg_t get; // [1:0]
+   } ams_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] AMS_SEL_OFFSET = 3'h0;
+-  parameter logic [BlockAw-1:0] AMS_GET_OFFSET = 3'h4;
++  parameter logic [BlockAw-1:0] AMS_SEL_OFFSET = 3'h 0;
++  parameter logic [BlockAw-1:0] AMS_GET_OFFSET = 3'h 4;
+ 
+   // Register index
+   typedef enum int {
+@@ -44,9 +48,9 @@ package ams_reg_pkg;
+   } ams_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] AMS_PERMIT[2] = '{
+-      4'b0001,  // index[0] AMS_SEL
+-      4'b0001  // index[1] AMS_GET
++  parameter logic [3:0] AMS_PERMIT [2] = '{
++    4'b 0001, // index[0] AMS_SEL
++    4'b 0001  // index[1] AMS_GET
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/ams/rtl/ams_reg_top.sv b/hw/ip_examples/ams/rtl/ams_reg_top.sv
+index 9e67532..b4d97e1 100644
+--- a/hw/ip_examples/ams/rtl/ams_reg_top.sv
++++ b/hw/ip_examples/ams/rtl/ams_reg_top.sv
+@@ -8,44 +8,44 @@
+ `include "common_cells/assertions.svh"
+ 
+ module ams_reg_top #(
+-    parameter type reg_req_t = logic,
+-    parameter type reg_rsp_t = logic,
+-    parameter int AW = 3
++  parameter type reg_req_t = logic,
++  parameter type reg_rsp_t = logic,
++  parameter int AW = 3
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    input reg_req_t reg_req_i,
+-    output reg_rsp_t reg_rsp_o,
+-    // To HW
+-    output ams_reg_pkg::ams_reg2hw_t reg2hw,  // Write
+-    input ams_reg_pkg::ams_hw2reg_t hw2reg,  // Read
++  input logic clk_i,
++  input logic rst_ni,
++  input  reg_req_t reg_req_i,
++  output reg_rsp_t reg_rsp_o,
++  // To HW
++  output ams_reg_pkg::ams_reg2hw_t reg2hw, // Write
++  input  ams_reg_pkg::ams_hw2reg_t hw2reg, // Read
+ 
+ 
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+ 
+-  import ams_reg_pkg::*;
++  import ams_reg_pkg::* ;
+ 
+   localparam int DW = 32;
+-  localparam int DBW = DW / 8;  // Byte Width
++  localparam int DBW = DW/8;                    // Byte Width
+ 
+   // register signals
+-  logic               reg_we;
+-  logic               reg_re;
+-  logic [BlockAw-1:0] reg_addr;
+-  logic [     DW-1:0] reg_wdata;
+-  logic [    DBW-1:0] reg_be;
+-  logic [     DW-1:0] reg_rdata;
+-  logic               reg_error;
++  logic           reg_we;
++  logic           reg_re;
++  logic [BlockAw-1:0]  reg_addr;
++  logic [DW-1:0]  reg_wdata;
++  logic [DBW-1:0] reg_be;
++  logic [DW-1:0]  reg_rdata;
++  logic           reg_error;
+ 
+-  logic addrmiss, wr_err;
++  logic          addrmiss, wr_err;
+ 
+   logic [DW-1:0] reg_rdata_next;
+ 
+   // Below register interface can be changed
+-  reg_req_t reg_intf_req;
+-  reg_rsp_t reg_intf_rsp;
++  reg_req_t  reg_intf_req;
++  reg_rsp_t  reg_intf_rsp;
+ 
+ 
+   assign reg_intf_req = reg_req_i;
+@@ -61,7 +61,7 @@ module ams_reg_top #(
+   assign reg_intf_rsp.error = reg_error;
+   assign reg_intf_rsp.ready = 1'b1;
+ 
+-  assign reg_rdata = reg_rdata_next;
++  assign reg_rdata = reg_rdata_next ;
+   assign reg_error = (devmode_i & addrmiss) | wr_err;
+ 
+ 
+@@ -77,53 +77,53 @@ module ams_reg_top #(
+   // R[sel]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (2),
+-      .SWACCESS("RW"),
+-      .RESVAL  (2'h0)
++    .DW      (2),
++    .SWACCESS("RW"),
++    .RESVAL  (2'h0)
+   ) u_sel (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(sel_we),
+-      .wd(sel_wd),
++    // from register interface
++    .we     (sel_we),
++    .wd     (sel_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.sel.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.sel.q ),
+ 
+-      // to register interface (read)
+-      .qs(sel_qs)
++    // to register interface (read)
++    .qs     (sel_qs)
+   );
+ 
+ 
+   // R[get]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_get (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.get.de),
+-      .d (hw2reg.get.d),
++    // from internal hardware
++    .de     (hw2reg.get.de),
++    .d      (hw2reg.get.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.get.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.get.q ),
+ 
+-      // to register interface (read)
+-      .qs(get_qs)
++    // to register interface (read)
++    .qs     (get_qs)
+   );
+ 
+ 
+@@ -136,7 +136,7 @@ module ams_reg_top #(
+     addr_hit[1] = (reg_addr == AMS_GET_OFFSET);
+   end
+ 
+-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
++  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+ 
+   // Check sub-word write is permitted
+   always_comb begin
+@@ -180,23 +180,24 @@ module ams_reg_top #(
+ 
+ endmodule
+ 
+-module ams_reg_top_intf #(
+-    parameter  int AW = 3,
+-    localparam int DW = 32
++module ams_reg_top_intf
++#(
++  parameter int AW = 3,
++  localparam int DW = 32
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    REG_BUS.in regbus_slave,
+-    // To HW
+-    output ams_reg_pkg::ams_reg2hw_t reg2hw,  // Write
+-    input ams_reg_pkg::ams_hw2reg_t hw2reg,  // Read
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  input logic clk_i,
++  input logic rst_ni,
++  REG_BUS.in  regbus_slave,
++  // To HW
++  output ams_reg_pkg::ams_reg2hw_t reg2hw, // Write
++  input  ams_reg_pkg::ams_hw2reg_t hw2reg, // Read
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+-  localparam int unsigned STRB_WIDTH = DW / 8;
++ localparam int unsigned STRB_WIDTH = DW/8;
+ 
+-  `include "register_interface/typedef.svh"
+-  `include "register_interface/assign.svh"
++`include "register_interface/typedef.svh"
++`include "register_interface/assign.svh"
+ 
+   // Define structs for reg_bus
+   typedef logic [AW-1:0] addr_t;
+@@ -206,27 +207,27 @@ module ams_reg_top_intf #(
+ 
+   reg_bus_req_t s_reg_req;
+   reg_bus_rsp_t s_reg_rsp;
+-
++  
+   // Assign SV interface to structs
+   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+ 
+-
++  
+ 
+   ams_reg_top #(
+-      .reg_req_t(reg_bus_req_t),
+-      .reg_rsp_t(reg_bus_rsp_t),
+-      .AW(AW)
++    .reg_req_t(reg_bus_req_t),
++    .reg_rsp_t(reg_bus_rsp_t),
++    .AW(AW)
+   ) i_regs (
+-      .clk_i,
+-      .rst_ni,
+-      .reg_req_i(s_reg_req),
+-      .reg_rsp_o(s_reg_rsp),
+-      .reg2hw,  // Write
+-      .hw2reg,  // Read
+-      .devmode_i
++    .clk_i,
++    .rst_ni,
++    .reg_req_i(s_reg_req),
++    .reg_rsp_o(s_reg_rsp),
++    .reg2hw, // Write
++    .hw2reg, // Read
++    .devmode_i
+   );
+-
++  
+ endmodule
+ 
+ 
+diff --git a/hw/ip_examples/dlc/rtl/dlc_reg_pkg.sv b/hw/ip_examples/dlc/rtl/dlc_reg_pkg.sv
+index 79a6600..9aa8171 100644
+--- a/hw/ip_examples/dlc/rtl/dlc_reg_pkg.sv
++++ b/hw/ip_examples/dlc/rtl/dlc_reg_pkg.sv
+@@ -13,25 +13,45 @@ package dlc_reg_pkg;
+   // Typedefs for registers //
+   ////////////////////////////
+ 
+-  typedef struct packed {logic [15:0] q;} dlc_reg2hw_trans_size_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } dlc_reg2hw_trans_size_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} dlc_reg2hw_curr_lvl_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } dlc_reg2hw_curr_lvl_reg_t;
+ 
+-  typedef struct packed {logic q;} dlc_reg2hw_hysteresis_en_reg_t;
++  typedef struct packed {
++    logic        q;
++  } dlc_reg2hw_hysteresis_en_reg_t;
+ 
+-  typedef struct packed {logic [3:0] q;} dlc_reg2hw_dlvl_log_level_width_reg_t;
++  typedef struct packed {
++    logic [3:0]  q;
++  } dlc_reg2hw_dlvl_log_level_width_reg_t;
+ 
+-  typedef struct packed {logic [3:0] q;} dlc_reg2hw_discard_bits_reg_t;
++  typedef struct packed {
++    logic [3:0]  q;
++  } dlc_reg2hw_discard_bits_reg_t;
+ 
+-  typedef struct packed {logic [3:0] q;} dlc_reg2hw_dlvl_n_bits_reg_t;
++  typedef struct packed {
++    logic [3:0]  q;
++  } dlc_reg2hw_dlvl_n_bits_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} dlc_reg2hw_dlvl_mask_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } dlc_reg2hw_dlvl_mask_reg_t;
+ 
+-  typedef struct packed {logic q;} dlc_reg2hw_dlvl_format_reg_t;
++  typedef struct packed {
++    logic        q;
++  } dlc_reg2hw_dlvl_format_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} dlc_reg2hw_dt_mask_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } dlc_reg2hw_dt_mask_reg_t;
+ 
+-  typedef struct packed {logic q;} dlc_reg2hw_bypass_reg_t;
++  typedef struct packed {
++    logic        q;
++  } dlc_reg2hw_bypass_reg_t;
+ 
+   typedef struct packed {
+     logic [15:0] d;
+@@ -40,34 +60,34 @@ package dlc_reg_pkg;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    dlc_reg2hw_trans_size_reg_t trans_size;  // [78:63]
+-    dlc_reg2hw_curr_lvl_reg_t curr_lvl;  // [62:47]
+-    dlc_reg2hw_hysteresis_en_reg_t hysteresis_en;  // [46:46]
+-    dlc_reg2hw_dlvl_log_level_width_reg_t dlvl_log_level_width;  // [45:42]
+-    dlc_reg2hw_discard_bits_reg_t discard_bits;  // [41:38]
+-    dlc_reg2hw_dlvl_n_bits_reg_t dlvl_n_bits;  // [37:34]
+-    dlc_reg2hw_dlvl_mask_reg_t dlvl_mask;  // [33:18]
+-    dlc_reg2hw_dlvl_format_reg_t dlvl_format;  // [17:17]
+-    dlc_reg2hw_dt_mask_reg_t dt_mask;  // [16:1]
+-    dlc_reg2hw_bypass_reg_t bypass;  // [0:0]
++    dlc_reg2hw_trans_size_reg_t trans_size; // [78:63]
++    dlc_reg2hw_curr_lvl_reg_t curr_lvl; // [62:47]
++    dlc_reg2hw_hysteresis_en_reg_t hysteresis_en; // [46:46]
++    dlc_reg2hw_dlvl_log_level_width_reg_t dlvl_log_level_width; // [45:42]
++    dlc_reg2hw_discard_bits_reg_t discard_bits; // [41:38]
++    dlc_reg2hw_dlvl_n_bits_reg_t dlvl_n_bits; // [37:34]
++    dlc_reg2hw_dlvl_mask_reg_t dlvl_mask; // [33:18]
++    dlc_reg2hw_dlvl_format_reg_t dlvl_format; // [17:17]
++    dlc_reg2hw_dt_mask_reg_t dt_mask; // [16:1]
++    dlc_reg2hw_bypass_reg_t bypass; // [0:0]
+   } dlc_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    dlc_hw2reg_curr_lvl_reg_t curr_lvl;  // [16:0]
++    dlc_hw2reg_curr_lvl_reg_t curr_lvl; // [16:0]
+   } dlc_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] DLC_TRANS_SIZE_OFFSET = 6'h0;
+-  parameter logic [BlockAw-1:0] DLC_CURR_LVL_OFFSET = 6'h4;
+-  parameter logic [BlockAw-1:0] DLC_HYSTERESIS_EN_OFFSET = 6'h8;
+-  parameter logic [BlockAw-1:0] DLC_DLVL_LOG_LEVEL_WIDTH_OFFSET = 6'hc;
+-  parameter logic [BlockAw-1:0] DLC_DISCARD_BITS_OFFSET = 6'h10;
+-  parameter logic [BlockAw-1:0] DLC_DLVL_N_BITS_OFFSET = 6'h14;
+-  parameter logic [BlockAw-1:0] DLC_DLVL_MASK_OFFSET = 6'h18;
+-  parameter logic [BlockAw-1:0] DLC_DLVL_FORMAT_OFFSET = 6'h1c;
+-  parameter logic [BlockAw-1:0] DLC_DT_MASK_OFFSET = 6'h20;
+-  parameter logic [BlockAw-1:0] DLC_BYPASS_OFFSET = 6'h24;
++  parameter logic [BlockAw-1:0] DLC_TRANS_SIZE_OFFSET = 6'h 0;
++  parameter logic [BlockAw-1:0] DLC_CURR_LVL_OFFSET = 6'h 4;
++  parameter logic [BlockAw-1:0] DLC_HYSTERESIS_EN_OFFSET = 6'h 8;
++  parameter logic [BlockAw-1:0] DLC_DLVL_LOG_LEVEL_WIDTH_OFFSET = 6'h c;
++  parameter logic [BlockAw-1:0] DLC_DISCARD_BITS_OFFSET = 6'h 10;
++  parameter logic [BlockAw-1:0] DLC_DLVL_N_BITS_OFFSET = 6'h 14;
++  parameter logic [BlockAw-1:0] DLC_DLVL_MASK_OFFSET = 6'h 18;
++  parameter logic [BlockAw-1:0] DLC_DLVL_FORMAT_OFFSET = 6'h 1c;
++  parameter logic [BlockAw-1:0] DLC_DT_MASK_OFFSET = 6'h 20;
++  parameter logic [BlockAw-1:0] DLC_BYPASS_OFFSET = 6'h 24;
+ 
+   // Register index
+   typedef enum int {
+@@ -84,17 +104,17 @@ package dlc_reg_pkg;
+   } dlc_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] DLC_PERMIT[10] = '{
+-      4'b0011,  // index[0] DLC_TRANS_SIZE
+-      4'b0011,  // index[1] DLC_CURR_LVL
+-      4'b0001,  // index[2] DLC_HYSTERESIS_EN
+-      4'b0001,  // index[3] DLC_DLVL_LOG_LEVEL_WIDTH
+-      4'b0001,  // index[4] DLC_DISCARD_BITS
+-      4'b0001,  // index[5] DLC_DLVL_N_BITS
+-      4'b0011,  // index[6] DLC_DLVL_MASK
+-      4'b0001,  // index[7] DLC_DLVL_FORMAT
+-      4'b0011,  // index[8] DLC_DT_MASK
+-      4'b0001  // index[9] DLC_BYPASS
++  parameter logic [3:0] DLC_PERMIT [10] = '{
++    4'b 0011, // index[0] DLC_TRANS_SIZE
++    4'b 0011, // index[1] DLC_CURR_LVL
++    4'b 0001, // index[2] DLC_HYSTERESIS_EN
++    4'b 0001, // index[3] DLC_DLVL_LOG_LEVEL_WIDTH
++    4'b 0001, // index[4] DLC_DISCARD_BITS
++    4'b 0001, // index[5] DLC_DLVL_N_BITS
++    4'b 0011, // index[6] DLC_DLVL_MASK
++    4'b 0001, // index[7] DLC_DLVL_FORMAT
++    4'b 0011, // index[8] DLC_DT_MASK
++    4'b 0001  // index[9] DLC_BYPASS
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/dlc/rtl/dlc_reg_top.sv b/hw/ip_examples/dlc/rtl/dlc_reg_top.sv
+index c12a4f8..0c116ab 100644
+--- a/hw/ip_examples/dlc/rtl/dlc_reg_top.sv
++++ b/hw/ip_examples/dlc/rtl/dlc_reg_top.sv
+@@ -8,44 +8,44 @@
+ `include "common_cells/assertions.svh"
+ 
+ module dlc_reg_top #(
+-    parameter type reg_req_t = logic,
+-    parameter type reg_rsp_t = logic,
+-    parameter int AW = 6
++  parameter type reg_req_t = logic,
++  parameter type reg_rsp_t = logic,
++  parameter int AW = 6
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    input reg_req_t reg_req_i,
+-    output reg_rsp_t reg_rsp_o,
+-    // To HW
+-    output dlc_reg_pkg::dlc_reg2hw_t reg2hw,  // Write
+-    input dlc_reg_pkg::dlc_hw2reg_t hw2reg,  // Read
++  input logic clk_i,
++  input logic rst_ni,
++  input  reg_req_t reg_req_i,
++  output reg_rsp_t reg_rsp_o,
++  // To HW
++  output dlc_reg_pkg::dlc_reg2hw_t reg2hw, // Write
++  input  dlc_reg_pkg::dlc_hw2reg_t hw2reg, // Read
+ 
+ 
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+ 
+-  import dlc_reg_pkg::*;
++  import dlc_reg_pkg::* ;
+ 
+   localparam int DW = 32;
+-  localparam int DBW = DW / 8;  // Byte Width
++  localparam int DBW = DW/8;                    // Byte Width
+ 
+   // register signals
+-  logic               reg_we;
+-  logic               reg_re;
+-  logic [BlockAw-1:0] reg_addr;
+-  logic [     DW-1:0] reg_wdata;
+-  logic [    DBW-1:0] reg_be;
+-  logic [     DW-1:0] reg_rdata;
+-  logic               reg_error;
++  logic           reg_we;
++  logic           reg_re;
++  logic [BlockAw-1:0]  reg_addr;
++  logic [DW-1:0]  reg_wdata;
++  logic [DBW-1:0] reg_be;
++  logic [DW-1:0]  reg_rdata;
++  logic           reg_error;
+ 
+-  logic addrmiss, wr_err;
++  logic          addrmiss, wr_err;
+ 
+   logic [DW-1:0] reg_rdata_next;
+ 
+   // Below register interface can be changed
+-  reg_req_t reg_intf_req;
+-  reg_rsp_t reg_intf_rsp;
++  reg_req_t  reg_intf_req;
++  reg_rsp_t  reg_intf_rsp;
+ 
+ 
+   assign reg_intf_req = reg_req_i;
+@@ -61,7 +61,7 @@ module dlc_reg_top #(
+   assign reg_intf_rsp.error = reg_error;
+   assign reg_intf_rsp.ready = 1'b1;
+ 
+-  assign reg_rdata = reg_rdata_next;
++  assign reg_rdata = reg_rdata_next ;
+   assign reg_error = (devmode_i & addrmiss) | wr_err;
+ 
+ 
+@@ -103,270 +103,270 @@ module dlc_reg_top #(
+   // R[trans_size]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_trans_size (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(trans_size_we),
+-      .wd(trans_size_wd),
++    // from register interface
++    .we     (trans_size_we),
++    .wd     (trans_size_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.trans_size.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.trans_size.q ),
+ 
+-      // to register interface (read)
+-      .qs(trans_size_qs)
++    // to register interface (read)
++    .qs     (trans_size_qs)
+   );
+ 
+ 
+   // R[curr_lvl]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_curr_lvl (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(curr_lvl_we),
+-      .wd(curr_lvl_wd),
++    // from register interface
++    .we     (curr_lvl_we),
++    .wd     (curr_lvl_wd),
+ 
+-      // from internal hardware
+-      .de(hw2reg.curr_lvl.de),
+-      .d (hw2reg.curr_lvl.d),
++    // from internal hardware
++    .de     (hw2reg.curr_lvl.de),
++    .d      (hw2reg.curr_lvl.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.curr_lvl.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.curr_lvl.q ),
+ 
+-      // to register interface (read)
+-      .qs(curr_lvl_qs)
++    // to register interface (read)
++    .qs     (curr_lvl_qs)
+   );
+ 
+ 
+   // R[hysteresis_en]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RW"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RW"),
++    .RESVAL  (1'h0)
+   ) u_hysteresis_en (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(hysteresis_en_we),
+-      .wd(hysteresis_en_wd),
++    // from register interface
++    .we     (hysteresis_en_we),
++    .wd     (hysteresis_en_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.hysteresis_en.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.hysteresis_en.q ),
+ 
+-      // to register interface (read)
+-      .qs(hysteresis_en_qs)
++    // to register interface (read)
++    .qs     (hysteresis_en_qs)
+   );
+ 
+ 
+   // R[dlvl_log_level_width]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (4),
+-      .SWACCESS("RW"),
+-      .RESVAL  (4'h0)
++    .DW      (4),
++    .SWACCESS("RW"),
++    .RESVAL  (4'h0)
+   ) u_dlvl_log_level_width (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dlvl_log_level_width_we),
+-      .wd(dlvl_log_level_width_wd),
++    // from register interface
++    .we     (dlvl_log_level_width_we),
++    .wd     (dlvl_log_level_width_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dlvl_log_level_width.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dlvl_log_level_width.q ),
+ 
+-      // to register interface (read)
+-      .qs(dlvl_log_level_width_qs)
++    // to register interface (read)
++    .qs     (dlvl_log_level_width_qs)
+   );
+ 
+ 
+   // R[discard_bits]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (4),
+-      .SWACCESS("RW"),
+-      .RESVAL  (4'h0)
++    .DW      (4),
++    .SWACCESS("RW"),
++    .RESVAL  (4'h0)
+   ) u_discard_bits (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(discard_bits_we),
+-      .wd(discard_bits_wd),
++    // from register interface
++    .we     (discard_bits_we),
++    .wd     (discard_bits_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.discard_bits.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.discard_bits.q ),
+ 
+-      // to register interface (read)
+-      .qs(discard_bits_qs)
++    // to register interface (read)
++    .qs     (discard_bits_qs)
+   );
+ 
+ 
+   // R[dlvl_n_bits]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (4),
+-      .SWACCESS("RW"),
+-      .RESVAL  (4'h0)
++    .DW      (4),
++    .SWACCESS("RW"),
++    .RESVAL  (4'h0)
+   ) u_dlvl_n_bits (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dlvl_n_bits_we),
+-      .wd(dlvl_n_bits_wd),
++    // from register interface
++    .we     (dlvl_n_bits_we),
++    .wd     (dlvl_n_bits_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dlvl_n_bits.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dlvl_n_bits.q ),
+ 
+-      // to register interface (read)
+-      .qs(dlvl_n_bits_qs)
++    // to register interface (read)
++    .qs     (dlvl_n_bits_qs)
+   );
+ 
+ 
+   // R[dlvl_mask]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_dlvl_mask (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dlvl_mask_we),
+-      .wd(dlvl_mask_wd),
++    // from register interface
++    .we     (dlvl_mask_we),
++    .wd     (dlvl_mask_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dlvl_mask.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dlvl_mask.q ),
+ 
+-      // to register interface (read)
+-      .qs(dlvl_mask_qs)
++    // to register interface (read)
++    .qs     (dlvl_mask_qs)
+   );
+ 
+ 
+   // R[dlvl_format]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RW"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RW"),
++    .RESVAL  (1'h0)
+   ) u_dlvl_format (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dlvl_format_we),
+-      .wd(dlvl_format_wd),
++    // from register interface
++    .we     (dlvl_format_we),
++    .wd     (dlvl_format_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dlvl_format.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dlvl_format.q ),
+ 
+-      // to register interface (read)
+-      .qs(dlvl_format_qs)
++    // to register interface (read)
++    .qs     (dlvl_format_qs)
+   );
+ 
+ 
+   // R[dt_mask]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_dt_mask (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dt_mask_we),
+-      .wd(dt_mask_wd),
++    // from register interface
++    .we     (dt_mask_we),
++    .wd     (dt_mask_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dt_mask.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dt_mask.q ),
+ 
+-      // to register interface (read)
+-      .qs(dt_mask_qs)
++    // to register interface (read)
++    .qs     (dt_mask_qs)
+   );
+ 
+ 
+   // R[bypass]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RW"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RW"),
++    .RESVAL  (1'h0)
+   ) u_bypass (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(bypass_we),
+-      .wd(bypass_wd),
++    // from register interface
++    .we     (bypass_we),
++    .wd     (bypass_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.bypass.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.bypass.q ),
+ 
+-      // to register interface (read)
+-      .qs(bypass_qs)
++    // to register interface (read)
++    .qs     (bypass_qs)
+   );
+ 
+ 
+@@ -387,7 +387,7 @@ module dlc_reg_top #(
+     addr_hit[9] = (reg_addr == DLC_BYPASS_OFFSET);
+   end
+ 
+-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
++  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+ 
+   // Check sub-word write is permitted
+   always_comb begin
+@@ -498,23 +498,24 @@ module dlc_reg_top #(
+ 
+ endmodule
+ 
+-module dlc_reg_top_intf #(
+-    parameter  int AW = 6,
+-    localparam int DW = 32
++module dlc_reg_top_intf
++#(
++  parameter int AW = 6,
++  localparam int DW = 32
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    REG_BUS.in regbus_slave,
+-    // To HW
+-    output dlc_reg_pkg::dlc_reg2hw_t reg2hw,  // Write
+-    input dlc_reg_pkg::dlc_hw2reg_t hw2reg,  // Read
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  input logic clk_i,
++  input logic rst_ni,
++  REG_BUS.in  regbus_slave,
++  // To HW
++  output dlc_reg_pkg::dlc_reg2hw_t reg2hw, // Write
++  input  dlc_reg_pkg::dlc_hw2reg_t hw2reg, // Read
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+-  localparam int unsigned STRB_WIDTH = DW / 8;
++ localparam int unsigned STRB_WIDTH = DW/8;
+ 
+-  `include "register_interface/typedef.svh"
+-  `include "register_interface/assign.svh"
++`include "register_interface/typedef.svh"
++`include "register_interface/assign.svh"
+ 
+   // Define structs for reg_bus
+   typedef logic [AW-1:0] addr_t;
+@@ -524,27 +525,27 @@ module dlc_reg_top_intf #(
+ 
+   reg_bus_req_t s_reg_req;
+   reg_bus_rsp_t s_reg_rsp;
+-
++  
+   // Assign SV interface to structs
+   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+ 
+-
++  
+ 
+   dlc_reg_top #(
+-      .reg_req_t(reg_bus_req_t),
+-      .reg_rsp_t(reg_bus_rsp_t),
+-      .AW(AW)
++    .reg_req_t(reg_bus_req_t),
++    .reg_rsp_t(reg_bus_rsp_t),
++    .AW(AW)
+   ) i_regs (
+-      .clk_i,
+-      .rst_ni,
+-      .reg_req_i(s_reg_req),
+-      .reg_rsp_o(s_reg_rsp),
+-      .reg2hw,  // Write
+-      .hw2reg,  // Read
+-      .devmode_i
++    .clk_i,
++    .rst_ni,
++    .reg_req_i(s_reg_req),
++    .reg_rsp_o(s_reg_rsp),
++    .reg2hw, // Write
++    .hw2reg, // Read
++    .devmode_i
+   );
+-
++  
+ endmodule
+ 
+ 
+diff --git a/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_pkg.sv b/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_pkg.sv
+index 90ca57e..b958022 100644
+--- a/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_pkg.sv
++++ b/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_pkg.sv
+@@ -13,49 +13,53 @@ package i2s_tx_sink_reg_pkg;
+   // Typedefs for registers //
+   ////////////////////////////
+ 
+-  typedef struct packed {logic [31:0] q;} i2s_tx_sink_reg2hw_control_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } i2s_tx_sink_reg2hw_control_reg_t;
+ 
+   typedef struct packed {
+     logic [31:0] q;
+     logic        re;
+   } i2s_tx_sink_reg2hw_rxdata_reg_t;
+ 
+-  typedef struct packed {logic [31:0] d;} i2s_tx_sink_hw2reg_rxdata_reg_t;
++  typedef struct packed {
++    logic [31:0] d;
++  } i2s_tx_sink_hw2reg_rxdata_reg_t;
+ 
+   typedef struct packed {
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } empty;
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } available;
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } overflow;
+   } i2s_tx_sink_hw2reg_status_reg_t;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    i2s_tx_sink_reg2hw_control_reg_t control;  // [64:33]
+-    i2s_tx_sink_reg2hw_rxdata_reg_t  rxdata;   // [32:0]
++    i2s_tx_sink_reg2hw_control_reg_t control; // [64:33]
++    i2s_tx_sink_reg2hw_rxdata_reg_t rxdata; // [32:0]
+   } i2s_tx_sink_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    i2s_tx_sink_hw2reg_rxdata_reg_t rxdata;  // [37:6]
+-    i2s_tx_sink_hw2reg_status_reg_t status;  // [5:0]
++    i2s_tx_sink_hw2reg_rxdata_reg_t rxdata; // [37:6]
++    i2s_tx_sink_hw2reg_status_reg_t status; // [5:0]
+   } i2s_tx_sink_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] I2S_TX_SINK_CONTROL_OFFSET = 4'h0;
+-  parameter logic [BlockAw-1:0] I2S_TX_SINK_RXDATA_OFFSET = 4'h4;
+-  parameter logic [BlockAw-1:0] I2S_TX_SINK_STATUS_OFFSET = 4'h8;
++  parameter logic [BlockAw-1:0] I2S_TX_SINK_CONTROL_OFFSET = 4'h 0;
++  parameter logic [BlockAw-1:0] I2S_TX_SINK_RXDATA_OFFSET = 4'h 4;
++  parameter logic [BlockAw-1:0] I2S_TX_SINK_STATUS_OFFSET = 4'h 8;
+ 
+   // Reset values for hwext registers and their fields
+-  parameter logic [31:0] I2S_TX_SINK_RXDATA_RESVAL = 32'h0;
++  parameter logic [31:0] I2S_TX_SINK_RXDATA_RESVAL = 32'h 0;
+ 
+   // Register index
+   typedef enum int {
+@@ -65,10 +69,10 @@ package i2s_tx_sink_reg_pkg;
+   } i2s_tx_sink_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] I2S_TX_SINK_PERMIT[3] = '{
+-      4'b1111,  // index[0] I2S_TX_SINK_CONTROL
+-      4'b1111,  // index[1] I2S_TX_SINK_RXDATA
+-      4'b0001  // index[2] I2S_TX_SINK_STATUS
++  parameter logic [3:0] I2S_TX_SINK_PERMIT [3] = '{
++    4'b 1111, // index[0] I2S_TX_SINK_CONTROL
++    4'b 1111, // index[1] I2S_TX_SINK_RXDATA
++    4'b 0001  // index[2] I2S_TX_SINK_STATUS
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_top.sv b/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_top.sv
+index a51fbf1..1192945 100644
+--- a/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_top.sv
++++ b/hw/ip_examples/i2s_tx_sink/rtl/i2s_tx_sink_reg_top.sv
+@@ -8,44 +8,44 @@
+ `include "common_cells/assertions.svh"
+ 
+ module i2s_tx_sink_reg_top #(
+-    parameter type reg_req_t = logic,
+-    parameter type reg_rsp_t = logic,
+-    parameter int AW = 4
++  parameter type reg_req_t = logic,
++  parameter type reg_rsp_t = logic,
++  parameter int AW = 4
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    input reg_req_t reg_req_i,
+-    output reg_rsp_t reg_rsp_o,
+-    // To HW
+-    output i2s_tx_sink_reg_pkg::i2s_tx_sink_reg2hw_t reg2hw,  // Write
+-    input i2s_tx_sink_reg_pkg::i2s_tx_sink_hw2reg_t hw2reg,  // Read
++  input logic clk_i,
++  input logic rst_ni,
++  input  reg_req_t reg_req_i,
++  output reg_rsp_t reg_rsp_o,
++  // To HW
++  output i2s_tx_sink_reg_pkg::i2s_tx_sink_reg2hw_t reg2hw, // Write
++  input  i2s_tx_sink_reg_pkg::i2s_tx_sink_hw2reg_t hw2reg, // Read
+ 
+ 
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+ 
+-  import i2s_tx_sink_reg_pkg::*;
++  import i2s_tx_sink_reg_pkg::* ;
+ 
+   localparam int DW = 32;
+-  localparam int DBW = DW / 8;  // Byte Width
++  localparam int DBW = DW/8;                    // Byte Width
+ 
+   // register signals
+-  logic               reg_we;
+-  logic               reg_re;
+-  logic [BlockAw-1:0] reg_addr;
+-  logic [     DW-1:0] reg_wdata;
+-  logic [    DBW-1:0] reg_be;
+-  logic [     DW-1:0] reg_rdata;
+-  logic               reg_error;
++  logic           reg_we;
++  logic           reg_re;
++  logic [BlockAw-1:0]  reg_addr;
++  logic [DW-1:0]  reg_wdata;
++  logic [DBW-1:0] reg_be;
++  logic [DW-1:0]  reg_rdata;
++  logic           reg_error;
+ 
+-  logic addrmiss, wr_err;
++  logic          addrmiss, wr_err;
+ 
+   logic [DW-1:0] reg_rdata_next;
+ 
+   // Below register interface can be changed
+-  reg_req_t reg_intf_req;
+-  reg_rsp_t reg_intf_rsp;
++  reg_req_t  reg_intf_req;
++  reg_rsp_t  reg_intf_rsp;
+ 
+ 
+   assign reg_intf_req = reg_req_i;
+@@ -61,7 +61,7 @@ module i2s_tx_sink_reg_top #(
+   assign reg_intf_rsp.error = reg_error;
+   assign reg_intf_rsp.ready = 1'b1;
+ 
+-  assign reg_rdata = reg_rdata_next;
++  assign reg_rdata = reg_rdata_next ;
+   assign reg_error = (devmode_i & addrmiss) | wr_err;
+ 
+ 
+@@ -81,43 +81,43 @@ module i2s_tx_sink_reg_top #(
+   // R[control]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h0)
+   ) u_control (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(control_we),
+-      .wd(control_wd),
++    // from register interface
++    .we     (control_we),
++    .wd     (control_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.control.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.control.q ),
+ 
+-      // to register interface (read)
+-      .qs(control_qs)
++    // to register interface (read)
++    .qs     (control_qs)
+   );
+ 
+ 
+   // R[rxdata]: V(True)
+ 
+   prim_subreg_ext #(
+-      .DW(32)
++    .DW    (32)
+   ) u_rxdata (
+-      .re (rxdata_re),
+-      .we (1'b0),
+-      .wd ('0),
+-      .d  (hw2reg.rxdata.d),
+-      .qre(reg2hw.rxdata.re),
+-      .qe (),
+-      .q  (reg2hw.rxdata.q),
+-      .qs (rxdata_qs)
++    .re     (rxdata_re),
++    .we     (1'b0),
++    .wd     ('0),
++    .d      (hw2reg.rxdata.d),
++    .qre    (reg2hw.rxdata.re),
++    .qe     (),
++    .q      (reg2hw.rxdata.q ),
++    .qs     (rxdata_qs)
+   );
+ 
+ 
+@@ -125,76 +125,76 @@ module i2s_tx_sink_reg_top #(
+ 
+   //   F[empty]: 0:0
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_empty (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.empty.de),
+-      .d (hw2reg.status.empty.d),
++    // from internal hardware
++    .de     (hw2reg.status.empty.de),
++    .d      (hw2reg.status.empty.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_empty_qs)
++    // to register interface (read)
++    .qs     (status_empty_qs)
+   );
+ 
+ 
+   //   F[available]: 1:1
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_available (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.available.de),
+-      .d (hw2reg.status.available.d),
++    // from internal hardware
++    .de     (hw2reg.status.available.de),
++    .d      (hw2reg.status.available.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_available_qs)
++    // to register interface (read)
++    .qs     (status_available_qs)
+   );
+ 
+ 
+   //   F[overflow]: 2:2
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_overflow (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.overflow.de),
+-      .d (hw2reg.status.overflow.d),
++    // from internal hardware
++    .de     (hw2reg.status.overflow.de),
++    .d      (hw2reg.status.overflow.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_overflow_qs)
++    // to register interface (read)
++    .qs     (status_overflow_qs)
+   );
+ 
+ 
+@@ -208,7 +208,7 @@ module i2s_tx_sink_reg_top #(
+     addr_hit[2] = (reg_addr == I2S_TX_SINK_STATUS_OFFSET);
+   end
+ 
+-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
++  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+ 
+   // Check sub-word write is permitted
+   always_comb begin
+@@ -221,7 +221,7 @@ module i2s_tx_sink_reg_top #(
+   assign control_we = addr_hit[0] & reg_we & !reg_error;
+   assign control_wd = reg_wdata[31:0];
+ 
+-  assign rxdata_re  = addr_hit[1] & reg_re & !reg_error;
++  assign rxdata_re = addr_hit[1] & reg_re & !reg_error;
+ 
+   // Read data return
+   always_comb begin
+@@ -261,23 +261,24 @@ module i2s_tx_sink_reg_top #(
+ 
+ endmodule
+ 
+-module i2s_tx_sink_reg_top_intf #(
+-    parameter  int AW = 4,
+-    localparam int DW = 32
++module i2s_tx_sink_reg_top_intf
++#(
++  parameter int AW = 4,
++  localparam int DW = 32
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    REG_BUS.in regbus_slave,
+-    // To HW
+-    output i2s_tx_sink_reg_pkg::i2s_tx_sink_reg2hw_t reg2hw,  // Write
+-    input i2s_tx_sink_reg_pkg::i2s_tx_sink_hw2reg_t hw2reg,  // Read
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  input logic clk_i,
++  input logic rst_ni,
++  REG_BUS.in  regbus_slave,
++  // To HW
++  output i2s_tx_sink_reg_pkg::i2s_tx_sink_reg2hw_t reg2hw, // Write
++  input  i2s_tx_sink_reg_pkg::i2s_tx_sink_hw2reg_t hw2reg, // Read
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+-  localparam int unsigned STRB_WIDTH = DW / 8;
++ localparam int unsigned STRB_WIDTH = DW/8;
+ 
+-  `include "register_interface/typedef.svh"
+-  `include "register_interface/assign.svh"
++`include "register_interface/typedef.svh"
++`include "register_interface/assign.svh"
+ 
+   // Define structs for reg_bus
+   typedef logic [AW-1:0] addr_t;
+@@ -287,27 +288,27 @@ module i2s_tx_sink_reg_top_intf #(
+ 
+   reg_bus_req_t s_reg_req;
+   reg_bus_rsp_t s_reg_rsp;
+-
++  
+   // Assign SV interface to structs
+   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+ 
+-
++  
+ 
+   i2s_tx_sink_reg_top #(
+-      .reg_req_t(reg_bus_req_t),
+-      .reg_rsp_t(reg_bus_rsp_t),
+-      .AW(AW)
++    .reg_req_t(reg_bus_req_t),
++    .reg_rsp_t(reg_bus_rsp_t),
++    .AW(AW)
+   ) i_regs (
+-      .clk_i,
+-      .rst_ni,
+-      .reg_req_i(s_reg_req),
+-      .reg_rsp_o(s_reg_rsp),
+-      .reg2hw,  // Write
+-      .hw2reg,  // Read
+-      .devmode_i
++    .clk_i,
++    .rst_ni,
++    .reg_req_i(s_reg_req),
++    .reg_rsp_o(s_reg_rsp),
++    .reg2hw, // Write
++    .hw2reg, // Read
++    .devmode_i
+   );
+-
++  
+ endmodule
+ 
+ 
+diff --git a/hw/ip_examples/iffifo/rtl/iffifo_reg_pkg.sv b/hw/ip_examples/iffifo/rtl/iffifo_reg_pkg.sv
+index e362798..04a62ad 100644
+--- a/hw/ip_examples/iffifo/rtl/iffifo_reg_pkg.sv
++++ b/hw/ip_examples/iffifo/rtl/iffifo_reg_pkg.sv
+@@ -23,31 +23,35 @@ package iffifo_reg_pkg;
+     logic        qe;
+   } iffifo_reg2hw_fifo_in_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} iffifo_reg2hw_watermark_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } iffifo_reg2hw_watermark_reg_t;
+ 
+   typedef struct packed {
+-    logic q;
+-    logic qe;
++    logic        q;
++    logic        qe;
+   } iffifo_reg2hw_interrupts_reg_t;
+ 
+-  typedef struct packed {logic [31:0] d;} iffifo_hw2reg_fifo_out_reg_t;
++  typedef struct packed {
++    logic [31:0] d;
++  } iffifo_hw2reg_fifo_out_reg_t;
+ 
+   typedef struct packed {
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } empty;
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } available;
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } reached;
+     struct packed {
+-      logic d;
+-      logic de;
++      logic        d;
++      logic        de;
+     } full;
+   } iffifo_hw2reg_status_reg_t;
+ 
+@@ -58,29 +62,29 @@ package iffifo_reg_pkg;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    iffifo_reg2hw_fifo_out_reg_t fifo_out;  // [99:67]
+-    iffifo_reg2hw_fifo_in_reg_t fifo_in;  // [66:34]
+-    iffifo_reg2hw_watermark_reg_t watermark;  // [33:2]
+-    iffifo_reg2hw_interrupts_reg_t interrupts;  // [1:0]
++    iffifo_reg2hw_fifo_out_reg_t fifo_out; // [99:67]
++    iffifo_reg2hw_fifo_in_reg_t fifo_in; // [66:34]
++    iffifo_reg2hw_watermark_reg_t watermark; // [33:2]
++    iffifo_reg2hw_interrupts_reg_t interrupts; // [1:0]
+   } iffifo_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    iffifo_hw2reg_fifo_out_reg_t fifo_out;  // [72:41]
+-    iffifo_hw2reg_status_reg_t status;  // [40:33]
+-    iffifo_hw2reg_occupancy_reg_t occupancy;  // [32:0]
++    iffifo_hw2reg_fifo_out_reg_t fifo_out; // [72:41]
++    iffifo_hw2reg_status_reg_t status; // [40:33]
++    iffifo_hw2reg_occupancy_reg_t occupancy; // [32:0]
+   } iffifo_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] IFFIFO_FIFO_OUT_OFFSET = 5'h0;
+-  parameter logic [BlockAw-1:0] IFFIFO_FIFO_IN_OFFSET = 5'h4;
+-  parameter logic [BlockAw-1:0] IFFIFO_STATUS_OFFSET = 5'h8;
+-  parameter logic [BlockAw-1:0] IFFIFO_OCCUPANCY_OFFSET = 5'hc;
+-  parameter logic [BlockAw-1:0] IFFIFO_WATERMARK_OFFSET = 5'h10;
+-  parameter logic [BlockAw-1:0] IFFIFO_INTERRUPTS_OFFSET = 5'h14;
++  parameter logic [BlockAw-1:0] IFFIFO_FIFO_OUT_OFFSET = 5'h 0;
++  parameter logic [BlockAw-1:0] IFFIFO_FIFO_IN_OFFSET = 5'h 4;
++  parameter logic [BlockAw-1:0] IFFIFO_STATUS_OFFSET = 5'h 8;
++  parameter logic [BlockAw-1:0] IFFIFO_OCCUPANCY_OFFSET = 5'h c;
++  parameter logic [BlockAw-1:0] IFFIFO_WATERMARK_OFFSET = 5'h 10;
++  parameter logic [BlockAw-1:0] IFFIFO_INTERRUPTS_OFFSET = 5'h 14;
+ 
+   // Reset values for hwext registers and their fields
+-  parameter logic [31:0] IFFIFO_FIFO_OUT_RESVAL = 32'h0;
++  parameter logic [31:0] IFFIFO_FIFO_OUT_RESVAL = 32'h 0;
+ 
+   // Register index
+   typedef enum int {
+@@ -93,13 +97,13 @@ package iffifo_reg_pkg;
+   } iffifo_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] IFFIFO_PERMIT[6] = '{
+-      4'b1111,  // index[0] IFFIFO_FIFO_OUT
+-      4'b1111,  // index[1] IFFIFO_FIFO_IN
+-      4'b0001,  // index[2] IFFIFO_STATUS
+-      4'b1111,  // index[3] IFFIFO_OCCUPANCY
+-      4'b1111,  // index[4] IFFIFO_WATERMARK
+-      4'b0001  // index[5] IFFIFO_INTERRUPTS
++  parameter logic [3:0] IFFIFO_PERMIT [6] = '{
++    4'b 1111, // index[0] IFFIFO_FIFO_OUT
++    4'b 1111, // index[1] IFFIFO_FIFO_IN
++    4'b 0001, // index[2] IFFIFO_STATUS
++    4'b 1111, // index[3] IFFIFO_OCCUPANCY
++    4'b 1111, // index[4] IFFIFO_WATERMARK
++    4'b 0001  // index[5] IFFIFO_INTERRUPTS
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/iffifo/rtl/iffifo_reg_top.sv b/hw/ip_examples/iffifo/rtl/iffifo_reg_top.sv
+index f0d2940..052f688 100644
+--- a/hw/ip_examples/iffifo/rtl/iffifo_reg_top.sv
++++ b/hw/ip_examples/iffifo/rtl/iffifo_reg_top.sv
+@@ -8,44 +8,44 @@
+ `include "common_cells/assertions.svh"
+ 
+ module iffifo_reg_top #(
+-    parameter type reg_req_t = logic,
+-    parameter type reg_rsp_t = logic,
+-    parameter int AW = 5
++  parameter type reg_req_t = logic,
++  parameter type reg_rsp_t = logic,
++  parameter int AW = 5
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    input reg_req_t reg_req_i,
+-    output reg_rsp_t reg_rsp_o,
+-    // To HW
+-    output iffifo_reg_pkg::iffifo_reg2hw_t reg2hw,  // Write
+-    input iffifo_reg_pkg::iffifo_hw2reg_t hw2reg,  // Read
++  input logic clk_i,
++  input logic rst_ni,
++  input  reg_req_t reg_req_i,
++  output reg_rsp_t reg_rsp_o,
++  // To HW
++  output iffifo_reg_pkg::iffifo_reg2hw_t reg2hw, // Write
++  input  iffifo_reg_pkg::iffifo_hw2reg_t hw2reg, // Read
+ 
+ 
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+ 
+-  import iffifo_reg_pkg::*;
++  import iffifo_reg_pkg::* ;
+ 
+   localparam int DW = 32;
+-  localparam int DBW = DW / 8;  // Byte Width
++  localparam int DBW = DW/8;                    // Byte Width
+ 
+   // register signals
+-  logic               reg_we;
+-  logic               reg_re;
+-  logic [BlockAw-1:0] reg_addr;
+-  logic [     DW-1:0] reg_wdata;
+-  logic [    DBW-1:0] reg_be;
+-  logic [     DW-1:0] reg_rdata;
+-  logic               reg_error;
++  logic           reg_we;
++  logic           reg_re;
++  logic [BlockAw-1:0]  reg_addr;
++  logic [DW-1:0]  reg_wdata;
++  logic [DBW-1:0] reg_be;
++  logic [DW-1:0]  reg_rdata;
++  logic           reg_error;
+ 
+-  logic addrmiss, wr_err;
++  logic          addrmiss, wr_err;
+ 
+   logic [DW-1:0] reg_rdata_next;
+ 
+   // Below register interface can be changed
+-  reg_req_t reg_intf_req;
+-  reg_rsp_t reg_intf_rsp;
++  reg_req_t  reg_intf_req;
++  reg_rsp_t  reg_intf_rsp;
+ 
+ 
+   assign reg_intf_req = reg_req_i;
+@@ -61,7 +61,7 @@ module iffifo_reg_top #(
+   assign reg_intf_rsp.error = reg_error;
+   assign reg_intf_rsp.ready = 1'b1;
+ 
+-  assign reg_rdata = reg_rdata_next;
++  assign reg_rdata = reg_rdata_next ;
+   assign reg_error = (devmode_i & addrmiss) | wr_err;
+ 
+ 
+@@ -89,43 +89,43 @@ module iffifo_reg_top #(
+   // R[fifo_out]: V(True)
+ 
+   prim_subreg_ext #(
+-      .DW(32)
++    .DW    (32)
+   ) u_fifo_out (
+-      .re (fifo_out_re),
+-      .we (1'b0),
+-      .wd ('0),
+-      .d  (hw2reg.fifo_out.d),
+-      .qre(reg2hw.fifo_out.re),
+-      .qe (),
+-      .q  (reg2hw.fifo_out.q),
+-      .qs (fifo_out_qs)
++    .re     (fifo_out_re),
++    .we     (1'b0),
++    .wd     ('0),
++    .d      (hw2reg.fifo_out.d),
++    .qre    (reg2hw.fifo_out.re),
++    .qe     (),
++    .q      (reg2hw.fifo_out.q ),
++    .qs     (fifo_out_qs)
+   );
+ 
+ 
+   // R[fifo_in]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h0)
+   ) u_fifo_in (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(fifo_in_we),
+-      .wd(fifo_in_wd),
++    // from register interface
++    .we     (fifo_in_we),
++    .wd     (fifo_in_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.fifo_in.qe),
+-      .q (reg2hw.fifo_in.q),
++    // to internal hardware
++    .qe     (reg2hw.fifo_in.qe),
++    .q      (reg2hw.fifo_in.q ),
+ 
+-      // to register interface (read)
+-      .qs(fifo_in_qs)
++    // to register interface (read)
++    .qs     (fifo_in_qs)
+   );
+ 
+ 
+@@ -133,181 +133,181 @@ module iffifo_reg_top #(
+ 
+   //   F[empty]: 0:0
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_empty (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.empty.de),
+-      .d (hw2reg.status.empty.d),
++    // from internal hardware
++    .de     (hw2reg.status.empty.de),
++    .d      (hw2reg.status.empty.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_empty_qs)
++    // to register interface (read)
++    .qs     (status_empty_qs)
+   );
+ 
+ 
+   //   F[available]: 1:1
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_available (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.available.de),
+-      .d (hw2reg.status.available.d),
++    // from internal hardware
++    .de     (hw2reg.status.available.de),
++    .d      (hw2reg.status.available.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_available_qs)
++    // to register interface (read)
++    .qs     (status_available_qs)
+   );
+ 
+ 
+   //   F[reached]: 2:2
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_reached (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.reached.de),
+-      .d (hw2reg.status.reached.d),
++    // from internal hardware
++    .de     (hw2reg.status.reached.de),
++    .d      (hw2reg.status.reached.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_reached_qs)
++    // to register interface (read)
++    .qs     (status_reached_qs)
+   );
+ 
+ 
+   //   F[full]: 3:3
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RO"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RO"),
++    .RESVAL  (1'h0)
+   ) u_status_full (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.status.full.de),
+-      .d (hw2reg.status.full.d),
++    // from internal hardware
++    .de     (hw2reg.status.full.de),
++    .d      (hw2reg.status.full.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(status_full_qs)
++    // to register interface (read)
++    .qs     (status_full_qs)
+   );
+ 
+ 
+   // R[occupancy]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RO"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RO"),
++    .RESVAL  (32'h0)
+   ) u_occupancy (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      .we(1'b0),
+-      .wd('0),
++    .we     (1'b0),
++    .wd     ('0  ),
+ 
+-      // from internal hardware
+-      .de(hw2reg.occupancy.de),
+-      .d (hw2reg.occupancy.d),
++    // from internal hardware
++    .de     (hw2reg.occupancy.de),
++    .d      (hw2reg.occupancy.d ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (),
++    // to internal hardware
++    .qe     (),
++    .q      (),
+ 
+-      // to register interface (read)
+-      .qs(occupancy_qs)
++    // to register interface (read)
++    .qs     (occupancy_qs)
+   );
+ 
+ 
+   // R[watermark]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h0)
+   ) u_watermark (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(watermark_we),
+-      .wd(watermark_wd),
++    // from register interface
++    .we     (watermark_we),
++    .wd     (watermark_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.watermark.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.watermark.q ),
+ 
+-      // to register interface (read)
+-      .qs(watermark_qs)
++    // to register interface (read)
++    .qs     (watermark_qs)
+   );
+ 
+ 
+   // R[interrupts]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RW"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RW"),
++    .RESVAL  (1'h0)
+   ) u_interrupts (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(interrupts_we),
+-      .wd(interrupts_wd),
++    // from register interface
++    .we     (interrupts_we),
++    .wd     (interrupts_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.interrupts.qe),
+-      .q (reg2hw.interrupts.q),
++    // to internal hardware
++    .qe     (reg2hw.interrupts.qe),
++    .q      (reg2hw.interrupts.q ),
+ 
+-      // to register interface (read)
+-      .qs(interrupts_qs)
++    // to register interface (read)
++    .qs     (interrupts_qs)
+   );
+ 
+ 
+@@ -324,7 +324,7 @@ module iffifo_reg_top #(
+     addr_hit[5] = (reg_addr == IFFIFO_INTERRUPTS_OFFSET);
+   end
+ 
+-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
++  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+ 
+   // Check sub-word write is permitted
+   always_comb begin
+@@ -399,23 +399,24 @@ module iffifo_reg_top #(
+ 
+ endmodule
+ 
+-module iffifo_reg_top_intf #(
+-    parameter  int AW = 5,
+-    localparam int DW = 32
++module iffifo_reg_top_intf
++#(
++  parameter int AW = 5,
++  localparam int DW = 32
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    REG_BUS.in regbus_slave,
+-    // To HW
+-    output iffifo_reg_pkg::iffifo_reg2hw_t reg2hw,  // Write
+-    input iffifo_reg_pkg::iffifo_hw2reg_t hw2reg,  // Read
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  input logic clk_i,
++  input logic rst_ni,
++  REG_BUS.in  regbus_slave,
++  // To HW
++  output iffifo_reg_pkg::iffifo_reg2hw_t reg2hw, // Write
++  input  iffifo_reg_pkg::iffifo_hw2reg_t hw2reg, // Read
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+-  localparam int unsigned STRB_WIDTH = DW / 8;
++ localparam int unsigned STRB_WIDTH = DW/8;
+ 
+-  `include "register_interface/typedef.svh"
+-  `include "register_interface/assign.svh"
++`include "register_interface/typedef.svh"
++`include "register_interface/assign.svh"
+ 
+   // Define structs for reg_bus
+   typedef logic [AW-1:0] addr_t;
+@@ -425,27 +426,27 @@ module iffifo_reg_top_intf #(
+ 
+   reg_bus_req_t s_reg_req;
+   reg_bus_rsp_t s_reg_rsp;
+-
++  
+   // Assign SV interface to structs
+   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+ 
+-
++  
+ 
+   iffifo_reg_top #(
+-      .reg_req_t(reg_bus_req_t),
+-      .reg_rsp_t(reg_bus_rsp_t),
+-      .AW(AW)
++    .reg_req_t(reg_bus_req_t),
++    .reg_rsp_t(reg_bus_rsp_t),
++    .AW(AW)
+   ) i_regs (
+-      .clk_i,
+-      .rst_ni,
+-      .reg_req_i(s_reg_req),
+-      .reg_rsp_o(s_reg_rsp),
+-      .reg2hw,  // Write
+-      .hw2reg,  // Read
+-      .devmode_i
++    .clk_i,
++    .rst_ni,
++    .reg_req_i(s_reg_req),
++    .reg_rsp_o(s_reg_rsp),
++    .reg2hw, // Write
++    .hw2reg, // Read
++    .devmode_i
+   );
+-
++  
+ endmodule
+ 
+ 
+diff --git a/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_pkg.sv b/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_pkg.sv
+index 60f61f2..d31ccc3 100644
+--- a/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_pkg.sv
++++ b/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_pkg.sv
+@@ -13,155 +13,199 @@ package im2col_spc_reg_pkg;
+   // Typedefs for registers //
+   ////////////////////////////
+ 
+-  typedef struct packed {logic [31:0] q;} im2col_spc_reg2hw_src_ptr_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } im2col_spc_reg2hw_src_ptr_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} im2col_spc_reg2hw_dst_ptr_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } im2col_spc_reg2hw_dst_ptr_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} im2col_spc_reg2hw_iw_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } im2col_spc_reg2hw_iw_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} im2col_spc_reg2hw_ih_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } im2col_spc_reg2hw_ih_reg_t;
+ 
+-  typedef struct packed {logic [7:0] q;} im2col_spc_reg2hw_fw_reg_t;
++  typedef struct packed {
++    logic [7:0]  q;
++  } im2col_spc_reg2hw_fw_reg_t;
+ 
+-  typedef struct packed {logic [7:0] q;} im2col_spc_reg2hw_fh_reg_t;
++  typedef struct packed {
++    logic [7:0]  q;
++  } im2col_spc_reg2hw_fh_reg_t;
+ 
+-  typedef struct packed {logic [7:0] q;} im2col_spc_reg2hw_batch_reg_t;
++  typedef struct packed {
++    logic [7:0]  q;
++  } im2col_spc_reg2hw_batch_reg_t;
+ 
+   typedef struct packed {
+-    logic [7:0] q;
+-    logic       qe;
++    logic [7:0]  q;
++    logic        qe;
+   } im2col_spc_reg2hw_num_ch_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} im2col_spc_reg2hw_ch_col_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } im2col_spc_reg2hw_ch_col_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} im2col_spc_reg2hw_n_patches_w_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } im2col_spc_reg2hw_n_patches_w_reg_t;
+ 
+-  typedef struct packed {logic [15:0] q;} im2col_spc_reg2hw_n_patches_h_reg_t;
++  typedef struct packed {
++    logic [15:0] q;
++  } im2col_spc_reg2hw_n_patches_h_reg_t;
+ 
+-  typedef struct packed {logic [7:0] q;} im2col_spc_reg2hw_last_patch_h_reg_t;
++  typedef struct packed {
++    logic [7:0]  q;
++  } im2col_spc_reg2hw_last_patch_h_reg_t;
+ 
+-  typedef struct packed {logic [7:0] q;} im2col_spc_reg2hw_last_patch_w_reg_t;
++  typedef struct packed {
++    logic [7:0]  q;
++  } im2col_spc_reg2hw_last_patch_w_reg_t;
+ 
+-  typedef struct packed {logic [3:0] q;} im2col_spc_reg2hw_log_strides_d1_reg_t;
++  typedef struct packed {
++    logic [3:0]  q;
++  } im2col_spc_reg2hw_log_strides_d1_reg_t;
+ 
+-  typedef struct packed {logic [3:0] q;} im2col_spc_reg2hw_log_strides_d2_reg_t;
++  typedef struct packed {
++    logic [3:0]  q;
++  } im2col_spc_reg2hw_log_strides_d2_reg_t;
+ 
+   typedef struct packed {
+-    logic q;
+-    logic re;
++    logic        q;
++    logic        re;
+   } im2col_spc_reg2hw_status_reg_t;
+ 
+   typedef struct packed {
+-    struct packed {logic [15:0] q;} rx_trigger_slot;
+-    struct packed {logic [15:0] q;} tx_trigger_slot;
++    struct packed {
++      logic [15:0] q;
++    } rx_trigger_slot;
++    struct packed {
++      logic [15:0] q;
++    } tx_trigger_slot;
+   } im2col_spc_reg2hw_slot_reg_t;
+ 
+-  typedef struct packed {logic [1:0] q;} im2col_spc_reg2hw_data_type_reg_t;
++  typedef struct packed {
++    logic [1:0]  q;
++  } im2col_spc_reg2hw_data_type_reg_t;
+ 
+   typedef struct packed {
+-    logic [5:0] q;
+-    logic       qe;
++    logic [5:0]  q;
++    logic        qe;
+   } im2col_spc_reg2hw_pad_top_reg_t;
+ 
+   typedef struct packed {
+-    logic [5:0] q;
+-    logic       qe;
++    logic [5:0]  q;
++    logic        qe;
+   } im2col_spc_reg2hw_pad_bottom_reg_t;
+ 
+   typedef struct packed {
+-    logic [5:0] q;
+-    logic       qe;
++    logic [5:0]  q;
++    logic        qe;
+   } im2col_spc_reg2hw_pad_right_reg_t;
+ 
+   typedef struct packed {
+-    logic [5:0] q;
+-    logic       qe;
++    logic [5:0]  q;
++    logic        qe;
+   } im2col_spc_reg2hw_pad_left_reg_t;
+ 
+-  typedef struct packed {logic q;} im2col_spc_reg2hw_interrupt_en_reg_t;
++  typedef struct packed {
++    logic        q;
++  } im2col_spc_reg2hw_interrupt_en_reg_t;
+ 
+   typedef struct packed {
+-    logic q;
+-    logic re;
++    logic        q;
++    logic        re;
+   } im2col_spc_reg2hw_spc_ifr_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} im2col_spc_reg2hw_spc_ch_mask_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } im2col_spc_reg2hw_spc_ch_mask_reg_t;
+ 
+-  typedef struct packed {logic [31:0] q;} im2col_spc_reg2hw_spc_ch_offset_reg_t;
++  typedef struct packed {
++    logic [31:0] q;
++  } im2col_spc_reg2hw_spc_ch_offset_reg_t;
+ 
+-  typedef struct packed {logic d;} im2col_spc_hw2reg_status_reg_t;
++  typedef struct packed {
++    logic        d;
++  } im2col_spc_hw2reg_status_reg_t;
+ 
+-  typedef struct packed {logic d;} im2col_spc_hw2reg_spc_ifr_reg_t;
++  typedef struct packed {
++    logic        d;
++  } im2col_spc_hw2reg_spc_ifr_reg_t;
+ 
+   // Register -> HW type
+   typedef struct packed {
+-    im2col_spc_reg2hw_src_ptr_reg_t src_ptr;  // [331:300]
+-    im2col_spc_reg2hw_dst_ptr_reg_t dst_ptr;  // [299:268]
+-    im2col_spc_reg2hw_iw_reg_t iw;  // [267:252]
+-    im2col_spc_reg2hw_ih_reg_t ih;  // [251:236]
+-    im2col_spc_reg2hw_fw_reg_t fw;  // [235:228]
+-    im2col_spc_reg2hw_fh_reg_t fh;  // [227:220]
+-    im2col_spc_reg2hw_batch_reg_t batch;  // [219:212]
+-    im2col_spc_reg2hw_num_ch_reg_t num_ch;  // [211:203]
+-    im2col_spc_reg2hw_ch_col_reg_t ch_col;  // [202:187]
+-    im2col_spc_reg2hw_n_patches_w_reg_t n_patches_w;  // [186:171]
+-    im2col_spc_reg2hw_n_patches_h_reg_t n_patches_h;  // [170:155]
+-    im2col_spc_reg2hw_last_patch_h_reg_t last_patch_h;  // [154:147]
+-    im2col_spc_reg2hw_last_patch_w_reg_t last_patch_w;  // [146:139]
+-    im2col_spc_reg2hw_log_strides_d1_reg_t log_strides_d1;  // [138:135]
+-    im2col_spc_reg2hw_log_strides_d2_reg_t log_strides_d2;  // [134:131]
+-    im2col_spc_reg2hw_status_reg_t status;  // [130:129]
+-    im2col_spc_reg2hw_slot_reg_t slot;  // [128:97]
+-    im2col_spc_reg2hw_data_type_reg_t data_type;  // [96:95]
+-    im2col_spc_reg2hw_pad_top_reg_t pad_top;  // [94:88]
+-    im2col_spc_reg2hw_pad_bottom_reg_t pad_bottom;  // [87:81]
+-    im2col_spc_reg2hw_pad_right_reg_t pad_right;  // [80:74]
+-    im2col_spc_reg2hw_pad_left_reg_t pad_left;  // [73:67]
+-    im2col_spc_reg2hw_interrupt_en_reg_t interrupt_en;  // [66:66]
+-    im2col_spc_reg2hw_spc_ifr_reg_t spc_ifr;  // [65:64]
+-    im2col_spc_reg2hw_spc_ch_mask_reg_t spc_ch_mask;  // [63:32]
+-    im2col_spc_reg2hw_spc_ch_offset_reg_t spc_ch_offset;  // [31:0]
++    im2col_spc_reg2hw_src_ptr_reg_t src_ptr; // [331:300]
++    im2col_spc_reg2hw_dst_ptr_reg_t dst_ptr; // [299:268]
++    im2col_spc_reg2hw_iw_reg_t iw; // [267:252]
++    im2col_spc_reg2hw_ih_reg_t ih; // [251:236]
++    im2col_spc_reg2hw_fw_reg_t fw; // [235:228]
++    im2col_spc_reg2hw_fh_reg_t fh; // [227:220]
++    im2col_spc_reg2hw_batch_reg_t batch; // [219:212]
++    im2col_spc_reg2hw_num_ch_reg_t num_ch; // [211:203]
++    im2col_spc_reg2hw_ch_col_reg_t ch_col; // [202:187]
++    im2col_spc_reg2hw_n_patches_w_reg_t n_patches_w; // [186:171]
++    im2col_spc_reg2hw_n_patches_h_reg_t n_patches_h; // [170:155]
++    im2col_spc_reg2hw_last_patch_h_reg_t last_patch_h; // [154:147]
++    im2col_spc_reg2hw_last_patch_w_reg_t last_patch_w; // [146:139]
++    im2col_spc_reg2hw_log_strides_d1_reg_t log_strides_d1; // [138:135]
++    im2col_spc_reg2hw_log_strides_d2_reg_t log_strides_d2; // [134:131]
++    im2col_spc_reg2hw_status_reg_t status; // [130:129]
++    im2col_spc_reg2hw_slot_reg_t slot; // [128:97]
++    im2col_spc_reg2hw_data_type_reg_t data_type; // [96:95]
++    im2col_spc_reg2hw_pad_top_reg_t pad_top; // [94:88]
++    im2col_spc_reg2hw_pad_bottom_reg_t pad_bottom; // [87:81]
++    im2col_spc_reg2hw_pad_right_reg_t pad_right; // [80:74]
++    im2col_spc_reg2hw_pad_left_reg_t pad_left; // [73:67]
++    im2col_spc_reg2hw_interrupt_en_reg_t interrupt_en; // [66:66]
++    im2col_spc_reg2hw_spc_ifr_reg_t spc_ifr; // [65:64]
++    im2col_spc_reg2hw_spc_ch_mask_reg_t spc_ch_mask; // [63:32]
++    im2col_spc_reg2hw_spc_ch_offset_reg_t spc_ch_offset; // [31:0]
+   } im2col_spc_reg2hw_t;
+ 
+   // HW -> register type
+   typedef struct packed {
+-    im2col_spc_hw2reg_status_reg_t  status;   // [1:1]
+-    im2col_spc_hw2reg_spc_ifr_reg_t spc_ifr;  // [0:0]
++    im2col_spc_hw2reg_status_reg_t status; // [1:1]
++    im2col_spc_hw2reg_spc_ifr_reg_t spc_ifr; // [0:0]
+   } im2col_spc_hw2reg_t;
+ 
+   // Register offsets
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_SRC_PTR_OFFSET = 7'h0;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_DST_PTR_OFFSET = 7'h4;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_IW_OFFSET = 7'h8;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_IH_OFFSET = 7'hc;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_FW_OFFSET = 7'h10;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_FH_OFFSET = 7'h14;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_BATCH_OFFSET = 7'h18;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_NUM_CH_OFFSET = 7'h1c;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_CH_COL_OFFSET = 7'h20;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_N_PATCHES_W_OFFSET = 7'h24;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_N_PATCHES_H_OFFSET = 7'h28;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_LAST_PATCH_H_OFFSET = 7'h2c;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_LAST_PATCH_W_OFFSET = 7'h30;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_LOG_STRIDES_D1_OFFSET = 7'h34;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_LOG_STRIDES_D2_OFFSET = 7'h38;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_STATUS_OFFSET = 7'h3c;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_SLOT_OFFSET = 7'h40;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_DATA_TYPE_OFFSET = 7'h44;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_TOP_OFFSET = 7'h48;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_BOTTOM_OFFSET = 7'h4c;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_RIGHT_OFFSET = 7'h50;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_LEFT_OFFSET = 7'h54;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_INTERRUPT_EN_OFFSET = 7'h58;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_IFR_OFFSET = 7'h5c;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_CH_MASK_OFFSET = 7'h60;
+-  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_CH_OFFSET_OFFSET = 7'h64;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_SRC_PTR_OFFSET = 7'h 0;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_DST_PTR_OFFSET = 7'h 4;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_IW_OFFSET = 7'h 8;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_IH_OFFSET = 7'h c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_FW_OFFSET = 7'h 10;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_FH_OFFSET = 7'h 14;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_BATCH_OFFSET = 7'h 18;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_NUM_CH_OFFSET = 7'h 1c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_CH_COL_OFFSET = 7'h 20;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_N_PATCHES_W_OFFSET = 7'h 24;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_N_PATCHES_H_OFFSET = 7'h 28;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_LAST_PATCH_H_OFFSET = 7'h 2c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_LAST_PATCH_W_OFFSET = 7'h 30;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_LOG_STRIDES_D1_OFFSET = 7'h 34;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_LOG_STRIDES_D2_OFFSET = 7'h 38;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_STATUS_OFFSET = 7'h 3c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_SLOT_OFFSET = 7'h 40;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_DATA_TYPE_OFFSET = 7'h 44;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_TOP_OFFSET = 7'h 48;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_BOTTOM_OFFSET = 7'h 4c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_RIGHT_OFFSET = 7'h 50;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_PAD_LEFT_OFFSET = 7'h 54;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_INTERRUPT_EN_OFFSET = 7'h 58;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_IFR_OFFSET = 7'h 5c;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_CH_MASK_OFFSET = 7'h 60;
++  parameter logic [BlockAw-1:0] IM2COL_SPC_SPC_CH_OFFSET_OFFSET = 7'h 64;
+ 
+   // Reset values for hwext registers and their fields
+-  parameter logic [0:0] IM2COL_SPC_STATUS_RESVAL = 1'h1;
+-  parameter logic [0:0] IM2COL_SPC_STATUS_READY_RESVAL = 1'h1;
+-  parameter logic [0:0] IM2COL_SPC_SPC_IFR_RESVAL = 1'h0;
+-  parameter logic [0:0] IM2COL_SPC_SPC_IFR_FLAG_RESVAL = 1'h0;
++  parameter logic [0:0] IM2COL_SPC_STATUS_RESVAL = 1'h 1;
++  parameter logic [0:0] IM2COL_SPC_STATUS_READY_RESVAL = 1'h 1;
++  parameter logic [0:0] IM2COL_SPC_SPC_IFR_RESVAL = 1'h 0;
++  parameter logic [0:0] IM2COL_SPC_SPC_IFR_FLAG_RESVAL = 1'h 0;
+ 
+   // Register index
+   typedef enum int {
+@@ -194,33 +238,33 @@ package im2col_spc_reg_pkg;
+   } im2col_spc_id_e;
+ 
+   // Register width information to check illegal writes
+-  parameter logic [3:0] IM2COL_SPC_PERMIT[26] = '{
+-      4'b1111,  // index[ 0] IM2COL_SPC_SRC_PTR
+-      4'b1111,  // index[ 1] IM2COL_SPC_DST_PTR
+-      4'b0011,  // index[ 2] IM2COL_SPC_IW
+-      4'b0011,  // index[ 3] IM2COL_SPC_IH
+-      4'b0001,  // index[ 4] IM2COL_SPC_FW
+-      4'b0001,  // index[ 5] IM2COL_SPC_FH
+-      4'b0001,  // index[ 6] IM2COL_SPC_BATCH
+-      4'b0001,  // index[ 7] IM2COL_SPC_NUM_CH
+-      4'b0011,  // index[ 8] IM2COL_SPC_CH_COL
+-      4'b0011,  // index[ 9] IM2COL_SPC_N_PATCHES_W
+-      4'b0011,  // index[10] IM2COL_SPC_N_PATCHES_H
+-      4'b0001,  // index[11] IM2COL_SPC_LAST_PATCH_H
+-      4'b0001,  // index[12] IM2COL_SPC_LAST_PATCH_W
+-      4'b0001,  // index[13] IM2COL_SPC_LOG_STRIDES_D1
+-      4'b0001,  // index[14] IM2COL_SPC_LOG_STRIDES_D2
+-      4'b0001,  // index[15] IM2COL_SPC_STATUS
+-      4'b1111,  // index[16] IM2COL_SPC_SLOT
+-      4'b0001,  // index[17] IM2COL_SPC_DATA_TYPE
+-      4'b0001,  // index[18] IM2COL_SPC_PAD_TOP
+-      4'b0001,  // index[19] IM2COL_SPC_PAD_BOTTOM
+-      4'b0001,  // index[20] IM2COL_SPC_PAD_RIGHT
+-      4'b0001,  // index[21] IM2COL_SPC_PAD_LEFT
+-      4'b0001,  // index[22] IM2COL_SPC_INTERRUPT_EN
+-      4'b0001,  // index[23] IM2COL_SPC_SPC_IFR
+-      4'b1111,  // index[24] IM2COL_SPC_SPC_CH_MASK
+-      4'b1111  // index[25] IM2COL_SPC_SPC_CH_OFFSET
++  parameter logic [3:0] IM2COL_SPC_PERMIT [26] = '{
++    4'b 1111, // index[ 0] IM2COL_SPC_SRC_PTR
++    4'b 1111, // index[ 1] IM2COL_SPC_DST_PTR
++    4'b 0011, // index[ 2] IM2COL_SPC_IW
++    4'b 0011, // index[ 3] IM2COL_SPC_IH
++    4'b 0001, // index[ 4] IM2COL_SPC_FW
++    4'b 0001, // index[ 5] IM2COL_SPC_FH
++    4'b 0001, // index[ 6] IM2COL_SPC_BATCH
++    4'b 0001, // index[ 7] IM2COL_SPC_NUM_CH
++    4'b 0011, // index[ 8] IM2COL_SPC_CH_COL
++    4'b 0011, // index[ 9] IM2COL_SPC_N_PATCHES_W
++    4'b 0011, // index[10] IM2COL_SPC_N_PATCHES_H
++    4'b 0001, // index[11] IM2COL_SPC_LAST_PATCH_H
++    4'b 0001, // index[12] IM2COL_SPC_LAST_PATCH_W
++    4'b 0001, // index[13] IM2COL_SPC_LOG_STRIDES_D1
++    4'b 0001, // index[14] IM2COL_SPC_LOG_STRIDES_D2
++    4'b 0001, // index[15] IM2COL_SPC_STATUS
++    4'b 1111, // index[16] IM2COL_SPC_SLOT
++    4'b 0001, // index[17] IM2COL_SPC_DATA_TYPE
++    4'b 0001, // index[18] IM2COL_SPC_PAD_TOP
++    4'b 0001, // index[19] IM2COL_SPC_PAD_BOTTOM
++    4'b 0001, // index[20] IM2COL_SPC_PAD_RIGHT
++    4'b 0001, // index[21] IM2COL_SPC_PAD_LEFT
++    4'b 0001, // index[22] IM2COL_SPC_INTERRUPT_EN
++    4'b 0001, // index[23] IM2COL_SPC_SPC_IFR
++    4'b 1111, // index[24] IM2COL_SPC_SPC_CH_MASK
++    4'b 1111  // index[25] IM2COL_SPC_SPC_CH_OFFSET
+   };
+ 
+ endpackage
+diff --git a/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_top.sv b/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_top.sv
+index 138c81d..bbfd5cd 100644
+--- a/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_top.sv
++++ b/hw/ip_examples/im2col_spc/rtl/im2col_spc_reg_top.sv
+@@ -8,44 +8,44 @@
+ `include "common_cells/assertions.svh"
+ 
+ module im2col_spc_reg_top #(
+-    parameter type reg_req_t = logic,
+-    parameter type reg_rsp_t = logic,
+-    parameter int AW = 7
++  parameter type reg_req_t = logic,
++  parameter type reg_rsp_t = logic,
++  parameter int AW = 7
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    input reg_req_t reg_req_i,
+-    output reg_rsp_t reg_rsp_o,
+-    // To HW
+-    output im2col_spc_reg_pkg::im2col_spc_reg2hw_t reg2hw,  // Write
+-    input im2col_spc_reg_pkg::im2col_spc_hw2reg_t hw2reg,  // Read
++  input logic clk_i,
++  input logic rst_ni,
++  input  reg_req_t reg_req_i,
++  output reg_rsp_t reg_rsp_o,
++  // To HW
++  output im2col_spc_reg_pkg::im2col_spc_reg2hw_t reg2hw, // Write
++  input  im2col_spc_reg_pkg::im2col_spc_hw2reg_t hw2reg, // Read
+ 
+ 
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+ 
+-  import im2col_spc_reg_pkg::*;
++  import im2col_spc_reg_pkg::* ;
+ 
+   localparam int DW = 32;
+-  localparam int DBW = DW / 8;  // Byte Width
++  localparam int DBW = DW/8;                    // Byte Width
+ 
+   // register signals
+-  logic               reg_we;
+-  logic               reg_re;
+-  logic [BlockAw-1:0] reg_addr;
+-  logic [     DW-1:0] reg_wdata;
+-  logic [    DBW-1:0] reg_be;
+-  logic [     DW-1:0] reg_rdata;
+-  logic               reg_error;
++  logic           reg_we;
++  logic           reg_re;
++  logic [BlockAw-1:0]  reg_addr;
++  logic [DW-1:0]  reg_wdata;
++  logic [DBW-1:0] reg_be;
++  logic [DW-1:0]  reg_rdata;
++  logic           reg_error;
+ 
+-  logic addrmiss, wr_err;
++  logic          addrmiss, wr_err;
+ 
+   logic [DW-1:0] reg_rdata_next;
+ 
+   // Below register interface can be changed
+-  reg_req_t reg_intf_req;
+-  reg_rsp_t reg_intf_rsp;
++  reg_req_t  reg_intf_req;
++  reg_rsp_t  reg_intf_rsp;
+ 
+ 
+   assign reg_intf_req = reg_req_i;
+@@ -61,7 +61,7 @@ module im2col_spc_reg_top #(
+   assign reg_intf_rsp.error = reg_error;
+   assign reg_intf_rsp.ready = 1'b1;
+ 
+-  assign reg_rdata = reg_rdata_next;
++  assign reg_rdata = reg_rdata_next ;
+   assign reg_error = (devmode_i & addrmiss) | wr_err;
+ 
+ 
+@@ -152,421 +152,421 @@ module im2col_spc_reg_top #(
+   // R[src_ptr]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h0)
+   ) u_src_ptr (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(src_ptr_we),
+-      .wd(src_ptr_wd),
++    // from register interface
++    .we     (src_ptr_we),
++    .wd     (src_ptr_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.src_ptr.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.src_ptr.q ),
+ 
+-      // to register interface (read)
+-      .qs(src_ptr_qs)
++    // to register interface (read)
++    .qs     (src_ptr_qs)
+   );
+ 
+ 
+   // R[dst_ptr]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h0)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h0)
+   ) u_dst_ptr (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(dst_ptr_we),
+-      .wd(dst_ptr_wd),
++    // from register interface
++    .we     (dst_ptr_we),
++    .wd     (dst_ptr_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.dst_ptr.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.dst_ptr.q ),
+ 
+-      // to register interface (read)
+-      .qs(dst_ptr_qs)
++    // to register interface (read)
++    .qs     (dst_ptr_qs)
+   );
+ 
+ 
+   // R[iw]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_iw (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(iw_we),
+-      .wd(iw_wd),
++    // from register interface
++    .we     (iw_we),
++    .wd     (iw_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.iw.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.iw.q ),
+ 
+-      // to register interface (read)
+-      .qs(iw_qs)
++    // to register interface (read)
++    .qs     (iw_qs)
+   );
+ 
+ 
+   // R[ih]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_ih (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(ih_we),
+-      .wd(ih_wd),
++    // from register interface
++    .we     (ih_we),
++    .wd     (ih_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.ih.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.ih.q ),
+ 
+-      // to register interface (read)
+-      .qs(ih_qs)
++    // to register interface (read)
++    .qs     (ih_qs)
+   );
+ 
+ 
+   // R[fw]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_fw (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(fw_we),
+-      .wd(fw_wd),
++    // from register interface
++    .we     (fw_we),
++    .wd     (fw_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.fw.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.fw.q ),
+ 
+-      // to register interface (read)
+-      .qs(fw_qs)
++    // to register interface (read)
++    .qs     (fw_qs)
+   );
+ 
+ 
+   // R[fh]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_fh (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(fh_we),
+-      .wd(fh_wd),
++    // from register interface
++    .we     (fh_we),
++    .wd     (fh_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.fh.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.fh.q ),
+ 
+-      // to register interface (read)
+-      .qs(fh_qs)
++    // to register interface (read)
++    .qs     (fh_qs)
+   );
+ 
+ 
+   // R[batch]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_batch (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(batch_we),
+-      .wd(batch_wd),
++    // from register interface
++    .we     (batch_we),
++    .wd     (batch_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.batch.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.batch.q ),
+ 
+-      // to register interface (read)
+-      .qs(batch_qs)
++    // to register interface (read)
++    .qs     (batch_qs)
+   );
+ 
+ 
+   // R[num_ch]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_num_ch (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(num_ch_we),
+-      .wd(num_ch_wd),
++    // from register interface
++    .we     (num_ch_we),
++    .wd     (num_ch_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.num_ch.qe),
+-      .q (reg2hw.num_ch.q),
++    // to internal hardware
++    .qe     (reg2hw.num_ch.qe),
++    .q      (reg2hw.num_ch.q ),
+ 
+-      // to register interface (read)
+-      .qs(num_ch_qs)
++    // to register interface (read)
++    .qs     (num_ch_qs)
+   );
+ 
+ 
+   // R[ch_col]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_ch_col (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(ch_col_we),
+-      .wd(ch_col_wd),
++    // from register interface
++    .we     (ch_col_we),
++    .wd     (ch_col_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.ch_col.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.ch_col.q ),
+ 
+-      // to register interface (read)
+-      .qs(ch_col_qs)
++    // to register interface (read)
++    .qs     (ch_col_qs)
+   );
+ 
+ 
+   // R[n_patches_w]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_n_patches_w (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(n_patches_w_we),
+-      .wd(n_patches_w_wd),
++    // from register interface
++    .we     (n_patches_w_we),
++    .wd     (n_patches_w_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.n_patches_w.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.n_patches_w.q ),
+ 
+-      // to register interface (read)
+-      .qs(n_patches_w_qs)
++    // to register interface (read)
++    .qs     (n_patches_w_qs)
+   );
+ 
+ 
+   // R[n_patches_h]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_n_patches_h (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(n_patches_h_we),
+-      .wd(n_patches_h_wd),
++    // from register interface
++    .we     (n_patches_h_we),
++    .wd     (n_patches_h_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.n_patches_h.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.n_patches_h.q ),
+ 
+-      // to register interface (read)
+-      .qs(n_patches_h_qs)
++    // to register interface (read)
++    .qs     (n_patches_h_qs)
+   );
+ 
+ 
+   // R[last_patch_h]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_last_patch_h (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(last_patch_h_we),
+-      .wd(last_patch_h_wd),
++    // from register interface
++    .we     (last_patch_h_we),
++    .wd     (last_patch_h_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.last_patch_h.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.last_patch_h.q ),
+ 
+-      // to register interface (read)
+-      .qs(last_patch_h_qs)
++    // to register interface (read)
++    .qs     (last_patch_h_qs)
+   );
+ 
+ 
+   // R[last_patch_w]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (8),
+-      .SWACCESS("RW"),
+-      .RESVAL  (8'h0)
++    .DW      (8),
++    .SWACCESS("RW"),
++    .RESVAL  (8'h0)
+   ) u_last_patch_w (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(last_patch_w_we),
+-      .wd(last_patch_w_wd),
++    // from register interface
++    .we     (last_patch_w_we),
++    .wd     (last_patch_w_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.last_patch_w.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.last_patch_w.q ),
+ 
+-      // to register interface (read)
+-      .qs(last_patch_w_qs)
++    // to register interface (read)
++    .qs     (last_patch_w_qs)
+   );
+ 
+ 
+   // R[log_strides_d1]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (4),
+-      .SWACCESS("RW"),
+-      .RESVAL  (4'h0)
++    .DW      (4),
++    .SWACCESS("RW"),
++    .RESVAL  (4'h0)
+   ) u_log_strides_d1 (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(log_strides_d1_we),
+-      .wd(log_strides_d1_wd),
++    // from register interface
++    .we     (log_strides_d1_we),
++    .wd     (log_strides_d1_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.log_strides_d1.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.log_strides_d1.q ),
+ 
+-      // to register interface (read)
+-      .qs(log_strides_d1_qs)
++    // to register interface (read)
++    .qs     (log_strides_d1_qs)
+   );
+ 
+ 
+   // R[log_strides_d2]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (4),
+-      .SWACCESS("RW"),
+-      .RESVAL  (4'h0)
++    .DW      (4),
++    .SWACCESS("RW"),
++    .RESVAL  (4'h0)
+   ) u_log_strides_d2 (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(log_strides_d2_we),
+-      .wd(log_strides_d2_wd),
++    // from register interface
++    .we     (log_strides_d2_we),
++    .wd     (log_strides_d2_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.log_strides_d2.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.log_strides_d2.q ),
+ 
+-      // to register interface (read)
+-      .qs(log_strides_d2_qs)
++    // to register interface (read)
++    .qs     (log_strides_d2_qs)
+   );
+ 
+ 
+   // R[status]: V(True)
+ 
+   prim_subreg_ext #(
+-      .DW(1)
++    .DW    (1)
+   ) u_status (
+-      .re (status_re),
+-      .we (1'b0),
+-      .wd ('0),
+-      .d  (hw2reg.status.d),
+-      .qre(reg2hw.status.re),
+-      .qe (),
+-      .q  (reg2hw.status.q),
+-      .qs (status_qs)
++    .re     (status_re),
++    .we     (1'b0),
++    .wd     ('0),
++    .d      (hw2reg.status.d),
++    .qre    (reg2hw.status.re),
++    .qe     (),
++    .q      (reg2hw.status.q ),
++    .qs     (status_qs)
+   );
+ 
+ 
+@@ -574,285 +574,285 @@ module im2col_spc_reg_top #(
+ 
+   //   F[rx_trigger_slot]: 15:0
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_slot_rx_trigger_slot (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(slot_rx_trigger_slot_we),
+-      .wd(slot_rx_trigger_slot_wd),
++    // from register interface
++    .we     (slot_rx_trigger_slot_we),
++    .wd     (slot_rx_trigger_slot_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.slot.rx_trigger_slot.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.slot.rx_trigger_slot.q ),
+ 
+-      // to register interface (read)
+-      .qs(slot_rx_trigger_slot_qs)
++    // to register interface (read)
++    .qs     (slot_rx_trigger_slot_qs)
+   );
+ 
+ 
+   //   F[tx_trigger_slot]: 31:16
+   prim_subreg #(
+-      .DW      (16),
+-      .SWACCESS("RW"),
+-      .RESVAL  (16'h0)
++    .DW      (16),
++    .SWACCESS("RW"),
++    .RESVAL  (16'h0)
+   ) u_slot_tx_trigger_slot (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(slot_tx_trigger_slot_we),
+-      .wd(slot_tx_trigger_slot_wd),
++    // from register interface
++    .we     (slot_tx_trigger_slot_we),
++    .wd     (slot_tx_trigger_slot_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.slot.tx_trigger_slot.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.slot.tx_trigger_slot.q ),
+ 
+-      // to register interface (read)
+-      .qs(slot_tx_trigger_slot_qs)
++    // to register interface (read)
++    .qs     (slot_tx_trigger_slot_qs)
+   );
+ 
+ 
+   // R[data_type]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (2),
+-      .SWACCESS("RW"),
+-      .RESVAL  (2'h0)
++    .DW      (2),
++    .SWACCESS("RW"),
++    .RESVAL  (2'h0)
+   ) u_data_type (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(data_type_we),
+-      .wd(data_type_wd),
++    // from register interface
++    .we     (data_type_we),
++    .wd     (data_type_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.data_type.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.data_type.q ),
+ 
+-      // to register interface (read)
+-      .qs(data_type_qs)
++    // to register interface (read)
++    .qs     (data_type_qs)
+   );
+ 
+ 
+   // R[pad_top]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (6),
+-      .SWACCESS("RW"),
+-      .RESVAL  (6'h0)
++    .DW      (6),
++    .SWACCESS("RW"),
++    .RESVAL  (6'h0)
+   ) u_pad_top (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(pad_top_we),
+-      .wd(pad_top_wd),
++    // from register interface
++    .we     (pad_top_we),
++    .wd     (pad_top_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.pad_top.qe),
+-      .q (reg2hw.pad_top.q),
++    // to internal hardware
++    .qe     (reg2hw.pad_top.qe),
++    .q      (reg2hw.pad_top.q ),
+ 
+-      // to register interface (read)
+-      .qs(pad_top_qs)
++    // to register interface (read)
++    .qs     (pad_top_qs)
+   );
+ 
+ 
+   // R[pad_bottom]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (6),
+-      .SWACCESS("RW"),
+-      .RESVAL  (6'h0)
++    .DW      (6),
++    .SWACCESS("RW"),
++    .RESVAL  (6'h0)
+   ) u_pad_bottom (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(pad_bottom_we),
+-      .wd(pad_bottom_wd),
++    // from register interface
++    .we     (pad_bottom_we),
++    .wd     (pad_bottom_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.pad_bottom.qe),
+-      .q (reg2hw.pad_bottom.q),
++    // to internal hardware
++    .qe     (reg2hw.pad_bottom.qe),
++    .q      (reg2hw.pad_bottom.q ),
+ 
+-      // to register interface (read)
+-      .qs(pad_bottom_qs)
++    // to register interface (read)
++    .qs     (pad_bottom_qs)
+   );
+ 
+ 
+   // R[pad_right]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (6),
+-      .SWACCESS("RW"),
+-      .RESVAL  (6'h0)
++    .DW      (6),
++    .SWACCESS("RW"),
++    .RESVAL  (6'h0)
+   ) u_pad_right (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(pad_right_we),
+-      .wd(pad_right_wd),
++    // from register interface
++    .we     (pad_right_we),
++    .wd     (pad_right_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.pad_right.qe),
+-      .q (reg2hw.pad_right.q),
++    // to internal hardware
++    .qe     (reg2hw.pad_right.qe),
++    .q      (reg2hw.pad_right.q ),
+ 
+-      // to register interface (read)
+-      .qs(pad_right_qs)
++    // to register interface (read)
++    .qs     (pad_right_qs)
+   );
+ 
+ 
+   // R[pad_left]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (6),
+-      .SWACCESS("RW"),
+-      .RESVAL  (6'h0)
++    .DW      (6),
++    .SWACCESS("RW"),
++    .RESVAL  (6'h0)
+   ) u_pad_left (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(pad_left_we),
+-      .wd(pad_left_wd),
++    // from register interface
++    .we     (pad_left_we),
++    .wd     (pad_left_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(reg2hw.pad_left.qe),
+-      .q (reg2hw.pad_left.q),
++    // to internal hardware
++    .qe     (reg2hw.pad_left.qe),
++    .q      (reg2hw.pad_left.q ),
+ 
+-      // to register interface (read)
+-      .qs(pad_left_qs)
++    // to register interface (read)
++    .qs     (pad_left_qs)
+   );
+ 
+ 
+   // R[interrupt_en]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (1),
+-      .SWACCESS("RW"),
+-      .RESVAL  (1'h0)
++    .DW      (1),
++    .SWACCESS("RW"),
++    .RESVAL  (1'h0)
+   ) u_interrupt_en (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(interrupt_en_we),
+-      .wd(interrupt_en_wd),
++    // from register interface
++    .we     (interrupt_en_we),
++    .wd     (interrupt_en_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.interrupt_en.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.interrupt_en.q ),
+ 
+-      // to register interface (read)
+-      .qs(interrupt_en_qs)
++    // to register interface (read)
++    .qs     (interrupt_en_qs)
+   );
+ 
+ 
+   // R[spc_ifr]: V(True)
+ 
+   prim_subreg_ext #(
+-      .DW(1)
++    .DW    (1)
+   ) u_spc_ifr (
+-      .re (spc_ifr_re),
+-      .we (1'b0),
+-      .wd ('0),
+-      .d  (hw2reg.spc_ifr.d),
+-      .qre(reg2hw.spc_ifr.re),
+-      .qe (),
+-      .q  (reg2hw.spc_ifr.q),
+-      .qs (spc_ifr_qs)
++    .re     (spc_ifr_re),
++    .we     (1'b0),
++    .wd     ('0),
++    .d      (hw2reg.spc_ifr.d),
++    .qre    (reg2hw.spc_ifr.re),
++    .qe     (),
++    .q      (reg2hw.spc_ifr.q ),
++    .qs     (spc_ifr_qs)
+   );
+ 
+ 
+   // R[spc_ch_mask]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h1)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h1)
+   ) u_spc_ch_mask (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(spc_ch_mask_we),
+-      .wd(spc_ch_mask_wd),
++    // from register interface
++    .we     (spc_ch_mask_we),
++    .wd     (spc_ch_mask_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.spc_ch_mask.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.spc_ch_mask.q ),
+ 
+-      // to register interface (read)
+-      .qs(spc_ch_mask_qs)
++    // to register interface (read)
++    .qs     (spc_ch_mask_qs)
+   );
+ 
+ 
+   // R[spc_ch_offset]: V(False)
+ 
+   prim_subreg #(
+-      .DW      (32),
+-      .SWACCESS("RW"),
+-      .RESVAL  (32'h1)
++    .DW      (32),
++    .SWACCESS("RW"),
++    .RESVAL  (32'h1)
+   ) u_spc_ch_offset (
+-      .clk_i (clk_i),
+-      .rst_ni(rst_ni),
++    .clk_i   (clk_i    ),
++    .rst_ni  (rst_ni  ),
+ 
+-      // from register interface
+-      .we(spc_ch_offset_we),
+-      .wd(spc_ch_offset_wd),
++    // from register interface
++    .we     (spc_ch_offset_we),
++    .wd     (spc_ch_offset_wd),
+ 
+-      // from internal hardware
+-      .de(1'b0),
+-      .d ('0),
++    // from internal hardware
++    .de     (1'b0),
++    .d      ('0  ),
+ 
+-      // to internal hardware
+-      .qe(),
+-      .q (reg2hw.spc_ch_offset.q),
++    // to internal hardware
++    .qe     (),
++    .q      (reg2hw.spc_ch_offset.q ),
+ 
+-      // to register interface (read)
+-      .qs(spc_ch_offset_qs)
++    // to register interface (read)
++    .qs     (spc_ch_offset_qs)
+   );
+ 
+ 
+@@ -861,16 +861,16 @@ module im2col_spc_reg_top #(
+   logic [25:0] addr_hit;
+   always_comb begin
+     addr_hit = '0;
+-    addr_hit[0] = (reg_addr == IM2COL_SPC_SRC_PTR_OFFSET);
+-    addr_hit[1] = (reg_addr == IM2COL_SPC_DST_PTR_OFFSET);
+-    addr_hit[2] = (reg_addr == IM2COL_SPC_IW_OFFSET);
+-    addr_hit[3] = (reg_addr == IM2COL_SPC_IH_OFFSET);
+-    addr_hit[4] = (reg_addr == IM2COL_SPC_FW_OFFSET);
+-    addr_hit[5] = (reg_addr == IM2COL_SPC_FH_OFFSET);
+-    addr_hit[6] = (reg_addr == IM2COL_SPC_BATCH_OFFSET);
+-    addr_hit[7] = (reg_addr == IM2COL_SPC_NUM_CH_OFFSET);
+-    addr_hit[8] = (reg_addr == IM2COL_SPC_CH_COL_OFFSET);
+-    addr_hit[9] = (reg_addr == IM2COL_SPC_N_PATCHES_W_OFFSET);
++    addr_hit[ 0] = (reg_addr == IM2COL_SPC_SRC_PTR_OFFSET);
++    addr_hit[ 1] = (reg_addr == IM2COL_SPC_DST_PTR_OFFSET);
++    addr_hit[ 2] = (reg_addr == IM2COL_SPC_IW_OFFSET);
++    addr_hit[ 3] = (reg_addr == IM2COL_SPC_IH_OFFSET);
++    addr_hit[ 4] = (reg_addr == IM2COL_SPC_FW_OFFSET);
++    addr_hit[ 5] = (reg_addr == IM2COL_SPC_FH_OFFSET);
++    addr_hit[ 6] = (reg_addr == IM2COL_SPC_BATCH_OFFSET);
++    addr_hit[ 7] = (reg_addr == IM2COL_SPC_NUM_CH_OFFSET);
++    addr_hit[ 8] = (reg_addr == IM2COL_SPC_CH_COL_OFFSET);
++    addr_hit[ 9] = (reg_addr == IM2COL_SPC_N_PATCHES_W_OFFSET);
+     addr_hit[10] = (reg_addr == IM2COL_SPC_N_PATCHES_H_OFFSET);
+     addr_hit[11] = (reg_addr == IM2COL_SPC_LAST_PATCH_H_OFFSET);
+     addr_hit[12] = (reg_addr == IM2COL_SPC_LAST_PATCH_W_OFFSET);
+@@ -889,7 +889,7 @@ module im2col_spc_reg_top #(
+     addr_hit[25] = (reg_addr == IM2COL_SPC_SPC_CH_OFFSET_OFFSET);
+   end
+ 
+-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
++  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
+ 
+   // Check sub-word write is permitted
+   always_comb begin
+@@ -1070,7 +1070,7 @@ module im2col_spc_reg_top #(
+       end
+ 
+       addr_hit[16]: begin
+-        reg_rdata_next[15:0]  = slot_rx_trigger_slot_qs;
++        reg_rdata_next[15:0] = slot_rx_trigger_slot_qs;
+         reg_rdata_next[31:16] = slot_tx_trigger_slot_qs;
+       end
+ 
+@@ -1130,23 +1130,24 @@ module im2col_spc_reg_top #(
+ 
+ endmodule
+ 
+-module im2col_spc_reg_top_intf #(
+-    parameter  int AW = 7,
+-    localparam int DW = 32
++module im2col_spc_reg_top_intf
++#(
++  parameter int AW = 7,
++  localparam int DW = 32
+ ) (
+-    input logic clk_i,
+-    input logic rst_ni,
+-    REG_BUS.in regbus_slave,
+-    // To HW
+-    output im2col_spc_reg_pkg::im2col_spc_reg2hw_t reg2hw,  // Write
+-    input im2col_spc_reg_pkg::im2col_spc_hw2reg_t hw2reg,  // Read
+-    // Config
+-    input devmode_i  // If 1, explicit error return for unmapped register access
++  input logic clk_i,
++  input logic rst_ni,
++  REG_BUS.in  regbus_slave,
++  // To HW
++  output im2col_spc_reg_pkg::im2col_spc_reg2hw_t reg2hw, // Write
++  input  im2col_spc_reg_pkg::im2col_spc_hw2reg_t hw2reg, // Read
++  // Config
++  input devmode_i // If 1, explicit error return for unmapped register access
+ );
+-  localparam int unsigned STRB_WIDTH = DW / 8;
++ localparam int unsigned STRB_WIDTH = DW/8;
+ 
+-  `include "register_interface/typedef.svh"
+-  `include "register_interface/assign.svh"
++`include "register_interface/typedef.svh"
++`include "register_interface/assign.svh"
+ 
+   // Define structs for reg_bus
+   typedef logic [AW-1:0] addr_t;
+@@ -1156,27 +1157,27 @@ module im2col_spc_reg_top_intf #(
+ 
+   reg_bus_req_t s_reg_req;
+   reg_bus_rsp_t s_reg_rsp;
+-
++  
+   // Assign SV interface to structs
+   `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+   `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+ 
+-
++  
+ 
+   im2col_spc_reg_top #(
+-      .reg_req_t(reg_bus_req_t),
+-      .reg_rsp_t(reg_bus_rsp_t),
+-      .AW(AW)
++    .reg_req_t(reg_bus_req_t),
++    .reg_rsp_t(reg_bus_rsp_t),
++    .AW(AW)
+   ) i_regs (
+-      .clk_i,
+-      .rst_ni,
+-      .reg_req_i(s_reg_req),
+-      .reg_rsp_o(s_reg_rsp),
+-      .reg2hw,  // Write
+-      .hw2reg,  // Read
+-      .devmode_i
++    .clk_i,
++    .rst_ni,
++    .reg_req_i(s_reg_req),
++    .reg_rsp_o(s_reg_rsp),
++    .reg2hw, // Write
++    .hw2reg, // Read
++    .devmode_i
+   );
+-
++  
+ endmodule
+ 
+ 
+diff --git a/hw/system/x_heep_system.sv.tpl b/hw/system/x_heep_system.sv.tpl
+index da2b975..f8c5ffc 100644
+--- a/hw/system/x_heep_system.sv.tpl
++++ b/hw/system/x_heep_system.sv.tpl
+@@ -101,6 +101,13 @@ module x_heep_system #(
+     // External SPC interface
+     output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o,
+ 
++`ifdef USE_CIM_MIC
++    // HopCIM live audio path (hw/ip/hopcim, R7): it drives the PDM clock pad and receives the
++    // PDM data pad; X-HEEP's pdm2pcm keeps the data but no longer drives the clock
++    input  logic cim_pdm_clk_i,
++    output logic cim_pdm_data_o,
++`endif
++
+     % for pad in xheep.get_padring().pad_list:
+       <%
+       has_input_pin = any(isinstance(pin, Input) for pin in pad.pins)
+@@ -240,6 +247,10 @@ module x_heep_system #(
+ <%
+ analog_signal_pads = [ pad for pad in xheep.get_padring().pad_list if any(isinstance(pin, Asignal) for pin in pad.pins) ] 
+ %>
++`ifdef USE_CIM_MIC
++  assign cim_pdm_data_o = pdm2pcm_pdm_in_x_muxed;
++`endif
++
+   pad_ring pad_ring_i (
+     % for pad in xheep.get_padring().pad_list:
+       <%
+@@ -252,7 +263,17 @@ analog_signal_pads = [ pad for pad in xheep.get_padring().pad_list if any(isinst
+       pin0_name = pad.pins[0].rtl_name()
+       muxed_string = "_muxed" if pad.is_muxed() else ""
+       %>\
+-      % if has_inout_pin or (has_input_pin and has_output_pin):
++      % if pin0_name == "pdm2pcm_clk_":
++`ifdef USE_CIM_MIC
++        .pdm2pcm_clk_i(cim_pdm_clk_i),
++        .pdm2pcm_clk_oe_i(1'b1),
++`else
++        .${pin0_name}i(${pin0_name}out_x${muxed_string}),
++        .${pin0_name}oe_i(${pin0_name}oe_x${muxed_string}),
++`endif
++        .${pin0_name}o(${pin0_name}in_x${muxed_string}),
++        .${pin0_name}io(${pin0_name}io),
++      % elif has_inout_pin or (has_input_pin and has_output_pin):
+         .${pin0_name}i(${pin0_name}out_x${muxed_string}),
+         .${pin0_name}oe_i(${pin0_name}oe_x${muxed_string}),
+         .${pin0_name}o(${pin0_name}in_x${muxed_string}),
+diff --git a/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv b/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
+index 5fe5d86..a349933 100644
+--- a/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
++++ b/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
+@@ -44,6 +44,16 @@ module dmi_jtag_tap #(
+   input  logic        dmi_tdo_i
+ );
+ 
++  // Local patch (HopCIM): TCK is put on a global buffer. Left on local routing, its skew across
++  // the DTM registers is unchecked, and a placement change (e.g. a larger design) can break the
++  // debug module (OpenOCD: "Debug Module did not become active"). See constraints/common/bscan.xdc.
++  logic tck_bscan;
++
++  BUFG i_tck_bufg (
++    .I (tck_bscan),
++    .O (tck_o)
++  );
++
+   BSCANE2 #(
+     .JTAG_CHAIN (3)
+   ) i_tap_dtmcs (
+@@ -53,7 +63,7 @@ module dmi_jtag_tap #(
+     .RUNTEST (),
+     .SEL (dtmcs_select_o),
+     .SHIFT (shift_o),
+-    .TCK (tck_o),
++    .TCK (tck_bscan),
+     .TDI (tdi_o),
+     .TMS (),
+     .TDO (dtmcs_tdo_i),
+diff --git a/hw/vendor/xheep/spi/rtl/w25q128jw_controller/rtl/w25q128jw_controller.sv b/hw/vendor/xheep/spi/rtl/w25q128jw_controller/rtl/w25q128jw_controller.sv
+index 2b56b5f..d0fe457 100644
+--- a/hw/vendor/xheep/spi/rtl/w25q128jw_controller/rtl/w25q128jw_controller.sv
++++ b/hw/vendor/xheep/spi/rtl/w25q128jw_controller/rtl/w25q128jw_controller.sv
+@@ -84,6 +84,7 @@ module w25q128jw_controller
+                             + {{(32-w25q128jw_controller_reg_pkg::BlockAw){1'b0}}, W25Q128JW_CONTROLLER_CACHE_DATA_OFFSET};
+ 
+   // ============== PACKAGE FUNCTIONS ==============
++  /* verilator lint_off UNUSEDSIGNAL */
+   function automatic void set_dma_regs(
+       input logic [31:0] src_ptr, input logic [31:0] dst_ptr, input logic [31:0] src_ptr_inc,
+       input logic [31:0] dst_ptr_inc, input logic [1:0] src_data_type, dst_data_type,
+@@ -121,6 +122,7 @@ module w25q128jw_controller
+     external_dma_hw2reg_o.size_d1.de = 1'b1;
+     external_dma_hw2reg_o.size_d1.d = size_d1;
+   endfunction
++  /* verilator lint_on UNUSEDSIGNAL */
+ 
+   // ============================================================================
+   // W25Q128JW CONTROLLER FSM
+diff --git a/sw/CMakeLists.txt b/sw/CMakeLists.txt
+index 08dc5b1..42cedc8 100644
+--- a/sw/CMakeLists.txt
++++ b/sw/CMakeLists.txt
+@@ -364,6 +364,9 @@ else()
+     -DportasmHANDLE_INTERRUPT=vSystemIrqHandler\
+   ")
+ endif()
++if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "rv32")
++  set(BASE_COMPILER_FLAGS "${BASE_COMPILER_FLAGS} -mabi=ilp32")
++endif()
+ set(CMAKE_C_FLAGS ${BASE_COMPILER_FLAGS})
+ set(CMAKE_CXX_FLAGS ${BASE_COMPILER_FLAGS})
+ set(CMAKE_ASM_FLAGS ${BASE_COMPILER_FLAGS})
+@@ -450,11 +453,12 @@ else()
+   message (STATUS "${Magenta}Using GCC specific linker flags${ColourReset}")
+   # Linker control
+   SET(CMAKE_EXE_LINKER_FLAGS  "-T ${LINKER_SCRIPT}  \
++                              -march=${CMAKE_SYSTEM_PROCESSOR} \
++                              -mabi=ilp32 \
+                               -static \
+                               -Wl,-Map=${MAINFILE}.map \
+                               -Wl,--gc-sections \
+-                              -L ${RISCV_XHEEP}/${COMPILER_PREFIX}elf/lib \
+-                              -lc -lm -lgcc -flto \
++                              -lc -lm -lgcc \
+                               -fpermissive -fno-rtti -fno-exceptions -fno-threadsafe-statics \
+                               -ffunction-sections -fdata-sections -specs=nano.specs")
+ endif()
+diff --git a/sw/cmake/riscv.cmake b/sw/cmake/riscv.cmake
+index dfd3984..ad60fe1 100644
+--- a/sw/cmake/riscv.cmake
++++ b/sw/cmake/riscv.cmake
+@@ -14,8 +14,8 @@
+ 
+ # Author: Jose Miranda (jose.mirandacalero@epfl.ch)
+ 
+-# set(RISCV_XHEEP  /home/$ENV{USER}/tools/riscv)
+-set(RISCV_GITHUB_GCC_COMPILER  $ENV{RISCV_XHEEP}/bin/$ENV{COMPILER_PREFIX}elf-gcc)
++string(REGEX REPLACE "elf-$" "" CLEAN_COMPILER_PREFIX "$ENV{COMPILER_PREFIX}")
++set(RISCV_GITHUB_GCC_COMPILER  $ENV{RISCV_XHEEP}/bin/${CLEAN_COMPILER_PREFIX}elf-gcc)
+ set(RISCV_GITHUB_CLANG_COMPILER  $ENV{RISCV_XHEEP}/bin/clang)
+ #message("RISC-V GCC cross-compiler is in : ${RISCV_GCC_COMPILER}") 
+ 
+@@ -52,8 +52,10 @@ endif()
+ # The Generic system name is used for embedded targets (targets without OS) in
+ # CMake
+ set( CMAKE_SYSTEM_NAME          Generic )
+-set( CMAKE_SYSTEM_PROCESSOR     $ENV{ARCH} 
+-     CACHE STRING "Generate code for given RISC-V ISA string")
++set( CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY" )
++string(REGEX REPLACE "_zicsr" "" ARCH_FOR_GCC "$ENV{ARCH}")
++set( CMAKE_SYSTEM_PROCESSOR     ${ARCH_FOR_GCC} 
++     CACHE STRING "Generate code for given RISC-V ISA string" FORCE)
+ set( CMAKE_EXECUTABLE_SUFFIX    ".elf")
+ 
+ # specify the cross compiler. We force the compiler so that CMake doesn't
+@@ -102,6 +104,9 @@ endif()
+ # specify the C standard
+ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g" )
+ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=${CMAKE_SYSTEM_PROCESSOR} ${COMPILER_FLAGS}" )
++if ("$ENV{ARCH}" MATCHES "rv32")
++     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mabi=ilp32" )
++endif()
+ if ($ENV{COMPILER} MATCHES "clang")
+      set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument --target=riscv32 --gcc-toolchain=$ENV{RISCV_XHEEP} --sysroot=$ENV{RISCV_XHEEP}/$ENV{COMPILER_PREFIX}elf" )
+ endif()
+diff --git a/sw/device/target/nexys-a7-100t/x-heep.h b/sw/device/target/nexys-a7-100t/x-heep.h
+index b53fe4b..69936ff 100644
+--- a/sw/device/target/nexys-a7-100t/x-heep.h
++++ b/sw/device/target/nexys-a7-100t/x-heep.h
+@@ -12,7 +12,9 @@ extern "C" {
+ #endif  // __cplusplus
+ 
+ 
+-#define REFERENCE_CLOCK_Hz (15*1000*1000) // 15 MHz for FPGA synthesis
++#ifndef REFERENCE_CLOCK_Hz                   // the HopCIM live-audio build (use_cim_mic) runs at 15.36 MHz:
++#define REFERENCE_CLOCK_Hz (15*1000*1000)    // make app COMPILER_FLAGS=-DREFERENCE_CLOCK_Hz=15360000
++#endif                                       // 15 MHz for FPGA synthesis
+ #define UART_BAUDRATE 9600
+ // Calculation formula: NCO = 16 * 2^nco_width * baud / fclk.
+ // Note that this will be calculated at compile time, so no 64-bit operations will be performed in CPU.
+diff --git a/tb/tb_top.cpp b/tb/tb_top.cpp
+index 52416aa..c565caa 100644
+--- a/tb/tb_top.cpp
++++ b/tb/tb_top.cpp
+@@ -19,7 +19,7 @@ void runCycles(unsigned int ncycles, Vtestharness *dut, VerilatedFstC *m_trace){
+     sim_time += CLK_PERIOD_ps/2;
+     dut->clk_i ^= 1;
+     dut->eval();
+-    m_trace->dump(sim_time);
++    if (m_trace) m_trace->dump(sim_time);
+   }
+ }
+ 
+@@ -38,10 +38,14 @@ int main (int argc, char * argv[])
+   Vtestharness *dut = new Vtestharness;
+ 
+   // Open VCD
+-  Verilated::traceEverOn (true);
+-  VerilatedFstC *m_trace = new VerilatedFstC;
+-  dut->trace (m_trace, 99);
+-  m_trace->open ("waveform.fst");
++  // Set XHEEP_NO_TRACE=1 to skip waveform dumping (much faster runs).
++  VerilatedFstC *m_trace = nullptr;
++  if (getenv("XHEEP_NO_TRACE") == nullptr) {
++    Verilated::traceEverOn (true);
++    m_trace = new VerilatedFstC;
++    dut->trace (m_trace, 99);
++    m_trace->open ("waveform.fst");
++  }
+ 
+   XHEEP_CmdLineOptions* cmd_lines_options = new XHEEP_CmdLineOptions(argc,argv);
+ 
+@@ -72,7 +76,7 @@ int main (int argc, char * argv[])
+   dut->jtag_tdi_i           = 0;
+ 
+   dut->eval();
+-  m_trace->dump(sim_time);
++  if (m_trace) m_trace->dump(sim_time);
+ 
+   dut->rst_ni               = 1;
+   dut->boot_select_i        = boot_sel;
+@@ -128,7 +132,7 @@ int main (int argc, char * argv[])
+     exit_val = 2; // exit 2 to indicate successful run but premature termination
+   }
+ 
+-  m_trace->close();
++  if (m_trace) m_trace->close();
+   delete dut;
+   delete cmd_lines_options;
+ 
+diff --git a/tb/x-heep-tb-utils.core b/tb/x-heep-tb-utils.core
+index c336492..337c558 100644
+--- a/tb/x-heep-tb-utils.core
++++ b/tb/x-heep-tb-utils.core
+@@ -23,6 +23,7 @@ filesets:
+     - example:ip:dlc
+     - x-heep:ip:serial_link_xheep_wrapper
+     - use_hls_example ? (epfl:ip:dot_product)
++    - use_cim ? (hopcim:ip:cim_endpoint)
+ 
+   files_verilator_waiver:
+     files:
+diff --git a/util/waiver-gen.py b/util/waiver-gen.py
+index 3f85842..5d41838 100644
+--- a/util/waiver-gen.py
++++ b/util/waiver-gen.py
+@@ -18,7 +18,7 @@ def get_verilator_major_version():
+             ["verilator", "--version"], capture_output=True, text=True, check=True
+         )
+         output = result.stdout
+-        match = re.search(r"rev v(\d+)\.\d+", output)
++        match = re.search(r"(?:Verilator |rev v)(\d+)\.\d+", output)
+ 
+         if not match:
+             print(

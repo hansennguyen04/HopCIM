@@ -1,0 +1,4 @@
+per frame (mean over 49): samples 4205, lraw readback 400, finish 2105 CPU cycles
+front-end go->done 8613 cycles (max 8613); CPU-active excl. front-end 6710 cycles/frame
+HopCIM FE: 49 frames, lraw mismatches 0, feature mismatches 0 -> PASS
+done

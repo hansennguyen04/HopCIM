@@ -1,0 +1,4 @@
+cycles: tile load 2309 (256 words), X load 580 (64 words), readback 211 (32 words)
+cycles: go->done b1 35, b8 36, b16 49, b24 57; chain of 8 b8 passes 144
+CIM smoke: 16 passes, 0 errors -> PASS
+done

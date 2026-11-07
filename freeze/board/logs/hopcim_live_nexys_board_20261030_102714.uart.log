@@ -1,0 +1,88 @@
+HopCIM live: listening at 16 kHz (system clock 15360000 Hz)
+LEDs: LD10-LD13 keyword 1 (down) .. 10 (yes), LD14 not silence, LD0 blinks at 1 Hz
+microphone: 1024 samples, min -703 max 506 mean 8 rms 190
+>> yes
+>> right
+>> left
+>> stop
+>> yes
+[10 s] 500 decisions (0 missed while printing), 5 keywords, overrun 0; CPU-active per decision 264 cycles (max 292)
+    classes: left 45 right 40 stop 42 up 8 yes 86 _unknown_ 279
+>> yes
+[20 s] 1000 decisions (8 missed while printing), 6 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: yes 33 _unknown_ 467
+>> stop
+>> stop
+>> stop
+>> up
+[30 s] 1500 decisions (14 missed while printing), 10 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: stop 89 up 9 yes 8 _unknown_ 394
+[40 s] 2000 decisions (21 missed while printing), 10 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: up 4 _unknown_ 496
+>> go
+>> stop
+>> up
+>> yes
+>> left
+[50 s] 2500 decisions (27 missed while printing), 15 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: go 7 left 40 right 3 stop 43 up 10 yes 48 _unknown_ 349
+>> right
+>> left
+[60 s] 3000 decisions (35 missed while printing), 17 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: left 29 right 10 _unknown_ 461
+[70 s] 3500 decisions (42 missed while printing), 17 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[80 s] 4000 decisions (48 missed while printing), 17 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+>> yes
+>> left
+[90 s] 4500 decisions (54 missed while printing), 19 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: left 9 yes 47 _unknown_ 444
+>> stop
+>> up
+[100 s] 5000 decisions (61 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: go 1 left 28 stop 41 up 9 _unknown_ 421
+[110 s] 5500 decisions (69 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[120 s] 6000 decisions (75 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[130 s] 6500 decisions (81 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[140 s] 7000 decisions (87 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[150 s] 7500 decisions (93 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[160 s] 8000 decisions (99 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[170 s] 8500 decisions (105 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[180 s] 9000 decisions (111 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[190 s] 9500 decisions (117 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[200 s] 10000 decisions (123 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[210 s] 10500 decisions (129 missed while printing), 21 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+>> yes
+>> left
+>> stop
+>> stop
+>> up
+[220 s] 11000 decisions (135 missed while printing), 26 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: left 42 stop 48 up 5 yes 47 _unknown_ 358
+[230 s] 11500 decisions (143 missed while printing), 26 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[240 s] 12000 decisions (149 missed while printing), 26 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[250 s] 12500 decisions (155 missed while printing), 26 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[260 s] 13000 decisions (161 missed while printing), 26 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+>> yes
+[270 s] 13500 decisions (167 missed while printing), 27 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: yes 47 _unknown_ 453
+[280 s] 14000 decisions (174 missed while printing), 27 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
+[290 s] 14500 decisions (180 missed while printing), 27 keywords, overrun 0; CPU-active per decision 263 cycles (max 292)
+    classes: _unknown_ 500
