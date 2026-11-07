@@ -21,7 +21,7 @@ Labels, as in the proposal: **[M]** measured in this project; **[E]** estimate o
 | C5 | [M] | One speaker: 48, 47, 42 of 50 keywords at 20, 40, 80 ms; 0, 1, 6 with nothing reported; no overrun (board) | `freeze/board/logs/hopcim_kwtest_nexys_board_20261107_151805.uart.log` | `model/score_kwtest.py <log>`; a new speaker run gives new numbers |
 | D1 | [M] | Gate level: cim_audio RTL equals its Vivado netlist, 0 mismatches over 4,493,107,200 output bits | `sim/xsim_audio_nl_div15/run.log` | `sim/run_audio_nl.sh`, about 70 min |
 | D2 | [M] | Endpoint with cim_fe, out of context: 7,635 LUT, 5,819 FF, 145 DSP | `syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15/utilization_hier.rpt` | `vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15` |
-| D3 | [M] | RTL regression from a clean clone of this repository: 17 of 17 benches pass | `freeze/regression_clean_clone.log` | `sim/run_all.sh`, about 5 min |
+| D3 | [M] | RTL regression from a clean clone of this repository: 24 of 24 benches pass | `freeze/regression_clean_clone.log` | `sim/run_all.sh`, about 8 min |
 | E1 | [M] | Activation reuse in software: exact on 174,216 decisions over 3,500 s (0 logit, 0 layer mismatches). Not in RTL | `model/reuse_results.json` | `~/venvs/planenest/bin/python` model/exact_reuse.py suite, about 15 min |
 | F1 | [E] | Estimate at 28 nm: 1,389 nJ per inference; 110, 75, 58 µW at 20, 40, 80 ms. Not a measurement | `model/energy_run.log` | `python3 model/energy_est.py` (see `docs/ENERGY_ESTIMATE.md` §10) |
 | F2 | [E] | Estimate: simple reuse saves a net 13.0-14.1 µW at 40 ms with leakage included, using ZigZag-IMC's transcribed equations | `model/energy_run.log` | `python3 model/energy_est.py` |

@@ -373,7 +373,8 @@ keywords missed, nothing reported in the 3 other trials, and 0 false alarms.
 
 | Check | Result |
 |---|---|
-| `tb_cim_mic`, k = 1, 2, 3, 4, 5, 16 (`cim_fe`), 1, 2, 4 (B3), PDM divider 15; k = 1, 2, 4 (`cim_fe`), 4 (B3), divider 5 | every decision's logits, class, count and hop exact; no other decision interrupt; no overrun; ring exact; k = 1 ends at the same cycle as before |
+| `tb_cim_mic`, k = 1, 2, 3, 4, 5, 16 (`cim_fe`), 1, 2, 4 (B3), PDM divider 15; k = 1, 2, 4 (`cim_fe`), 4 (B3), divider 5 | every decision's logits, class, count and hop exact; no other decision interrupt; no overrun; ring exact |
+| k = 1 against the RTL before this option, with the same bench | ends at exactly the same cycle at divider 5: 15,492,293 (`cim_fe`), 15,493,385 (B3). The current bench reads `AUD_CTRL` back after enabling it, which adds 2 cycles to its count |
 | The same bench, k > 1: a restart | the first decision again at hop 49 |
 | Stride counter broken on purpose (off by one, no reset at a restart, stride ignored, counting before hop 49) | all 4 caught; the unchanged RTL passes |
 | Benches with the audio path off: endpoint, front-end, sequencer, stream, both front-ends | all pass |
