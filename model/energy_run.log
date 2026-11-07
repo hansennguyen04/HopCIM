@@ -1,0 +1,102 @@
+Counts: all exact checks pass (7,501 passes, 72,000 ACT writes, 2,656,768 MACs per inference; frame counts).
+
+Transcription of ZigZag-IMC's digital equations against its chip figures (TOP/s/W):
+  chip             model  reported  ratio
+  ISSCC 2022 15.5  36.29     36.63  0.991
+  ISSCC 2023 7.2   19.99     19.50  1.025
+
+Colonnade through AccelForge against the paper (fJ per MAC, 0.8 V, 65 nm):
+  case    model   paper   ratio
+  w8_i1    146.7   144.4   1.02
+  w1_i1     68.3    68.3   1.00
+  w16_i1   254.1   243.2   1.04
+  w8_i8   1173.5  1169.7   1.00
+
+Measured bit activity (alpha; ZigZag validates at 0.25):
+  group  alpha   toggle rate  weight density
+  conv1  0.0471        0.094           0.311
+  dw     0.0093        0.117           0.073
+  fc     0.1471        0.286           0.516
+  pw     0.0772        0.154           0.503
+  dct    0.1325        0.255           0.325
+  fft1   0.0399        0.088           0.115
+  fft3   0.1554        0.325           0.479
+  mel    0.0119        0.262           0.046
+
+One network inference, nJ (2,656,768 MACs):
+  part                        measured alpha  alpha 0.25  Colonnade
+  CIM array                            134.2       408.8     1926.6
+  tile select                          169.1       169.1        0.0
+  ACT memory                           298.2       298.2      298.2
+  FEAT memory                            0.4         0.4        0.4
+  requant parameters                   152.0       152.0      152.0
+  requant arithmetic                   435.9       435.9      435.9
+  input and result registers             3.9         3.9        3.9
+  sequencer logic                      195.6       195.6      195.6
+  total                               1389.3      1663.9     3012.6
+  fJ per MAC, all included               523         626       1134
+
+Front-end, one frame, nJ: on the CIM (cim_fe) against dedicated (mfcc_ded, B3):
+  part             measured alpha (CIM / B3)  alpha 0.25 (CIM / B3)  Colonnade (CIM / B3)
+  CIM array                      4.42 / 0.00            9.63 / 0.00          22.60 / 0.00
+  tile select                    1.09 / 0.00            1.09 / 0.00           0.00 / 0.00
+  ring memory                    1.05 / 1.09            1.05 / 1.09           1.05 / 1.09
+  buffers                       2.00 / 11.68           2.00 / 11.68          2.00 / 11.68
+  multipliers                   6.35 / 24.67           6.35 / 24.67          6.35 / 24.67
+  registers                      0.03 / 0.00            0.03 / 0.00           0.03 / 0.00
+  front-end logic                5.82 / 7.03            5.82 / 7.03           5.82 / 7.03
+  total                        20.76 / 44.46          25.96 / 44.46         37.85 / 44.46
+
+Window path per hop, nJ: 1 row 1.38; 49 rows 36.95; mean at 7.3 rows 6.08
+CPU per decision (upper bound) 7.4 nJ; audio input 2.91 uW at 15.36 MHz
+
+Average power, uW, baseline, one decision every 20 / 40 / 80 ms, cim_fe (B3 total in the last row):
+  part                       20 ms        40 ms        80 ms      
+  network                          69.46        34.73        17.37
+  front-end and window path         1.34         1.34         1.34
+  CPU                               0.37         0.18         0.09
+  audio input                       2.91         2.91         2.91
+  leakage: weight cells             5.88         5.88         5.88
+  leakage: other SRAM               4.07         4.07         4.07
+  leakage: CIM macro logic         22.20        22.20        22.20
+  leakage: digital logic            4.03         4.03         4.03
+  total                            110.3         75.3         57.9
+    of which leakage         36.2 (33 %)  36.2 (48 %)  36.2 (62 %)
+  total with B3 front-end          106.4         71.5         54.0
+
+Area, mm^2 at 28 nm (not a layout):
+  weight_cells 0.097, macro_logic 0.273, other_sram 0.050, digital_logic 0.050, macros 5; total 0.469
+
+Activation reuse against the same decision rate without it (simple mode, baseline, stream group ranges):
+  rate, cache              dynamic saved, uW  leakage added, uW  net, uW       break-even, pW/bit
+  20 ms, 2 caches, +72 KB          31.6-33.8                6.2  +25.4..+27.5           54.9-58.6
+  40 ms, 1 cache, +32 KB           15.8-16.9                2.8  +13.0..+14.1           61.8-65.9
+  80 ms, 1 cache, +32 KB             6.5-7.3                2.8    +3.7..+4.5           25.6-28.6
+
+The same streams with reuse off at the next slower rate, as an alternative to reuse:
+                     20 ms  40 ms  80 ms
+  plain              110.3   75.3   57.9
+  with simple reuse   84.2   62.0   54.0
+
+Sensitivity: each row changes one thing against the baseline
+  variant                    net nJ  20 ms  40 ms  80 ms  reuse@20  reuse@40  b/e pW  FE dyn  FE leak
+  baseline                     1389    110     75     58     +26.0     +13.3      63   -1.19    +5.03
+  alpha 0.25 (validated)       1664    124     82     62     +32.4     +16.5      75   -0.93    +5.03
+  Colonnade array, 0.8 V       3013    192    117     79     +63.7     +32.2     137   -0.33    +5.03
+  multipliers: Horowitz        1086     94     67     53     +18.9      +9.7      49   -0.51    +5.03
+  logic activity 0.05          1339    107     74     57     +24.9     +12.7      61   -1.17    +5.03
+  logic activity 0.2           1489    116     79     60     +28.3     +14.5      68   -1.21    +5.03
+  6 -> 4 GE per LUT            1366    108     74     57     +25.5     +13.0      62   -1.18    +5.02
+  6 -> 10 GE per LUT           1437    114     78     60     +27.1     +13.9      65   -1.20    +5.05
+  logic leak 20 pW/GE          1389     95     60     42     +26.0     +13.3      63   -1.19    +2.41
+  logic leak 100 pW/GE         1389    136    102     84     +26.0     +13.3      63   -1.19    +9.39
+  SRAM 7.4 pW/bit (silicon)    1389    107     72     54     +28.0     +14.2      63   -1.19    +4.78
+  SRAM 25 pW/bit               1389    122     87     69     +17.9      +9.7      63   -1.19    +5.77
+  tiles per macro 1            1220    386    355    340     +22.1     +11.4      55   -1.24   +27.23
+  tiles per macro 4            1270    162    130    114     +23.3     +11.9      58   -1.22    +9.47
+  tiles per macro 8            1310    124     91     75     +24.2     +12.4      59   -1.21    +5.03
+  tiles per macro 32           1548    109     71     51     +29.7     +15.2      70   -1.13    +5.03
+  reuse: flat array            1389    110     75     58     +15.3      +9.7      49   -1.19    +5.03
+  5.12 MHz clock               1389    109     74     57     +26.0     +13.3      63   -1.19    +5.03
+  20/40/80 ms: total uW. reuse@: net saving of simple reuse, uW. b/e: its break-even at 40 ms.
+  FE dyn, FE leak: cim_fe minus B3, uW at 50 frames per second (positive: the CIM front-end costs more).

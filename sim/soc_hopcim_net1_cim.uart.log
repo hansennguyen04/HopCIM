@@ -1,0 +1,10 @@
+clip 0: label 0 predicted 0, 13020998 cycles
+tiles: 61 network tiles built and loaded in 459031 cycles
+conv1            660243 cyc/inference
+depthwise x4    9728330 cyc/inference
+pointwise x4    2596756 cyc/inference
+avg pool          34218 cyc/inference
+fc                 1441 cyc/inference
+total          13020988 cyc/inference, 7501 CIM passes
+HopCIM net: 1 clips, logit mismatches 0, prediction = golden 1, correct 1 -> PASS
+done

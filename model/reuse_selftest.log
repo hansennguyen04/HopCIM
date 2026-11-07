@@ -1,0 +1,6 @@
+geometry: rows [6, 8, 10, 12, 14], 3201 passes: ok
+1000 hops: window maximum changed at 117; logit mismatches 0, layer mismatches 0
+broken on purpose, no padding repair at the start of the window: logits wrong at 798 of 951 decisions, class wrong at 35: caught
+broken on purpose, one cache for both stride phases: logits wrong at 799 of 951 decisions, class wrong at 312: caught
+broken on purpose, window-maximum change ignored: logits wrong at 789 of 951 decisions, class wrong at 52: caught
+PASS

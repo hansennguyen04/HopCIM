@@ -1,0 +1,4 @@
+per frame (mean over 49): CPU-active 4743 (max 6781), wall 13331, front-end go->irq 8656 (max 8656) cycles
+window path (finish) 2120 CPU cycles/frame; CPU-active per hop incl. finish 6863 cycles
+HopCIM FE irq: 49 frames, lraw mismatches 1960, feature mismatches 33 -> FAIL
+done

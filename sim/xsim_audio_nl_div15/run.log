@@ -1,0 +1,21 @@
+
+****** xsim v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Thu Nov  5 22:48:59 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tbnl/xsim_script.tcl
+# xsim {tbnl} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+4493107200 output bits compared, 0 skipped (RTL X); 0 mismatches
+front-end starts 98, sequencer starts 100, with the network 14; decisions in the last stream 0, overrun 0
+PASS
+$finish called at time : 316416245 ns : File "/home/hansen0411/APlus_Project/hopcim/tb/tb_cim_audio_nl.sv" Line 128
+run: Time (s): cpu = 00:00:00.68 ; elapsed = 01:10:00 . Memory (MB): peak = 1301.035 ; gain = 0.000 ; free physical = 9735 ; free virtual = 18035
+exit
+INFO: xsimkernel Simulation Memory Usage: 110092 KB (Peak: 171140 KB), Simulation CPU Usage: 4199740 ms
+INFO: [Common 17-206] Exiting xsim at Thu Nov  5 23:59:02 2026...

@@ -1,0 +1,13 @@
+2026-10-27 09:31:35.144380: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+  1000/4890
+  2000/4890
+  3000/4890
+  4000/4890
+layer mismatches (clips): {'conv1': 0, 'dw1': 0, 'pw1': 0, 'dw2': 0, 'pw2': 0, 'dw3': 0, 'pw3': 0, 'dw4': 0, 'pw4': 0, 'pool': 0, 'fc': 0}
+argmax(fc) != argmax(TFLite softmax): 0 clips
+accuracy on integer CIM-MFCC features: ours 91.80 %, TFLite reference kernels 91.80 %, TFLite default (XNNPACK) 91.78 %; reference vs default predictions differ on 24 clips
+real 107.43
+user 106.93
+sys 0.95

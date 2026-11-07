@@ -1,0 +1,978 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Wed Oct 28 10:34:12 2026
+| Host         : hansen0411-Lenovo-Legion-5-15ARH05 running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_timing_summary -max_paths 5 -file /home/hansen0411/APlus_Project/hopcim/syn/ooc_cim_endpoint_FE_DED0/timing.rpt
+| Design       : cim_endpoint
+| Device       : 7a100t-csg324
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Summary Report
+
+------------------------------------------------------------------------------------------------
+| Timer Settings
+| --------------
+------------------------------------------------------------------------------------------------
+
+  Enable Multi Corner Analysis               :  Yes
+  Enable Pessimism Removal                   :  Yes
+  Pessimism Removal Resolution               :  Nearest Common Node
+  Enable Input Delay Default Clock           :  No
+  Enable Preset / Clear Arcs                 :  No
+  Disable Flight Delays                      :  No
+  Ignore I/O Paths                           :  No
+  Timing Early Launch at Borrowing Latches   :  No
+  Borrow Time for Max Delay Exceptions       :  Yes
+  Merge Timing Exceptions                    :  Yes
+  Inter-SLR Compensation                     :  Conservative
+
+  Corner  Analyze    Analyze    
+  Name    Max Paths  Min Paths  
+  ------  ---------  ---------  
+  Slow    Yes        Yes        
+  Fast    Yes        Yes        
+
+
+------------------------------------------------------------------------------------------------
+| Report Methodology
+| ------------------
+------------------------------------------------------------------------------------------------
+
+No report available as report_methodology has not been run prior. Run report_methodology on the current design for the summary of methodology violations.
+
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (54)
+6. checking no_output_delay (36)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (54)
+-------------------------------
+ There are 54 input ports with no input delay specified. (HIGH)
+
+ There are 0 input ports with no input delay but user has a false path constraint.
+
+
+6. checking no_output_delay (36)
+--------------------------------
+ There are 36 ports with no output delay specified. (HIGH)
+
+ There are 0 ports with no output delay but user has a false path constraint
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+
+
+------------------------------------------------------------------------------------------------
+| Design Timing Summary
+| ---------------------
+------------------------------------------------------------------------------------------------
+
+    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+     44.427        0.000                      0                25208        0.027        0.000                      0                25208       32.083        0.000                       0                  6834  
+
+
+All user specified timing constraints are met.
+
+
+------------------------------------------------------------------------------------------------
+| Clock Summary
+| -------------
+------------------------------------------------------------------------------------------------
+
+Clock  Waveform(ns)       Period(ns)      Frequency(MHz)
+-----  ------------       ----------      --------------
+clk    {0.000 33.333}     66.667          15.000          
+
+
+------------------------------------------------------------------------------------------------
+| Intra Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+-----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+clk                44.427        0.000                      0                25208        0.027        0.000                      0                25208       32.083        0.000                       0                  6834  
+
+
+------------------------------------------------------------------------------------------------
+| Inter Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Other Path Groups Table
+| -----------------------
+------------------------------------------------------------------------------------------------
+
+Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Timing Details
+| --------------
+------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------
+From Clock:  clk
+  To Clock:  clk
+
+Setup :            0  Failing Endpoints,  Worst Slack       44.427ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.027ns,  Total Violation        0.000ns
+PW    :            0  Failing Endpoints,  Worst Slack       32.083ns,  Total Violation        0.000ns
+---------------------------------------------------------------------------------------------------
+
+
+Max Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             44.427ns  (required time - arrival time)
+  Source:                 i_audio/i_dec/dsync_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_audio/i_dec/y1_reg[15]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            66.667ns  (clk rise@66.667ns - clk rise@0.000ns)
+  Data Path Delay:        22.218ns  (logic 8.465ns (38.100%)  route 13.753ns (61.900%))
+  Logic Levels:           25  (CARRY4=14 LUT2=3 LUT3=4 LUT4=2 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.924ns = ( 67.591 - 66.667 ) 
+    Source Clock Delay      (SCD):    0.973ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.973     0.973    i_audio/i_dec/clk_i
+    SLICE_X66Y113        FDCE                                         r  i_audio/i_dec/dsync_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y113        FDCE (Prop_fdce_C_Q)         0.518     1.491 r  i_audio/i_dec/dsync_reg[1]/Q
+                         net (fo=68, routed)          2.687     4.178    i_audio/i_dec/sel
+    SLICE_X65Y106        LUT2 (Prop_lut2_I0_O)        0.124     4.302 r  i_audio/i_dec/y111_carry_i_4/O
+                         net (fo=1, routed)           0.000     4.302    i_audio/i_dec/y111_carry_i_4_n_0
+    SLICE_X65Y106        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.852 r  i_audio/i_dec/y111_carry/CO[3]
+                         net (fo=1, routed)           0.000     4.852    i_audio/i_dec/y111_carry_n_0
+    SLICE_X65Y107        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     5.186 r  i_audio/i_dec/y111_carry__0/O[1]
+                         net (fo=3, routed)           1.104     6.289    i_audio/i_dec/in[6]
+    SLICE_X70Y105        LUT3 (Prop_lut3_I2_O)        0.303     6.592 r  i_audio/i_dec/y19__0_carry__0_i_1/O
+                         net (fo=2, routed)           1.009     7.602    i_audio/i_dec/y19__0_carry__0_i_1_n_0
+    SLICE_X68Y105        LUT4 (Prop_lut4_I3_O)        0.124     7.726 r  i_audio/i_dec/y19__0_carry__0_i_5/O
+                         net (fo=1, routed)           0.000     7.726    i_audio/i_dec/y19__0_carry__0_i_5_n_0
+    SLICE_X68Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     8.127 r  i_audio/i_dec/y19__0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     8.127    i_audio/i_dec/y19__0_carry__0_n_0
+    SLICE_X68Y106        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348     8.475 r  i_audio/i_dec/y19__0_carry__1/O[1]
+                         net (fo=2, routed)           0.980     9.454    i_audio/i_dec/i_nx[2]_1[9]
+    SLICE_X67Y104        LUT2 (Prop_lut2_I1_O)        0.303     9.757 r  i_audio/i_dec/y18_carry__1_i_3/O
+                         net (fo=1, routed)           0.000     9.757    i_audio/i_dec/y18_carry__1_i_3_n_0
+    SLICE_X67Y104        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    10.307 r  i_audio/i_dec/y18_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    10.307    i_audio/i_dec/y18_carry__1_n_0
+    SLICE_X67Y105        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    10.636 r  i_audio/i_dec/y18_carry__2/O[3]
+                         net (fo=2, routed)           0.881    11.518    i_audio/i_dec/i_nx[3]_2[15]
+    SLICE_X66Y105        LUT2 (Prop_lut2_I1_O)        0.306    11.824 r  i_audio/i_dec/y17_carry__2_i_1/O
+                         net (fo=1, routed)           0.000    11.824    i_audio/i_dec/y17_carry__2_i_1_n_0
+    SLICE_X66Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376    12.200 r  i_audio/i_dec/y17_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    12.200    i_audio/i_dec/y17_carry__2_n_0
+    SLICE_X66Y106        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.256    12.456 r  i_audio/i_dec/y17_carry__3/O[2]
+                         net (fo=13, routed)          2.059    14.515    i_audio/i_dec/c_nx[0]_3[18]
+    SLICE_X56Y108        LUT3 (Prop_lut3_I1_O)        0.301    14.816 r  i_audio/i_dec/y11__0_carry__3_i_1/O
+                         net (fo=2, routed)           0.670    15.486    i_audio/i_dec/y11__0_carry__3_i_1_n_0
+    SLICE_X57Y108        LUT4 (Prop_lut4_I3_O)        0.124    15.610 r  i_audio/i_dec/y11__0_carry__3_i_5/O
+                         net (fo=1, routed)           0.000    15.610    i_audio/i_dec/y11__0_carry__3_i_5_n_0
+    SLICE_X57Y108        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    16.011 r  i_audio/i_dec/y11__0_carry__3/CO[3]
+                         net (fo=1, routed)           0.000    16.011    i_audio/i_dec/y11__0_carry__3_n_0
+    SLICE_X57Y109        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    16.250 r  i_audio/i_dec/y11__0_carry__4/O[2]
+                         net (fo=4, routed)           1.451    17.701    i_audio/i_dec/y11__0_carry__4_n_5
+    SLICE_X53Y110        LUT3 (Prop_lut3_I2_O)        0.302    18.003 r  i_audio/i_dec/y11__95_carry__5_i_15/O
+                         net (fo=3, routed)           0.956    18.959    i_audio/i_dec/y11__95_carry__5_i_15_n_0
+    SLICE_X53Y107        LUT5 (Prop_lut5_I0_O)        0.124    19.083 f  i_audio/i_dec/y11__95_carry__4_i_10/O
+                         net (fo=2, routed)           0.677    19.760    i_audio/i_dec/y11__95_carry__4_i_10_n_0
+    SLICE_X53Y107        LUT6 (Prop_lut6_I5_O)        0.124    19.884 r  i_audio/i_dec/y11__95_carry__4_i_1/O
+                         net (fo=2, routed)           0.665    20.549    i_audio/i_dec/y11__95_carry__4_i_1_n_0
+    SLICE_X52Y107        LUT3 (Prop_lut3_I0_O)        0.124    20.673 r  i_audio/i_dec/y11__95_carry__4_i_5/O
+                         net (fo=1, routed)           0.000    20.673    i_audio/i_dec/y11__95_carry__4_i_5_n_0
+    SLICE_X52Y107        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    21.074 r  i_audio/i_dec/y11__95_carry__4/CO[3]
+                         net (fo=1, routed)           0.000    21.074    i_audio/i_dec/y11__95_carry__4_n_0
+    SLICE_X52Y108        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    21.408 r  i_audio/i_dec/y11__95_carry__5/O[1]
+                         net (fo=1, routed)           0.614    22.022    i_audio/i_dec/y121_out[25]
+    SLICE_X48Y109        CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.835    22.857 r  i_audio/i_dec/y11__176_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    22.857    i_audio/i_dec/y11__176_carry__2_n_0
+    SLICE_X48Y110        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    23.191 r  i_audio/i_dec/y11__176_carry__3/O[1]
+                         net (fo=1, routed)           0.000    23.191    i_audio/i_dec/p_0_in[15]
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[15]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       66.667    66.667 r  
+                                                      0.000    66.667 r  clk_i (IN)
+                         net (fo=6837, unset)         0.924    67.591    i_audio/i_dec/clk_i
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[15]/C
+                         clock pessimism              0.000    67.591    
+                         clock uncertainty           -0.035    67.556    
+    SLICE_X48Y110        FDCE (Setup_fdce_C_D)        0.062    67.618    i_audio/i_dec/y1_reg[15]
+  -------------------------------------------------------------------
+                         required time                         67.618    
+                         arrival time                         -23.191    
+  -------------------------------------------------------------------
+                         slack                                 44.427    
+
+Slack (MET) :             44.522ns  (required time - arrival time)
+  Source:                 i_audio/i_dec/dsync_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_audio/i_dec/y1_reg[16]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            66.667ns  (clk rise@66.667ns - clk rise@0.000ns)
+  Data Path Delay:        22.123ns  (logic 8.370ns (37.834%)  route 13.753ns (62.166%))
+  Logic Levels:           25  (CARRY4=14 LUT2=3 LUT3=4 LUT4=2 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.924ns = ( 67.591 - 66.667 ) 
+    Source Clock Delay      (SCD):    0.973ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.973     0.973    i_audio/i_dec/clk_i
+    SLICE_X66Y113        FDCE                                         r  i_audio/i_dec/dsync_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y113        FDCE (Prop_fdce_C_Q)         0.518     1.491 r  i_audio/i_dec/dsync_reg[1]/Q
+                         net (fo=68, routed)          2.687     4.178    i_audio/i_dec/sel
+    SLICE_X65Y106        LUT2 (Prop_lut2_I0_O)        0.124     4.302 r  i_audio/i_dec/y111_carry_i_4/O
+                         net (fo=1, routed)           0.000     4.302    i_audio/i_dec/y111_carry_i_4_n_0
+    SLICE_X65Y106        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.852 r  i_audio/i_dec/y111_carry/CO[3]
+                         net (fo=1, routed)           0.000     4.852    i_audio/i_dec/y111_carry_n_0
+    SLICE_X65Y107        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     5.186 r  i_audio/i_dec/y111_carry__0/O[1]
+                         net (fo=3, routed)           1.104     6.289    i_audio/i_dec/in[6]
+    SLICE_X70Y105        LUT3 (Prop_lut3_I2_O)        0.303     6.592 r  i_audio/i_dec/y19__0_carry__0_i_1/O
+                         net (fo=2, routed)           1.009     7.602    i_audio/i_dec/y19__0_carry__0_i_1_n_0
+    SLICE_X68Y105        LUT4 (Prop_lut4_I3_O)        0.124     7.726 r  i_audio/i_dec/y19__0_carry__0_i_5/O
+                         net (fo=1, routed)           0.000     7.726    i_audio/i_dec/y19__0_carry__0_i_5_n_0
+    SLICE_X68Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     8.127 r  i_audio/i_dec/y19__0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     8.127    i_audio/i_dec/y19__0_carry__0_n_0
+    SLICE_X68Y106        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348     8.475 r  i_audio/i_dec/y19__0_carry__1/O[1]
+                         net (fo=2, routed)           0.980     9.454    i_audio/i_dec/i_nx[2]_1[9]
+    SLICE_X67Y104        LUT2 (Prop_lut2_I1_O)        0.303     9.757 r  i_audio/i_dec/y18_carry__1_i_3/O
+                         net (fo=1, routed)           0.000     9.757    i_audio/i_dec/y18_carry__1_i_3_n_0
+    SLICE_X67Y104        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    10.307 r  i_audio/i_dec/y18_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    10.307    i_audio/i_dec/y18_carry__1_n_0
+    SLICE_X67Y105        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    10.636 r  i_audio/i_dec/y18_carry__2/O[3]
+                         net (fo=2, routed)           0.881    11.518    i_audio/i_dec/i_nx[3]_2[15]
+    SLICE_X66Y105        LUT2 (Prop_lut2_I1_O)        0.306    11.824 r  i_audio/i_dec/y17_carry__2_i_1/O
+                         net (fo=1, routed)           0.000    11.824    i_audio/i_dec/y17_carry__2_i_1_n_0
+    SLICE_X66Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376    12.200 r  i_audio/i_dec/y17_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    12.200    i_audio/i_dec/y17_carry__2_n_0
+    SLICE_X66Y106        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.256    12.456 r  i_audio/i_dec/y17_carry__3/O[2]
+                         net (fo=13, routed)          2.059    14.515    i_audio/i_dec/c_nx[0]_3[18]
+    SLICE_X56Y108        LUT3 (Prop_lut3_I1_O)        0.301    14.816 r  i_audio/i_dec/y11__0_carry__3_i_1/O
+                         net (fo=2, routed)           0.670    15.486    i_audio/i_dec/y11__0_carry__3_i_1_n_0
+    SLICE_X57Y108        LUT4 (Prop_lut4_I3_O)        0.124    15.610 r  i_audio/i_dec/y11__0_carry__3_i_5/O
+                         net (fo=1, routed)           0.000    15.610    i_audio/i_dec/y11__0_carry__3_i_5_n_0
+    SLICE_X57Y108        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    16.011 r  i_audio/i_dec/y11__0_carry__3/CO[3]
+                         net (fo=1, routed)           0.000    16.011    i_audio/i_dec/y11__0_carry__3_n_0
+    SLICE_X57Y109        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    16.250 r  i_audio/i_dec/y11__0_carry__4/O[2]
+                         net (fo=4, routed)           1.451    17.701    i_audio/i_dec/y11__0_carry__4_n_5
+    SLICE_X53Y110        LUT3 (Prop_lut3_I2_O)        0.302    18.003 r  i_audio/i_dec/y11__95_carry__5_i_15/O
+                         net (fo=3, routed)           0.956    18.959    i_audio/i_dec/y11__95_carry__5_i_15_n_0
+    SLICE_X53Y107        LUT5 (Prop_lut5_I0_O)        0.124    19.083 f  i_audio/i_dec/y11__95_carry__4_i_10/O
+                         net (fo=2, routed)           0.677    19.760    i_audio/i_dec/y11__95_carry__4_i_10_n_0
+    SLICE_X53Y107        LUT6 (Prop_lut6_I5_O)        0.124    19.884 r  i_audio/i_dec/y11__95_carry__4_i_1/O
+                         net (fo=2, routed)           0.665    20.549    i_audio/i_dec/y11__95_carry__4_i_1_n_0
+    SLICE_X52Y107        LUT3 (Prop_lut3_I0_O)        0.124    20.673 r  i_audio/i_dec/y11__95_carry__4_i_5/O
+                         net (fo=1, routed)           0.000    20.673    i_audio/i_dec/y11__95_carry__4_i_5_n_0
+    SLICE_X52Y107        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    21.074 r  i_audio/i_dec/y11__95_carry__4/CO[3]
+                         net (fo=1, routed)           0.000    21.074    i_audio/i_dec/y11__95_carry__4_n_0
+    SLICE_X52Y108        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    21.408 r  i_audio/i_dec/y11__95_carry__5/O[1]
+                         net (fo=1, routed)           0.614    22.022    i_audio/i_dec/y121_out[25]
+    SLICE_X48Y109        CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.835    22.857 r  i_audio/i_dec/y11__176_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    22.857    i_audio/i_dec/y11__176_carry__2_n_0
+    SLICE_X48Y110        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    23.096 r  i_audio/i_dec/y11__176_carry__3/O[2]
+                         net (fo=1, routed)           0.000    23.096    i_audio/i_dec/p_0_in[16]
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[16]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       66.667    66.667 r  
+                                                      0.000    66.667 r  clk_i (IN)
+                         net (fo=6837, unset)         0.924    67.591    i_audio/i_dec/clk_i
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[16]/C
+                         clock pessimism              0.000    67.591    
+                         clock uncertainty           -0.035    67.556    
+    SLICE_X48Y110        FDCE (Setup_fdce_C_D)        0.062    67.618    i_audio/i_dec/y1_reg[16]
+  -------------------------------------------------------------------
+                         required time                         67.618    
+                         arrival time                         -23.096    
+  -------------------------------------------------------------------
+                         slack                                 44.522    
+
+Slack (MET) :             44.538ns  (required time - arrival time)
+  Source:                 i_audio/i_dec/dsync_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_audio/i_dec/y1_reg[14]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            66.667ns  (clk rise@66.667ns - clk rise@0.000ns)
+  Data Path Delay:        22.107ns  (logic 8.354ns (37.789%)  route 13.753ns (62.211%))
+  Logic Levels:           25  (CARRY4=14 LUT2=3 LUT3=4 LUT4=2 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.924ns = ( 67.591 - 66.667 ) 
+    Source Clock Delay      (SCD):    0.973ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.973     0.973    i_audio/i_dec/clk_i
+    SLICE_X66Y113        FDCE                                         r  i_audio/i_dec/dsync_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y113        FDCE (Prop_fdce_C_Q)         0.518     1.491 r  i_audio/i_dec/dsync_reg[1]/Q
+                         net (fo=68, routed)          2.687     4.178    i_audio/i_dec/sel
+    SLICE_X65Y106        LUT2 (Prop_lut2_I0_O)        0.124     4.302 r  i_audio/i_dec/y111_carry_i_4/O
+                         net (fo=1, routed)           0.000     4.302    i_audio/i_dec/y111_carry_i_4_n_0
+    SLICE_X65Y106        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.852 r  i_audio/i_dec/y111_carry/CO[3]
+                         net (fo=1, routed)           0.000     4.852    i_audio/i_dec/y111_carry_n_0
+    SLICE_X65Y107        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     5.186 r  i_audio/i_dec/y111_carry__0/O[1]
+                         net (fo=3, routed)           1.104     6.289    i_audio/i_dec/in[6]
+    SLICE_X70Y105        LUT3 (Prop_lut3_I2_O)        0.303     6.592 r  i_audio/i_dec/y19__0_carry__0_i_1/O
+                         net (fo=2, routed)           1.009     7.602    i_audio/i_dec/y19__0_carry__0_i_1_n_0
+    SLICE_X68Y105        LUT4 (Prop_lut4_I3_O)        0.124     7.726 r  i_audio/i_dec/y19__0_carry__0_i_5/O
+                         net (fo=1, routed)           0.000     7.726    i_audio/i_dec/y19__0_carry__0_i_5_n_0
+    SLICE_X68Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     8.127 r  i_audio/i_dec/y19__0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     8.127    i_audio/i_dec/y19__0_carry__0_n_0
+    SLICE_X68Y106        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348     8.475 r  i_audio/i_dec/y19__0_carry__1/O[1]
+                         net (fo=2, routed)           0.980     9.454    i_audio/i_dec/i_nx[2]_1[9]
+    SLICE_X67Y104        LUT2 (Prop_lut2_I1_O)        0.303     9.757 r  i_audio/i_dec/y18_carry__1_i_3/O
+                         net (fo=1, routed)           0.000     9.757    i_audio/i_dec/y18_carry__1_i_3_n_0
+    SLICE_X67Y104        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    10.307 r  i_audio/i_dec/y18_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    10.307    i_audio/i_dec/y18_carry__1_n_0
+    SLICE_X67Y105        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    10.636 r  i_audio/i_dec/y18_carry__2/O[3]
+                         net (fo=2, routed)           0.881    11.518    i_audio/i_dec/i_nx[3]_2[15]
+    SLICE_X66Y105        LUT2 (Prop_lut2_I1_O)        0.306    11.824 r  i_audio/i_dec/y17_carry__2_i_1/O
+                         net (fo=1, routed)           0.000    11.824    i_audio/i_dec/y17_carry__2_i_1_n_0
+    SLICE_X66Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376    12.200 r  i_audio/i_dec/y17_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    12.200    i_audio/i_dec/y17_carry__2_n_0
+    SLICE_X66Y106        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.256    12.456 r  i_audio/i_dec/y17_carry__3/O[2]
+                         net (fo=13, routed)          2.059    14.515    i_audio/i_dec/c_nx[0]_3[18]
+    SLICE_X56Y108        LUT3 (Prop_lut3_I1_O)        0.301    14.816 r  i_audio/i_dec/y11__0_carry__3_i_1/O
+                         net (fo=2, routed)           0.670    15.486    i_audio/i_dec/y11__0_carry__3_i_1_n_0
+    SLICE_X57Y108        LUT4 (Prop_lut4_I3_O)        0.124    15.610 r  i_audio/i_dec/y11__0_carry__3_i_5/O
+                         net (fo=1, routed)           0.000    15.610    i_audio/i_dec/y11__0_carry__3_i_5_n_0
+    SLICE_X57Y108        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    16.011 r  i_audio/i_dec/y11__0_carry__3/CO[3]
+                         net (fo=1, routed)           0.000    16.011    i_audio/i_dec/y11__0_carry__3_n_0
+    SLICE_X57Y109        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    16.250 r  i_audio/i_dec/y11__0_carry__4/O[2]
+                         net (fo=4, routed)           1.451    17.701    i_audio/i_dec/y11__0_carry__4_n_5
+    SLICE_X53Y110        LUT3 (Prop_lut3_I2_O)        0.302    18.003 r  i_audio/i_dec/y11__95_carry__5_i_15/O
+                         net (fo=3, routed)           0.956    18.959    i_audio/i_dec/y11__95_carry__5_i_15_n_0
+    SLICE_X53Y107        LUT5 (Prop_lut5_I0_O)        0.124    19.083 f  i_audio/i_dec/y11__95_carry__4_i_10/O
+                         net (fo=2, routed)           0.677    19.760    i_audio/i_dec/y11__95_carry__4_i_10_n_0
+    SLICE_X53Y107        LUT6 (Prop_lut6_I5_O)        0.124    19.884 r  i_audio/i_dec/y11__95_carry__4_i_1/O
+                         net (fo=2, routed)           0.665    20.549    i_audio/i_dec/y11__95_carry__4_i_1_n_0
+    SLICE_X52Y107        LUT3 (Prop_lut3_I0_O)        0.124    20.673 r  i_audio/i_dec/y11__95_carry__4_i_5/O
+                         net (fo=1, routed)           0.000    20.673    i_audio/i_dec/y11__95_carry__4_i_5_n_0
+    SLICE_X52Y107        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    21.074 r  i_audio/i_dec/y11__95_carry__4/CO[3]
+                         net (fo=1, routed)           0.000    21.074    i_audio/i_dec/y11__95_carry__4_n_0
+    SLICE_X52Y108        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    21.408 r  i_audio/i_dec/y11__95_carry__5/O[1]
+                         net (fo=1, routed)           0.614    22.022    i_audio/i_dec/y121_out[25]
+    SLICE_X48Y109        CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.835    22.857 r  i_audio/i_dec/y11__176_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    22.857    i_audio/i_dec/y11__176_carry__2_n_0
+    SLICE_X48Y110        CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.223    23.080 r  i_audio/i_dec/y11__176_carry__3/O[0]
+                         net (fo=1, routed)           0.000    23.080    i_audio/i_dec/p_0_in[14]
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[14]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       66.667    66.667 r  
+                                                      0.000    66.667 r  clk_i (IN)
+                         net (fo=6837, unset)         0.924    67.591    i_audio/i_dec/clk_i
+    SLICE_X48Y110        FDCE                                         r  i_audio/i_dec/y1_reg[14]/C
+                         clock pessimism              0.000    67.591    
+                         clock uncertainty           -0.035    67.556    
+    SLICE_X48Y110        FDCE (Setup_fdce_C_D)        0.062    67.618    i_audio/i_dec/y1_reg[14]
+  -------------------------------------------------------------------
+                         required time                         67.618    
+                         arrival time                         -23.080    
+  -------------------------------------------------------------------
+                         slack                                 44.538    
+
+Slack (MET) :             44.687ns  (required time - arrival time)
+  Source:                 i_audio/i_dec/dsync_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_audio/i_dec/y1_reg[13]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            66.667ns  (clk rise@66.667ns - clk rise@0.000ns)
+  Data Path Delay:        21.958ns  (logic 8.205ns (37.367%)  route 13.753ns (62.633%))
+  Logic Levels:           24  (CARRY4=13 LUT2=3 LUT3=4 LUT4=2 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.924ns = ( 67.591 - 66.667 ) 
+    Source Clock Delay      (SCD):    0.973ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.973     0.973    i_audio/i_dec/clk_i
+    SLICE_X66Y113        FDCE                                         r  i_audio/i_dec/dsync_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y113        FDCE (Prop_fdce_C_Q)         0.518     1.491 r  i_audio/i_dec/dsync_reg[1]/Q
+                         net (fo=68, routed)          2.687     4.178    i_audio/i_dec/sel
+    SLICE_X65Y106        LUT2 (Prop_lut2_I0_O)        0.124     4.302 r  i_audio/i_dec/y111_carry_i_4/O
+                         net (fo=1, routed)           0.000     4.302    i_audio/i_dec/y111_carry_i_4_n_0
+    SLICE_X65Y106        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.852 r  i_audio/i_dec/y111_carry/CO[3]
+                         net (fo=1, routed)           0.000     4.852    i_audio/i_dec/y111_carry_n_0
+    SLICE_X65Y107        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     5.186 r  i_audio/i_dec/y111_carry__0/O[1]
+                         net (fo=3, routed)           1.104     6.289    i_audio/i_dec/in[6]
+    SLICE_X70Y105        LUT3 (Prop_lut3_I2_O)        0.303     6.592 r  i_audio/i_dec/y19__0_carry__0_i_1/O
+                         net (fo=2, routed)           1.009     7.602    i_audio/i_dec/y19__0_carry__0_i_1_n_0
+    SLICE_X68Y105        LUT4 (Prop_lut4_I3_O)        0.124     7.726 r  i_audio/i_dec/y19__0_carry__0_i_5/O
+                         net (fo=1, routed)           0.000     7.726    i_audio/i_dec/y19__0_carry__0_i_5_n_0
+    SLICE_X68Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     8.127 r  i_audio/i_dec/y19__0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     8.127    i_audio/i_dec/y19__0_carry__0_n_0
+    SLICE_X68Y106        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348     8.475 r  i_audio/i_dec/y19__0_carry__1/O[1]
+                         net (fo=2, routed)           0.980     9.454    i_audio/i_dec/i_nx[2]_1[9]
+    SLICE_X67Y104        LUT2 (Prop_lut2_I1_O)        0.303     9.757 r  i_audio/i_dec/y18_carry__1_i_3/O
+                         net (fo=1, routed)           0.000     9.757    i_audio/i_dec/y18_carry__1_i_3_n_0
+    SLICE_X67Y104        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    10.307 r  i_audio/i_dec/y18_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    10.307    i_audio/i_dec/y18_carry__1_n_0
+    SLICE_X67Y105        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    10.636 r  i_audio/i_dec/y18_carry__2/O[3]
+                         net (fo=2, routed)           0.881    11.518    i_audio/i_dec/i_nx[3]_2[15]
+    SLICE_X66Y105        LUT2 (Prop_lut2_I1_O)        0.306    11.824 r  i_audio/i_dec/y17_carry__2_i_1/O
+                         net (fo=1, routed)           0.000    11.824    i_audio/i_dec/y17_carry__2_i_1_n_0
+    SLICE_X66Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376    12.200 r  i_audio/i_dec/y17_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    12.200    i_audio/i_dec/y17_carry__2_n_0
+    SLICE_X66Y106        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.256    12.456 r  i_audio/i_dec/y17_carry__3/O[2]
+                         net (fo=13, routed)          2.059    14.515    i_audio/i_dec/c_nx[0]_3[18]
+    SLICE_X56Y108        LUT3 (Prop_lut3_I1_O)        0.301    14.816 r  i_audio/i_dec/y11__0_carry__3_i_1/O
+                         net (fo=2, routed)           0.670    15.486    i_audio/i_dec/y11__0_carry__3_i_1_n_0
+    SLICE_X57Y108        LUT4 (Prop_lut4_I3_O)        0.124    15.610 r  i_audio/i_dec/y11__0_carry__3_i_5/O
+                         net (fo=1, routed)           0.000    15.610    i_audio/i_dec/y11__0_carry__3_i_5_n_0
+    SLICE_X57Y108        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    16.011 r  i_audio/i_dec/y11__0_carry__3/CO[3]
+                         net (fo=1, routed)           0.000    16.011    i_audio/i_dec/y11__0_carry__3_n_0
+    SLICE_X57Y109        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    16.250 r  i_audio/i_dec/y11__0_carry__4/O[2]
+                         net (fo=4, routed)           1.451    17.701    i_audio/i_dec/y11__0_carry__4_n_5
+    SLICE_X53Y110        LUT3 (Prop_lut3_I2_O)        0.302    18.003 r  i_audio/i_dec/y11__95_carry__5_i_15/O
+                         net (fo=3, routed)           0.956    18.959    i_audio/i_dec/y11__95_carry__5_i_15_n_0
+    SLICE_X53Y107        LUT5 (Prop_lut5_I0_O)        0.124    19.083 f  i_audio/i_dec/y11__95_carry__4_i_10/O
+                         net (fo=2, routed)           0.677    19.760    i_audio/i_dec/y11__95_carry__4_i_10_n_0
+    SLICE_X53Y107        LUT6 (Prop_lut6_I5_O)        0.124    19.884 r  i_audio/i_dec/y11__95_carry__4_i_1/O
+                         net (fo=2, routed)           0.665    20.549    i_audio/i_dec/y11__95_carry__4_i_1_n_0
+    SLICE_X52Y107        LUT3 (Prop_lut3_I0_O)        0.124    20.673 r  i_audio/i_dec/y11__95_carry__4_i_5/O
+                         net (fo=1, routed)           0.000    20.673    i_audio/i_dec/y11__95_carry__4_i_5_n_0
+    SLICE_X52Y107        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    21.074 r  i_audio/i_dec/y11__95_carry__4/CO[3]
+                         net (fo=1, routed)           0.000    21.074    i_audio/i_dec/y11__95_carry__4_n_0
+    SLICE_X52Y108        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    21.408 r  i_audio/i_dec/y11__95_carry__5/O[1]
+                         net (fo=1, routed)           0.614    22.022    i_audio/i_dec/y121_out[25]
+    SLICE_X48Y109        CARRY4 (Prop_carry4_S[0]_O[3])
+                                                      0.909    22.931 r  i_audio/i_dec/y11__176_carry__2/O[3]
+                         net (fo=1, routed)           0.000    22.931    i_audio/i_dec/p_0_in[13]
+    SLICE_X48Y109        FDCE                                         r  i_audio/i_dec/y1_reg[13]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       66.667    66.667 r  
+                                                      0.000    66.667 r  clk_i (IN)
+                         net (fo=6837, unset)         0.924    67.591    i_audio/i_dec/clk_i
+    SLICE_X48Y109        FDCE                                         r  i_audio/i_dec/y1_reg[13]/C
+                         clock pessimism              0.000    67.591    
+                         clock uncertainty           -0.035    67.556    
+    SLICE_X48Y109        FDCE (Setup_fdce_C_D)        0.062    67.618    i_audio/i_dec/y1_reg[13]
+  -------------------------------------------------------------------
+                         required time                         67.618    
+                         arrival time                         -22.931    
+  -------------------------------------------------------------------
+                         slack                                 44.687    
+
+Slack (MET) :             44.746ns  (required time - arrival time)
+  Source:                 i_audio/i_dec/dsync_reg[1]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_audio/i_dec/y1_reg[12]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            66.667ns  (clk rise@66.667ns - clk rise@0.000ns)
+  Data Path Delay:        21.899ns  (logic 8.146ns (37.198%)  route 13.753ns (62.802%))
+  Logic Levels:           24  (CARRY4=13 LUT2=3 LUT3=4 LUT4=2 LUT5=1 LUT6=1)
+  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.924ns = ( 67.591 - 66.667 ) 
+    Source Clock Delay      (SCD):    0.973ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.973     0.973    i_audio/i_dec/clk_i
+    SLICE_X66Y113        FDCE                                         r  i_audio/i_dec/dsync_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y113        FDCE (Prop_fdce_C_Q)         0.518     1.491 r  i_audio/i_dec/dsync_reg[1]/Q
+                         net (fo=68, routed)          2.687     4.178    i_audio/i_dec/sel
+    SLICE_X65Y106        LUT2 (Prop_lut2_I0_O)        0.124     4.302 r  i_audio/i_dec/y111_carry_i_4/O
+                         net (fo=1, routed)           0.000     4.302    i_audio/i_dec/y111_carry_i_4_n_0
+    SLICE_X65Y106        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.852 r  i_audio/i_dec/y111_carry/CO[3]
+                         net (fo=1, routed)           0.000     4.852    i_audio/i_dec/y111_carry_n_0
+    SLICE_X65Y107        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     5.186 r  i_audio/i_dec/y111_carry__0/O[1]
+                         net (fo=3, routed)           1.104     6.289    i_audio/i_dec/in[6]
+    SLICE_X70Y105        LUT3 (Prop_lut3_I2_O)        0.303     6.592 r  i_audio/i_dec/y19__0_carry__0_i_1/O
+                         net (fo=2, routed)           1.009     7.602    i_audio/i_dec/y19__0_carry__0_i_1_n_0
+    SLICE_X68Y105        LUT4 (Prop_lut4_I3_O)        0.124     7.726 r  i_audio/i_dec/y19__0_carry__0_i_5/O
+                         net (fo=1, routed)           0.000     7.726    i_audio/i_dec/y19__0_carry__0_i_5_n_0
+    SLICE_X68Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     8.127 r  i_audio/i_dec/y19__0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     8.127    i_audio/i_dec/y19__0_carry__0_n_0
+    SLICE_X68Y106        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348     8.475 r  i_audio/i_dec/y19__0_carry__1/O[1]
+                         net (fo=2, routed)           0.980     9.454    i_audio/i_dec/i_nx[2]_1[9]
+    SLICE_X67Y104        LUT2 (Prop_lut2_I1_O)        0.303     9.757 r  i_audio/i_dec/y18_carry__1_i_3/O
+                         net (fo=1, routed)           0.000     9.757    i_audio/i_dec/y18_carry__1_i_3_n_0
+    SLICE_X67Y104        CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    10.307 r  i_audio/i_dec/y18_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    10.307    i_audio/i_dec/y18_carry__1_n_0
+    SLICE_X67Y105        CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    10.636 r  i_audio/i_dec/y18_carry__2/O[3]
+                         net (fo=2, routed)           0.881    11.518    i_audio/i_dec/i_nx[3]_2[15]
+    SLICE_X66Y105        LUT2 (Prop_lut2_I1_O)        0.306    11.824 r  i_audio/i_dec/y17_carry__2_i_1/O
+                         net (fo=1, routed)           0.000    11.824    i_audio/i_dec/y17_carry__2_i_1_n_0
+    SLICE_X66Y105        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376    12.200 r  i_audio/i_dec/y17_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    12.200    i_audio/i_dec/y17_carry__2_n_0
+    SLICE_X66Y106        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.256    12.456 r  i_audio/i_dec/y17_carry__3/O[2]
+                         net (fo=13, routed)          2.059    14.515    i_audio/i_dec/c_nx[0]_3[18]
+    SLICE_X56Y108        LUT3 (Prop_lut3_I1_O)        0.301    14.816 r  i_audio/i_dec/y11__0_carry__3_i_1/O
+                         net (fo=2, routed)           0.670    15.486    i_audio/i_dec/y11__0_carry__3_i_1_n_0
+    SLICE_X57Y108        LUT4 (Prop_lut4_I3_O)        0.124    15.610 r  i_audio/i_dec/y11__0_carry__3_i_5/O
+                         net (fo=1, routed)           0.000    15.610    i_audio/i_dec/y11__0_carry__3_i_5_n_0
+    SLICE_X57Y108        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    16.011 r  i_audio/i_dec/y11__0_carry__3/CO[3]
+                         net (fo=1, routed)           0.000    16.011    i_audio/i_dec/y11__0_carry__3_n_0
+    SLICE_X57Y109        CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239    16.250 r  i_audio/i_dec/y11__0_carry__4/O[2]
+                         net (fo=4, routed)           1.451    17.701    i_audio/i_dec/y11__0_carry__4_n_5
+    SLICE_X53Y110        LUT3 (Prop_lut3_I2_O)        0.302    18.003 r  i_audio/i_dec/y11__95_carry__5_i_15/O
+                         net (fo=3, routed)           0.956    18.959    i_audio/i_dec/y11__95_carry__5_i_15_n_0
+    SLICE_X53Y107        LUT5 (Prop_lut5_I0_O)        0.124    19.083 f  i_audio/i_dec/y11__95_carry__4_i_10/O
+                         net (fo=2, routed)           0.677    19.760    i_audio/i_dec/y11__95_carry__4_i_10_n_0
+    SLICE_X53Y107        LUT6 (Prop_lut6_I5_O)        0.124    19.884 r  i_audio/i_dec/y11__95_carry__4_i_1/O
+                         net (fo=2, routed)           0.665    20.549    i_audio/i_dec/y11__95_carry__4_i_1_n_0
+    SLICE_X52Y107        LUT3 (Prop_lut3_I0_O)        0.124    20.673 r  i_audio/i_dec/y11__95_carry__4_i_5/O
+                         net (fo=1, routed)           0.000    20.673    i_audio/i_dec/y11__95_carry__4_i_5_n_0
+    SLICE_X52Y107        CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    21.074 r  i_audio/i_dec/y11__95_carry__4/CO[3]
+                         net (fo=1, routed)           0.000    21.074    i_audio/i_dec/y11__95_carry__4_n_0
+    SLICE_X52Y108        CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    21.408 r  i_audio/i_dec/y11__95_carry__5/O[1]
+                         net (fo=1, routed)           0.614    22.022    i_audio/i_dec/y121_out[25]
+    SLICE_X48Y109        CARRY4 (Prop_carry4_S[0]_O[2])
+                                                      0.850    22.872 r  i_audio/i_dec/y11__176_carry__2/O[2]
+                         net (fo=1, routed)           0.000    22.872    i_audio/i_dec/p_0_in[12]
+    SLICE_X48Y109        FDCE                                         r  i_audio/i_dec/y1_reg[12]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       66.667    66.667 r  
+                                                      0.000    66.667 r  clk_i (IN)
+                         net (fo=6837, unset)         0.924    67.591    i_audio/i_dec/clk_i
+    SLICE_X48Y109        FDCE                                         r  i_audio/i_dec/y1_reg[12]/C
+                         clock pessimism              0.000    67.591    
+                         clock uncertainty           -0.035    67.556    
+    SLICE_X48Y109        FDCE (Setup_fdce_C_D)        0.062    67.618    i_audio/i_dec/y1_reg[12]
+  -------------------------------------------------------------------
+                         required time                         67.618    
+                         arrival time                         -22.872    
+  -------------------------------------------------------------------
+                         slack                                 44.746    
+
+
+
+
+
+Min Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             0.027ns  (arrival time - required time)
+  Source:                 i_seq/hptr_reg[0]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_seq/bm_m_reg_0_63_15_15/DP/WADR0
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.358ns  (logic 0.141ns (39.341%)  route 0.217ns (60.659%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.432ns
+    Source Clock Delay      (SCD):    0.410ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.410     0.410    i_seq/clk_i
+    SLICE_X57Y94         FDCE                                         r  i_seq/hptr_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X57Y94         FDCE (Prop_fdce_C_Q)         0.141     0.551 r  i_seq/hptr_reg[0]/Q
+                         net (fo=49, routed)          0.217     0.769    i_seq/bm_m_reg_0_63_15_15/A0
+    SLICE_X56Y94         RAMD64E                                      r  i_seq/bm_m_reg_0_63_15_15/DP/WADR0
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.432     0.432    i_seq/bm_m_reg_0_63_15_15/WCLK
+    SLICE_X56Y94         RAMD64E                                      r  i_seq/bm_m_reg_0_63_15_15/DP/CLK
+                         clock pessimism              0.000     0.432    
+    SLICE_X56Y94         RAMD64E (Hold_ramd64e_CLK_WADR0)
+                                                      0.310     0.742    i_seq/bm_m_reg_0_63_15_15/DP
+  -------------------------------------------------------------------
+                         required time                         -0.742    
+                         arrival time                           0.769    
+  -------------------------------------------------------------------
+                         slack                                  0.027    
+
+Slack (MET) :             0.027ns  (arrival time - required time)
+  Source:                 i_seq/hptr_reg[0]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_seq/bm_m_reg_0_63_15_15/SP/WADR0
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.358ns  (logic 0.141ns (39.341%)  route 0.217ns (60.659%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.432ns
+    Source Clock Delay      (SCD):    0.410ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.410     0.410    i_seq/clk_i
+    SLICE_X57Y94         FDCE                                         r  i_seq/hptr_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X57Y94         FDCE (Prop_fdce_C_Q)         0.141     0.551 r  i_seq/hptr_reg[0]/Q
+                         net (fo=49, routed)          0.217     0.769    i_seq/bm_m_reg_0_63_15_15/A0
+    SLICE_X56Y94         RAMD64E                                      r  i_seq/bm_m_reg_0_63_15_15/SP/WADR0
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.432     0.432    i_seq/bm_m_reg_0_63_15_15/WCLK
+    SLICE_X56Y94         RAMD64E                                      r  i_seq/bm_m_reg_0_63_15_15/SP/CLK
+                         clock pessimism              0.000     0.432    
+    SLICE_X56Y94         RAMD64E (Hold_ramd64e_CLK_WADR0)
+                                                      0.310     0.742    i_seq/bm_m_reg_0_63_15_15/SP
+  -------------------------------------------------------------------
+                         required time                         -0.742    
+                         arrival time                           0.769    
+  -------------------------------------------------------------------
+                         slack                                  0.027    
+
+Slack (MET) :             0.098ns  (arrival time - required time)
+  Source:                 i_engine/m4_reg[dm8][2]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_engine/wait_cnt_reg[2]/D
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.240ns  (logic 0.186ns (77.466%)  route 0.054ns (22.534%))
+  Logic Levels:           1  (LUT6=1)
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.432ns
+    Source Clock Delay      (SCD):    0.410ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.410     0.410    i_engine/clk_i
+    SLICE_X51Y73         FDCE                                         r  i_engine/m4_reg[dm8][2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X51Y73         FDCE (Prop_fdce_C_Q)         0.141     0.551 r  i_engine/m4_reg[dm8][2]/Q
+                         net (fo=1, routed)           0.054     0.605    i_engine/m4_reg[dm_n_0_8][2]
+    SLICE_X50Y73         LUT6 (Prop_lut6_I5_O)        0.045     0.650 r  i_engine/wait_cnt[2]_i_1/O
+                         net (fo=1, routed)           0.000     0.650    i_engine/p_0_in__0[2]
+    SLICE_X50Y73         FDCE                                         r  i_engine/wait_cnt_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.432     0.432    i_engine/clk_i
+    SLICE_X50Y73         FDCE                                         r  i_engine/wait_cnt_reg[2]/C
+                         clock pessimism              0.000     0.432    
+    SLICE_X50Y73         FDCE (Hold_fdce_C_D)         0.121     0.553    i_engine/wait_cnt_reg[2]
+  -------------------------------------------------------------------
+                         required time                         -0.553    
+                         arrival time                           0.650    
+  -------------------------------------------------------------------
+                         slack                                  0.098    
+
+Slack (MET) :             0.112ns  (arrival time - required time)
+  Source:                 i_seq/hptr_reg[2]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_seq/bm_m_reg_0_63_9_11/RAMA/WADR2
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.387ns  (logic 0.141ns (36.406%)  route 0.246ns (63.594%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.432ns
+    Source Clock Delay      (SCD):    0.410ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.410     0.410    i_seq/clk_i
+    SLICE_X57Y97         FDCE                                         r  i_seq/hptr_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X57Y97         FDCE (Prop_fdce_C_Q)         0.141     0.551 r  i_seq/hptr_reg[2]/Q
+                         net (fo=47, routed)          0.246     0.797    i_seq/bm_m_reg_0_63_9_11/ADDRD2
+    SLICE_X56Y97         RAMD64E                                      r  i_seq/bm_m_reg_0_63_9_11/RAMA/WADR2
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.432     0.432    i_seq/bm_m_reg_0_63_9_11/WCLK
+    SLICE_X56Y97         RAMD64E                                      r  i_seq/bm_m_reg_0_63_9_11/RAMA/CLK
+                         clock pessimism              0.000     0.432    
+    SLICE_X56Y97         RAMD64E (Hold_ramd64e_CLK_WADR2)
+                                                      0.254     0.686    i_seq/bm_m_reg_0_63_9_11/RAMA
+  -------------------------------------------------------------------
+                         required time                         -0.686    
+                         arrival time                           0.797    
+  -------------------------------------------------------------------
+                         slack                                  0.112    
+
+Slack (MET) :             0.112ns  (arrival time - required time)
+  Source:                 i_seq/hptr_reg[2]/C
+                            (rising edge-triggered cell FDCE clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Destination:            i_seq/bm_m_reg_0_63_9_11/RAMB/WADR2
+                            (rising edge-triggered cell RAMD64E clocked by clk  {rise@0.000ns fall@33.333ns period=66.667ns})
+  Path Group:             clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk rise@0.000ns - clk rise@0.000ns)
+  Data Path Delay:        0.387ns  (logic 0.141ns (36.406%)  route 0.246ns (63.594%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    0.432ns
+    Source Clock Delay      (SCD):    0.410ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.410     0.410    i_seq/clk_i
+    SLICE_X57Y97         FDCE                                         r  i_seq/hptr_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X57Y97         FDCE (Prop_fdce_C_Q)         0.141     0.551 r  i_seq/hptr_reg[2]/Q
+                         net (fo=47, routed)          0.246     0.797    i_seq/bm_m_reg_0_63_9_11/ADDRD2
+    SLICE_X56Y97         RAMD64E                                      r  i_seq/bm_m_reg_0_63_9_11/RAMB/WADR2
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk_i (IN)
+                         net (fo=6837, unset)         0.432     0.432    i_seq/bm_m_reg_0_63_9_11/WCLK
+    SLICE_X56Y97         RAMD64E                                      r  i_seq/bm_m_reg_0_63_9_11/RAMB/CLK
+                         clock pessimism              0.000     0.432    
+    SLICE_X56Y97         RAMD64E (Hold_ramd64e_CLK_WADR2)
+                                                      0.254     0.686    i_seq/bm_m_reg_0_63_9_11/RAMB
+  -------------------------------------------------------------------
+                         required time                         -0.686    
+                         arrival time                           0.797    
+  -------------------------------------------------------------------
+                         slack                                  0.112    
+
+
+
+
+
+Pulse Width Checks
+--------------------------------------------------------------------------------------
+Clock Name:         clk
+Waveform(ns):       { 0.000 33.333 }
+Period(ns):         66.667
+Sources:            { clk_i }
+
+Check Type        Corner  Lib Pin      Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location      Pin
+Min Period        n/a     DSP48E1/CLK  n/a            3.884         66.667      62.783     DSP48_X0Y47   g_fe_cim.i_fe/m_ir_reg/CLK
+Min Period        n/a     DSP48E1/CLK  n/a            3.884         66.667      62.783     DSP48_X0Y45   g_fe_cim.i_fe/p_0_out/CLK
+Min Period        n/a     DSP48E1/CLK  n/a            3.884         66.667      62.783     DSP48_X2Y36   i_engine/prod_reg[3][0]/CLK
+Min Period        n/a     DSP48E1/CLK  n/a            3.884         66.667      62.783     DSP48_X0Y4    i_engine/prod_reg[3][10]/CLK
+Min Period        n/a     DSP48E1/CLK  n/a            3.884         66.667      62.783     DSP48_X1Y0    i_engine/prod_reg[3][11]/CLK
+Low Pulse Width   Slow    RAMD64E/CLK  n/a            1.250         33.334      32.084     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMA/CLK
+Low Pulse Width   Fast    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMA/CLK
+Low Pulse Width   Slow    RAMD64E/CLK  n/a            1.250         33.334      32.084     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMB/CLK
+Low Pulse Width   Fast    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMB/CLK
+Low Pulse Width   Slow    RAMD64E/CLK  n/a            1.250         33.334      32.084     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMC/CLK
+High Pulse Width  Slow    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMA/CLK
+High Pulse Width  Fast    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMA/CLK
+High Pulse Width  Slow    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMB/CLK
+High Pulse Width  Fast    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMB/CLK
+High Pulse Width  Slow    RAMD64E/CLK  n/a            1.250         33.333      32.083     SLICE_X46Y81  g_fe_cim.i_fe/lraw_q_reg_0_63_12_14/RAMC/CLK
+
+
+

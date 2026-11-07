@@ -1,0 +1,750 @@
+{
+ "tools": {
+  "accelforge_commit": "7312a7d915625552bf6eb1db577941f8317b6ac7",
+  "python": "3.12.15",
+  "hwcomponents": "1.0.114",
+  "hwcomponents-cacti": "1.0.40",
+  "hwcomponents-library": "1.0.58",
+  "accelforge": "1.0.1"
+ },
+ "assume": {
+  "cim_group": 16,
+  "alpha": "measured",
+  "macro": "zigzag",
+  "mult": "aladdin",
+  "ge_per_lut": 6.0,
+  "ge_per_ff": 6.0,
+  "ge_per_dsp": 1500.0,
+  "logic_activity": 0.1,
+  "leak_pw_per_ge": 50.0,
+  "sram_pw_per_bit": null,
+  "reuse_access": "banked",
+  "f_sys_hz": 15360000.0
+ },
+ "chips": {
+  "ISSCC 2022 15.5": {
+   "model": 36.294141331654735,
+   "reported": 36.63,
+   "ratio": 0.9908310491852234
+  },
+  "ISSCC 2023 7.2": {
+   "model": 19.988450423489674,
+   "reported": 19.5,
+   "ratio": 1.0250487396661372
+  }
+ },
+ "network_pJ": {
+  "measured alpha": {
+   "CIM array": 134202.6528817457,
+   "tile select": 169059.115008,
+   "ACT memory": 298241.13888000004,
+   "FEAT memory": 368.26426999999995,
+   "requant parameters": 152023.05245324998,
+   "requant arithmetic": 435856.28808635485,
+   "input and result registers": 3896.8651259999997,
+   "sequencer logic": 195630.26636159996
+  },
+  "alpha 0.25": {
+   "CIM array": 408818.42504999996,
+   "tile select": 169059.115008,
+   "ACT memory": 298241.13888000004,
+   "FEAT memory": 368.26426999999995,
+   "requant parameters": 152023.05245324998,
+   "requant arithmetic": 435856.28808635485,
+   "input and result registers": 3896.8651259999997,
+   "sequencer logic": 195630.26636159996
+  },
+  "Colonnade": {
+   "CIM array": 1926558.1145989413,
+   "tile select": 0.0,
+   "ACT memory": 298241.13888000004,
+   "FEAT memory": 368.26426999999995,
+   "requant parameters": 152023.05245324998,
+   "requant arithmetic": 435856.28808635485,
+   "input and result registers": 3896.8651259999997,
+   "sequencer logic": 195630.26636159996
+  }
+ },
+ "frame_pJ": {
+  "measured alpha": {
+   "cim": {
+    "CIM array": 4423.8743738052535,
+    "tile select": 1085.73696,
+    "ring memory": 1052.8831871999998,
+    "buffers": 2000.504095152,
+    "multipliers": 6345.257270965641,
+    "registers": 26.508384,
+    "front-end logic": 5821.1137215
+   },
+   "ded": {
+    "CIM array": 0.0,
+    "tile select": 0.0,
+    "ring memory": 1087.97929344,
+    "buffers": 11679.888172199999,
+    "multipliers": 24666.611320576852,
+    "registers": 2.4494399999999996,
+    "front-end logic": 7026.786207
+   }
+  },
+  "alpha 0.25": {
+   "cim": {
+    "CIM array": 9627.419592,
+    "tile select": 1085.73696,
+    "ring memory": 1052.8831871999998,
+    "buffers": 2000.504095152,
+    "multipliers": 6345.257270965641,
+    "registers": 26.508384,
+    "front-end logic": 5821.1137215
+   },
+   "ded": {
+    "CIM array": 0.0,
+    "tile select": 0.0,
+    "ring memory": 1087.97929344,
+    "buffers": 11679.888172199999,
+    "multipliers": 24666.611320576852,
+    "registers": 2.4494399999999996,
+    "front-end logic": 7026.786207
+   }
+  },
+  "Colonnade": {
+   "cim": {
+    "CIM array": 22604.951845391843,
+    "tile select": 0.0,
+    "ring memory": 1052.8831871999998,
+    "buffers": 2000.504095152,
+    "multipliers": 6345.257270965641,
+    "registers": 26.508384,
+    "front-end logic": 5821.1137215
+   },
+   "ded": {
+    "CIM array": 0.0,
+    "tile select": 0.0,
+    "ring memory": 1087.97929344,
+    "buffers": 11679.888172199999,
+    "multipliers": 24666.611320576852,
+    "registers": 2.4494399999999996,
+    "front-end logic": 7026.786207
+   }
+  }
+ },
+ "budget_uW": {
+  "cim": {
+   "1": {
+    "network": 69.46388215334754,
+    "front-end and window path": 1.3419967561357626,
+    "CPU": 0.36819999999999997,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.881506,
+    "leakage: other SRAM": 4.065620593750001,
+    "leakage: CIM macro logic": 22.2008,
+    "leakage: digital logic": 4.032
+   },
+   "2": {
+    "network": 34.73194107667377,
+    "front-end and window path": 1.3419967561357626,
+    "CPU": 0.18409999999999999,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.881506,
+    "leakage: other SRAM": 4.065620593750001,
+    "leakage: CIM macro logic": 22.2008,
+    "leakage: digital logic": 4.032
+   },
+   "4": {
+    "network": 17.365970538336885,
+    "front-end and window path": 1.3419967561357626,
+    "CPU": 0.09204999999999999,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.881506,
+    "leakage: other SRAM": 4.065620593750001,
+    "leakage: CIM macro logic": 22.2008,
+    "leakage: digital logic": 4.032
+   }
+  },
+  "ded": {
+   "1": {
+    "network": 69.46388215334754,
+    "front-end and window path": 2.5273885781654597,
+    "CPU": 0.36819999999999997,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.370070695652173,
+    "leakage: other SRAM": 3.907754158750001,
+    "leakage: CIM macro logic": 17.760640000000002,
+    "leakage: digital logic": 4.1106
+   },
+   "2": {
+    "network": 34.73194107667377,
+    "front-end and window path": 2.5273885781654597,
+    "CPU": 0.18409999999999999,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.370070695652173,
+    "leakage: other SRAM": 3.907754158750001,
+    "leakage: CIM macro logic": 17.760640000000002,
+    "leakage: digital logic": 4.1106
+   },
+   "4": {
+    "network": 17.365970538336885,
+    "front-end and window path": 2.5273885781654597,
+    "CPU": 0.09204999999999999,
+    "audio input": 2.9087930115513245,
+    "leakage: weight cells": 5.370070695652173,
+    "leakage: other SRAM": 3.907754158750001,
+    "leakage: CIM macro logic": 17.760640000000002,
+    "leakage: digital logic": 4.1106
+   }
+  }
+ },
+ "area_mm2": {
+  "weight_cells": 0.09654223999999999,
+  "macro_logic": 0.272625824,
+  "other_sram": 0.050417574937499994,
+  "digital_logic": 0.049512959999999995,
+  "macros": 5
+ },
+ "reuse": {
+  "1": [
+   {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 26.045365436535256,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   {
+    "saved_dynamic_uW": 31.614032695107067,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 25.38244886457814,
+    "break_even_pW_per_bit": 54.88547342900532,
+    "passes_per_decision": 4090.7016986026274
+   },
+   {
+    "saved_dynamic_uW": 33.42767237310294,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 27.196088542574017,
+    "break_even_pW_per_bit": 58.03415342552594,
+    "passes_per_decision": 3895.0590745544305
+   },
+   {
+    "saved_dynamic_uW": 33.75019999491682,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 27.518616164387893,
+    "break_even_pW_per_bit": 58.594097213397255,
+    "passes_per_decision": 3860.267075335812
+   },
+   {
+    "saved_dynamic_uW": 33.44863191616726,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 27.217048085638332,
+    "break_even_pW_per_bit": 58.07054152112371,
+    "passes_per_decision": 3892.7981072555203
+   }
+  ],
+  "2": [
+   {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.317629972044992,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   {
+    "saved_dynamic_uW": 15.808756073978845,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 12.985726985420344,
+    "break_even_pW_per_bit": 61.75295341397986,
+    "passes_per_decision": 4090.326359832636
+   },
+   {
+    "saved_dynamic_uW": 16.711065198420744,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.888036109862243,
+    "break_even_pW_per_bit": 65.27759843133104,
+    "passes_per_decision": 3895.6569037656905
+   },
+   {
+    "saved_dynamic_uW": 16.87546058655433,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 14.052431497995828,
+    "break_even_pW_per_bit": 65.91976791622784,
+    "passes_per_decision": 3860.1892797319933
+   },
+   {
+    "saved_dynamic_uW": 16.69996080069315,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.87693171213465,
+    "break_even_pW_per_bit": 65.23422187770763,
+    "passes_per_decision": 3898.0526315789475
+   }
+  ],
+  "4": [
+   {
+    "saved_dynamic_uW": 6.738263241555265,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 3.915234152996764,
+    "break_even_pW_per_bit": 26.321340787325255,
+    "passes_per_decision": 4595.07432206227
+   },
+   {
+    "saved_dynamic_uW": 6.541083649002841,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 3.7180545604443407,
+    "break_even_pW_per_bit": 25.55110800391735,
+    "passes_per_decision": 4680.109474389019
+   },
+   {
+    "saved_dynamic_uW": 7.022388166256787,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 4.199359077698286,
+    "break_even_pW_per_bit": 27.431203774440576,
+    "passes_per_decision": 4472.543354536324
+   },
+   {
+    "saved_dynamic_uW": 7.309770606777385,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 4.486741518218885,
+    "break_even_pW_per_bit": 28.55379143272416,
+    "passes_per_decision": 4348.607559308403
+   },
+   {
+    "saved_dynamic_uW": 7.2401380076751085,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 4.4171089191166075,
+    "break_even_pW_per_bit": 28.281789092480896,
+    "passes_per_decision": 4378.637130801688
+   }
+  ]
+ },
+ "sensitivity": {
+  "baseline": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 110.26279851478462,
+    "2": 75.34675743811086,
+    "4": 57.888736899773974
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 26.045365436535256,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.317629972044992,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "alpha 0.25 (validated)": {
+   "net_nJ": 1663.893415235205,
+   "total_uW": {
+    "1": 124.27858213911719,
+    "2": 82.49714675823707,
+    "4": 61.606429067796995
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 38.650497339365096,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 32.41891350883617,
+    "break_even_pW_per_bit": 67.10155788084218,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 19.327864443311356,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 16.504835354752856,
+    "break_even_pW_per_bit": 75.49947048168498,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -0.9252145611199601,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "Colonnade array, 0.8 V": {
+   "net_nJ": 3012.573989776146,
+   "total_uW": {
+    "1": 192.47810888831535,
+    "2": 116.97965914391166,
+    "4": 79.23043427170984
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 69.95197870784406,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 63.72039487731514,
+    "break_even_pW_per_bit": 121.44440747889594,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 34.98072353727757,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 32.15769444871907,
+    "break_even_pW_per_bit": 136.6434513174905,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -0.330624796450368,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "multipliers: Horowitz": {
+   "net_nJ": 1086.2315333217625,
+   "total_uW": {
+    "1": 94.44316530659407,
+    "2": 67.10327697355001,
+    "4": 53.43333280702798
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 25.133565380554483,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 18.901981550025557,
+    "break_even_pW_per_bit": 43.6346621190182,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 12.568483670136395,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 9.745454581577894,
+    "break_even_pW_per_bit": 49.09563933647029,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -0.505261702014415,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "logic activity 0.05": {
+   "net_nJ": 1339.4215426301507,
+   "total_uW": {
+    "1": 107.23787751071313,
+    "2": 73.56823894495938,
+    "4": 56.73341966208248
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 31.126429861999465,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 24.89484603147054,
+    "break_even_pW_per_bit": 54.03894073263796,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 15.565321493657317,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 12.742292405098816,
+    "break_even_pW_per_bit": 60.802037084598894,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1721780075171975,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "logic activity 0.2": {
+   "net_nJ": 1488.9898439405504,
+   "total_uW": {
+    "1": 116.31264052292754,
+    "2": 78.90379442441379,
+    "4": 60.199371375156915
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 34.57798807719362,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 28.346404246664697,
+    "break_even_pW_per_bit": 60.03122930068338,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 17.291334194495853,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 14.468305105937352,
+    "break_even_pW_per_bit": 67.54427419724942,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.2118194510546978,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "6 -> 4 GE per LUT": {
+   "net_nJ": 1365.6320493245507,
+   "total_uW": {
+    "1": 108.40067718291257,
+    "2": 74.07577594979881,
+    "4": 56.913325333241936
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 31.73128455990575,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 25.499700729376823,
+    "break_even_pW_per_bit": 55.08903569428081,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 15.867789777736185,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.044760689177684,
+    "break_even_pW_per_bit": 61.98355381928197,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1799682118796975,
+   "fe_leak_uW": 5.022561739347822
+  },
+  "6 -> 10 GE per LUT": {
+   "net_nJ": 1436.5688305517506,
+   "total_uW": {
+    "1": 113.98704117852867,
+    "2": 77.8887204147349,
+    "4": 59.83956003283804
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 33.36827868138106,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 27.13669485085213,
+    "break_even_pW_per_bit": 57.93103937739767,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.686397626338117,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.863368537779616,
+    "break_even_pW_per_bit": 65.18124072788326,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1962390423296978,
+   "fe_leak_uW": 5.047461739347824
+  },
+  "logic leak 20 pW/GE": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 94.52311851478461,
+    "2": 59.607077438110856,
+    "4": 42.149056899773974
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 26.045365436535256,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.317629972044992,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 2.413925739347828
+  },
+  "logic leak 100 pW/GE": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 136.49559851478463,
+    "2": 101.57955743811087,
+    "4": 84.12153689977399
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 26.045365436535256,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.317629972044992,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 9.392421739347817
+  },
+  "SRAM 7.4 pW/bit (silicon)": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 106.61691992103462,
+    "2": 71.70087884436086,
+    "4": 54.242858306023976
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 4.2623999999999995,
+    "net_uW": 28.014549267064183,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 1.8943999999999999,
+    "net_uW": 14.246259060603494,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 4.777380799999996
+  },
+  "SRAM 25 pW/bit": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 121.60367192103462,
+    "2": 86.68763084436085,
+    "4": 69.22961030602396
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 14.399999999999999,
+    "net_uW": 17.876949267064184,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 6.3999999999999995,
+    "net_uW": 9.740659060603495,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 5.766359999999999
+  },
+  "tiles per macro 1": {
+   "net_nJ": 1220.2185280589506,
+   "total_uW": {
+    "1": 385.91446365920115,
+    "2": 355.2249004577274,
+    "4": 339.8801188569905
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 28.35326204379735,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 22.121678213268424,
+    "break_even_pW_per_bit": 49.22441327048151,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 14.178549903161544,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 11.355520814603043,
+    "break_even_pW_per_bit": 55.38496055922478,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.2396786700296973,
+   "fe_leak_uW": 27.231661739347885
+  },
+  "tiles per macro 4": {
+   "net_nJ": 1269.9417971789505,
+   "total_uW": {
+    "1": 161.97176685201978,
+    "2": 130.03912192254603,
+    "4": 114.07279945780914
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 29.50728769769936,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 23.275703867170435,
+    "break_even_pW_per_bit": 51.22793003072806,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 14.75564083182094,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 11.93261174326244,
+    "break_even_pW_per_bit": 57.63922199930055,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.2237119500296973,
+   "fe_leak_uW": 9.471021739347805
+  },
+  "tiles per macro 8": {
+   "net_nJ": 1309.7204124749508,
+   "total_uW": {
+    "1": 124.01469740627473,
+    "2": 91.08758709440097,
+    "4": 74.62403193846409
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 30.430508220820975,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 24.19892439029205,
+    "break_even_pW_per_bit": 52.8307434389253,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 15.217313574748461,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 12.39428448618996,
+    "break_even_pW_per_bit": 59.44263115136118,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.2109385740296976,
+   "fe_leak_uW": 5.030861739347813
+  },
+  "tiles per macro 32": {
+   "net_nJ": 1548.3921042509508,
+   "total_uW": {
+    "1": 109.39996073180438,
+    "2": 70.50605812553063,
+    "4": 51.059106822393744
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 35.96983135955061,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 29.738247529021685,
+    "break_even_pW_per_bit": 62.4476238881087,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 17.987350032313568,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 15.164320943755067,
+    "break_even_pW_per_bit": 70.26308606372487,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1342983180296975,
+   "fe_leak_uW": 5.030861739347831
+  },
+  "reuse: flat array": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 110.26279851478462,
+    "2": 75.34675743811086,
+    "4": 57.888736899773974
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 21.549318685068737,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 15.317734854539811,
+    "break_even_pW_per_bit": 37.41201160602211,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 12.522850616351123,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 9.699821527792622,
+    "break_even_pW_per_bit": 48.917385220121574,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 5.03086173934782
+  },
+  "5.12 MHz clock": {
+   "net_nJ": 1389.2776430669505,
+   "total_uW": {
+    "1": 109.20609195478463,
+    "2": 74.29005087811086,
+    "4": 56.83203033977398
+   },
+   "reuse_k1": {
+    "saved_dynamic_uW": 32.27694926706418,
+    "added_leak_uW": 6.231583830528927,
+    "net_uW": 26.045365436535256,
+    "break_even_pW_per_bit": 56.03637025531976,
+    "passes_per_decision": 4019.190946364321
+   },
+   "reuse_k2": {
+    "saved_dynamic_uW": 16.140659060603493,
+    "added_leak_uW": 2.8230290885585005,
+    "net_uW": 13.317629972044992,
+    "break_even_pW_per_bit": 63.049449455482396,
+    "passes_per_decision": 4018.7196652719667
+   },
+   "fe_dyn_uW": -1.1853918220296975,
+   "fe_leak_uW": 5.03086173934782
+  }
+ }
+}

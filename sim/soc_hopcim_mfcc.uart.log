@@ -1,0 +1,12 @@
+tiles: 8 loaded in 20555 cycles; passes per frame 54 + 2 (DCT)
+window+exp    16001 cyc/frame
+FFT step 1    18681 cyc/frame
+twiddles      21726 cyc/frame
+FFT step 3    12202 cyc/frame
+magnitude     70881 cyc/frame
+mel            1801 cyc/frame
+log            2966 cyc/frame
+norm+DCT+q     2104 cyc/frame
+total        146364 cyc/frame
+HopCIM MFCC: 49 frames, lraw mismatches 0, feature mismatches 0 -> PASS
+done

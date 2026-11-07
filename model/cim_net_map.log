@@ -1,0 +1,4 @@
+network mapping self-test: 40 clips, 0 logit mismatches; 7501 passes per inference, tiles 8..68
+real 11.91
+user 12.71
+sys 0.02

@@ -1,0 +1,31 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Oct 27 20:16:20 2026
+| Host         : hansen0411-Lenovo-Legion-5-15ARH05 running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_utilization -hierarchical -file /home/hansen0411/APlus_Project/hopcim/syn/ooc_cim_seq/utilization_hier.rpt
+| Design       : cim_seq
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+|   Instance  |     Module    | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+| cim_seq     |         (top) |       2443 |       2152 |     274 |   17 | 1982 |     11 |      1 |          9 |
+|   (cim_seq) |         (top) |       2220 |       1929 |     274 |   17 | 1925 |     11 |      1 |          5 |
+|   i_log2    | cim_log2fix16 |        226 |        226 |       0 |    0 |   57 |      0 |      0 |          4 |
++-------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

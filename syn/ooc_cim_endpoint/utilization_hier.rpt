@@ -1,0 +1,32 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Tue Oct 27 08:04:24 2026
+| Host         : hansen0411-Lenovo-Legion-5-15ARH05 running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_utilization -hierarchical -file /home/hansen0411/APlus_Project/hopcim/syn/ooc_cim_endpoint/utilization_hier.rpt
+| Design       : cim_endpoint
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++------------------+------------+------------+------------+---------+------+------+--------+--------+------------+
+|     Instance     |   Module   | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++------------------+------------+------------+------------+---------+------+------+--------+--------+------------+
+| cim_endpoint     |      (top) |       4176 |       3765 |     404 |    7 | 4474 |      0 |     37 |        135 |
+|   (cim_endpoint) |      (top) |         12 |         12 |       0 |    0 |  882 |      0 |      1 |          0 |
+|   i_engine       | cim_engine |       2215 |       1952 |     256 |    7 | 1641 |      0 |     32 |        128 |
+|   i_fe           |     cim_fe |       1952 |       1804 |     148 |    0 | 1951 |      0 |      4 |          7 |
++------------------+------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

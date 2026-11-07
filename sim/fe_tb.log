@@ -1,0 +1,7 @@
+interplay: front-end go held 20 edges behind the CPU pass, X write held 7474 edges
+RESULT: 319 frames, 0 bad frames, 0 errors; front-end go to done 528..7476 edges (mean 6996)
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_fe.sv:142: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 26ms; walltime 4.039 s; speed 6.380 ms/s
+- Verilator: cpu 4.039 s on 1 threads; alloced 127 MB

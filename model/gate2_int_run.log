@@ -1,0 +1,46 @@
+2026-10-27 00:02:14.112557: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+  500/4890
+  1000/4890
+  1500/4890
+  2000/4890
+  2500/4890
+  3000/4890
+  3500/4890
+  4000/4890
+  4500/4890
+{
+  "n": 4890,
+  "accuracy": {
+    "int8|ref": 91.65644171779141,
+    "int8|int": 91.77914110429448,
+    "float32|ref": 91.86094069529652,
+    "float32|int": 91.75869120654396
+  },
+  "delta_int8": 0.1226993865030721,
+  "delta_float32": -0.10224948875256246,
+  "mcnemar_int8": [
+    18,
+    24,
+    0.44079906734259566
+  ],
+  "int8_feature_diff_vs_reference": {
+    "equal": 0.96682400567589,
+    "within_1": 0.9994424272776595,
+    "mean": 0.036852802470681525,
+    "max": 255
+  },
+  "constants": {
+    "K16": 1374529,
+    "LN2_Q16": 45426,
+    "FLOOR_Q8": -3537,
+    "RQ_M": 808325,
+    "RQ_F": 44,
+    "DCT_S": 145398.08416894634
+  },
+  "gate_pass": true
+}
+real 74.12
+user 72.40
+sys 1.56
