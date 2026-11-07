@@ -744,7 +744,7 @@ cd ~/APlus_Project
 # accuracy re-gate and mapping self-test
 ~/venvs/kwsgate/bin/python hopcim/model/gate2_int.py
 ~/venvs/planenest/bin/python -c "import sys; sys.path.insert(0,'hopcim/model'); import cim_map; cim_map.self_test(4890)"
-# all frozen claims against their evidence, then the RTL regression (Verilator, about 10 min)
+# all frozen claims against their evidence, then the RTL regression (Verilator, about 5 min)
 python3 hopcim/freeze/freeze.py check
 hopcim/sim/run_all.sh
 # SoC simulation

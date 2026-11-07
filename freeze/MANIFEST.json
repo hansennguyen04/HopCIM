@@ -147,6 +147,7 @@
  "dataset": {
   "name": "Google Speech Commands v2, test split as used by the MLPerf Tiny preprocessing",
   "path": "kws_gate/data/test",
+  "clips": 4890,
   "files": 4892,
   "tree_sha256": "66b2d570e4eb6361850b08cabfdcc93f7ef63d3b2c4db7b04090e609b2c74739"
  }

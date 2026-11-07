@@ -194,7 +194,7 @@ def artefacts():
     tree, n = tree_hash(DATASET)
     return dict(bitstreams=bits, elfs=elfs, models=models,
                 dataset={"name": "Google Speech Commands v2, test split as used by the MLPerf Tiny preprocessing",
-                         "path": str(DATASET.relative_to(PROJECT)), "files": n, "tree_sha256": tree})
+                         "path": str(DATASET.relative_to(PROJECT)), "clips": len(list(DATASET.rglob("*.wav"))), "files": n, "tree_sha256": tree})
 
 
 def source_hashes():
@@ -220,7 +220,7 @@ def manifest():
         "Labels, as in the proposal: **[M]** measured in this project; **[E]** estimate or model, not measured.\n\n"
         "| ID | Label | Claim | Evidence | Reproduce |\n|---|---|---|---|---|\n" + "\n".join(rows) + "\n")
     print(f"manifest: {len(m['bitstreams'])} bitstreams, {len(m['elfs'])} ELFs, {len(m['models'])} models, "
-          f"dataset {m['dataset']['files']} files; {len(rows)} claims")
+          f"dataset {m['dataset']['clips']} clips; {len(rows)} claims")
 
 
 # ------------------------------------------------------------------ claims
@@ -321,6 +321,9 @@ def claims():
         dict(id="D2", label="[M]", text="Endpoint with cim_fe, out of context: 7,635 LUT, 5,819 FF, 145 DSP",
              evidence=UTIL, check=lambda: has(UTIL, r"\| cim_endpoint\s+\|\s+\(top\) \|\s+7635 \|.*\|\s+5819 \|.*\|\s+145 \|"),
              docs=[("docs/LIVE_AUDIO.md", "7,635 (+18)")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15`"),
+        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository: 17 of 17 benches pass",
+             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"17 of 17 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
+             docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 5 min"),
         dict(id="E1", label="[M]", text="Activation reuse in software: exact on 174,216 decisions over 3,500 s (0 logit, 0 layer mismatches). Not in RTL",
              evidence="model/reuse_results.json",
              check=lambda: jget("model/reuse_results.json", "decisions") == 174216 and jget("model/reuse_results.json", "logit_mismatches") == 0 and jget("model/reuse_results.json", "layer_mismatches") == 0,
@@ -347,7 +350,7 @@ def check():
     m = json.loads((HERE / "MANIFEST.json").read_text())
     a = artefacts()
     for key in ("bitstreams", "elfs", "models", "dataset"):
-        say(a[key] == m[key], f"{key}: {len(a[key])} entries" if key != "dataset" else f"dataset: {a[key]['files']} files, tree {a[key]['tree_sha256'][:12]}")
+        say(a[key] == m[key], f"{key}: {len(a[key])} entries" if key != "dataset" else f"dataset: {a[key]['clips']} clips, tree {a[key]['tree_sha256'][:12]}")
     say(source_hashes() == m["sources"], "X-HEEP snapshot hashes")
 
     print("Snapshot against the live files")

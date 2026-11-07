@@ -1,0 +1,16 @@
+ok    unchanged clone passes
+caught  a board log reports other CPU-active cycles
+caught  the sequencer's cycle count changes
+caught  a spoken keyword disappears from the log
+caught  an overrun appears in a speaker log
+caught  the reuse evaluation has a mismatch
+caught  the energy total changes
+caught  the gate-level check has a mismatch
+caught  a document quotes another number
+caught  a stale statement returns
+caught  a bitstream hash differs
+caught  the X-HEEP patch is damaged
+caught  a firmware file differs from the live one
+caught  a board script differs from the live one
+
+13 breaks, 0 problems

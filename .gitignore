@@ -24,3 +24,4 @@ vivado*.log
 !/syn/**/*.sh
 !/syn/vivado_miscompile/**
 /syn/netlist/
+sim/regression.log
