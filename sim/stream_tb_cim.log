@@ -7,5 +7,5 @@ RESULT: 0 errors
 PASS
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_stream.sv:189: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 103ms; walltime 21.745 s; speed 4.746 ms/s
-- Verilator: cpu 21.702 s on 1 threads; alloced 127 MB
+- Verilator: $finish at 103ms; walltime 31.698 s; speed 3.562 ms/s
+- Verilator: cpu 28.917 s on 1 threads; alloced 127 MB
