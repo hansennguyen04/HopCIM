@@ -122,9 +122,15 @@ python3 hopcim/model/score_kwtest.py <the run's .uart.log>
 | `core-v-mini-mcu.core`, the wrapper, `tb/testharness.sv` | `use_cim_s` (`CIM_SEQ_S`): the baseline S in the sequencer, the endpoint's `SEQ_S = 1` (`BASELINE_S.md`); on the FPGA and in the Verilator SoC |
 | `core-v-mini-mcu.core`, `core-v-mini-mcu-fpga.core`, the wrapper, `xilinx_generate_clk_wizard_8m192.tcl` | `use_cim_mic4` (`CIM_MIC_4M096`, needs `use_cim_mic` and `use_cim_s`): 4.096 MHz and `PDM_CLKDIV = 4`. No MMCM output divider reaches 4.096 MHz from 100 MHz (the fractional one, CLKOUT0, would need 156.25 > 128), so the MMCM makes 8.192 MHz (VCO 640 MHz, divided by 78.125) without an output buffer, and a BUFGCE in the wrapper passes every second rising edge; timing is analysed at 8.192 MHz |
 
-`hw/fpga/xheep_fpga_support/` is vendored in X-HEEP (`xheep_fpga_support.vendor.hjson`): the
-fileset change and the two clock scripts are edits in place. They need to go upstream, or into a
-patch under `hw/vendor/patches/`, before X-HEEP re-vendors that directory.
+**Since 2026-11-08 every X-HEEP change above lives in this repository** as a patch series on X-HEEP
+`b3eb3c8` (`xheep/`, see `xheep/README.md`): `xheep/setup.sh <dir>` builds an X-HEEP tree from upstream
+(clone, `git am` of 3 patches, links to the RTL and to the firmware in `sw/applications/`, `make mcu-gen`),
+`xheep/check.sh` checks a tree against it (the working tree `planenest/hw/x-heep` passes), and
+`xheep/build.sh <dir> s` builds the S bitstream. A tree made this way from a clean clone produced a
+bitstream identical to `xheep_nexys_bscan_cim128ks.bit` apart from the 4 bytes of the build time in its
+header. The changes inside vendored directories (`xheep_fpga_support`, `riscv_dbg`, `xheep_spi`) are also in
+`hw/vendor/patches/` with a `patch_dir`, so `util/vendor.py` keeps them on a re-vendor. Two hand edits of
+generated files (`tb/testharness.sv`, `tb/testharness_pkg.sv`) were moved into their templates.
 
 **Timing of the Nexys builds.** Every bitstream, the stock ones included, reports negative slack
 from X-HEEP's SPI-slave pin clock (`spi_slave_clk_pin`, declared at 50 MHz on a 7-segment pin) to
