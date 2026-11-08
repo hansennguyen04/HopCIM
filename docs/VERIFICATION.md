@@ -151,3 +151,26 @@ unchanged. All of the checks above were re-run with S added:
 
 `sign_gate_exact` recomputes TFLite's whole requantisation for every gated result and requires −128; over the
 benches it checked 23.9 million gated results.
+
+## 9. B1: StreamFuse B in block 1 (2026-11-08)
+
+B1 (`STREAMFUSE_B1.md`) changed `cim_seq` behind another parameter, off by default; every R6b and S bench gives the
+same results and cycles as before (only the banner line naming `SEQ_B1` is new). All checks re-run with B1 added:
+
+| Check | Result |
+|---|---|
+| Regression, `sim/run_all.sh` | **46 of 46 pass**: the 40 above and 6 with B1 (sequencer with both front-ends, stream, live path at 15.36 MHz and at 4.096 MHz with k = 1, 4) |
+| Assertions, `sim/run_cov.sh 6` | **57, all exercised, none failing**, over 45 benches. The 6 new ones (`sva_seq_b1`) keep a shadow of the line buffer and the fusion vector from the RTL's own events: `b1_lb_read_holds_its_word`, `b1_fill_overwrites_dead_words`, `b1_fv_read_complete`, `b1_fv_overwrite_after_read`, `b1_fill_each_word_once`, `b1_dw_not_to_act` |
+| Mutation test, `model/verif_mutants.py 6` | **33 of 33 caught**: the 27 above and 6 for B1; 3 changes equivalent (the 2 above and B1's line-buffer source check, which never binds: `STREAMFUSE_B1.md` §3). Three S mutants were re-anchored to lines B1 edited (the parameter address now `{d_lay, ...}`, the second result's destination and lane 1's ACT write gained the fused segment's terms); the mutations are the same. The first full run flagged them as not applying, which the run reports as a miss |
+| Coverage, all benches merged | 99 % of lines (295/297), 98 % of branches (627/640), 97 % of expressions (602/619), 94 % of toggle points (20,359/21,710) |
+| All 4,890 test clips through the RTL with B1 | **0 errors** (logits and class), 67,817 cycles each |
+| Post-synthesis, endpoint with B1 (`NLTAG=_b1 TBGEN="S=1 B1=1" sim/run_endpoint_nl.sh <B1 dcp>`) | **every layer and one full inference exact on the Vivado netlist** (67,817 cycles, `sim/xsim_endpoint_nl_b1/run.log`); L1 is not readable in a netlist run (no ACT copy), but L2 is computed from it |
+| Regression from a clean clone of the repository | **46 of 46 pass** (`freeze/regression_clean_clone.log`) |
+
+Two new uncovered points, both unreachable by construction (15 source lines in all now; line numbers in §3 are from the
+source before S and B1):
+
+| Line | Why |
+|---|---|
+| `cim_seq.sv:1213`, the last reader's row clamped to 24 | the replaced word's row is at most 22 (input rows ≤ 24, minus 2 or 3), so the clamp never applies; kept as the general rule |
+| `cim_seq.sv:1246`, a fusion-vector position change seen first on lane 1 | every position's first result is channel 0, which lane 0 carries |

@@ -53,6 +53,8 @@ RTL counts from `sim/run_energy_counts.sh cim 5 1 b1` (101 decisions, `model/ene
 | Verilator SoC (X-HEEP with `use_cim_s use_cim_b1`, from `xheep/setup.sh`), `hopcim_seq` | 60 runs bit-exact, **67,885 cycles go to interrupt** (RTL + 68, as for S), CPU-active unchanged |
 | Assertions (`tb/cim_assertions.sv`, `sva_seq_b1`, a shadow of both buffers) | 6 new checks, all exercised (e.g. 502,970 line-buffer reads), 0 failures |
 | Mutants (`model/verif_mutants.py`) | 6 of 6 caught; one more is equivalent (below) |
+| Board, `xheep_nexys_bscan_cim128kb1.bit` (15.36 MHz, built by `xheep/build.sh <tree> b1`), `hopcim_seq` | 60 runs bit-exact, **67,885 cycles go to interrupt**, the Verilator SoC's figure |
+| Board, `board_khop.sh 42` | 500, 250, 125 decisions per 10 s at k = 1, 2, 4, **no overrun**; CPU-active 263, 263, 266 cycles per decision (as S); real-microphone logits **exact at 25, 13, 7 of 25, 13, 7** decisions |
 
 | Broken B1 | Caught by |
 |---|---|
@@ -78,6 +80,9 @@ differs by 10 LUT of synthesis variation in unchanged logic):
 | S, same source | 8,126 | 604 | 5,980 | 46.5 | 147 | +46.4 / +0.10 ns |
 | **B1** | **8,761** | 822 | **6,182** | 46.5 | 147 | +47.2 / +0.02 ns |
 | difference | **+635** | +218 (line buffer, fusion vector) | **+202** | 0 | 0 | |
+
+Whole SoC on the board (`xheep_nexys_bscan_cim128kb1.bit`): 43,418 LUT (S 42,758: +660, +1.5 %), 40,550 FF (+187),
+82.5 BRAM tiles and 148 DSP (both as S); the system clock meets timing with +16.3 ns setup and +0.229 ns hold slack.
 
 In `cim_seq`: +418 logic LUT, +2 SRL, +197 FF of control, the rest is the two buffers' LUT RAM.
 **The gates priced B's added control at 25 % of R6b's `cim_seq` (294 LUT, 224 FF) for all four blocks; one block
@@ -118,7 +123,18 @@ decision: it adds B's one map of 26 rows with in-place writes (the row lag) and 
 that saves storage, and should take the network energy toward the modelled 0.837 × S (about −7 % of total power at
 40 ms). The novelty is in the evaluation (`STREAMFUSE_NOVELTY.md`), not the mechanism.
 
-## 7. Reproduce
+## 7. Limits
+
+- One block only. The storage saving of B (one map of 26 rows written in place) is not built, so B1 needs more
+  activation storage than S (148,192 against 140,000 bits).
+- Energy is the model-based estimate [E] with the frozen rules; on the FPGA the line buffer and the fusion vector are
+  LUT RAM, in the estimate a 128-word SRAM and flip-flops.
+- With B1, L1 is never in ACT and L2..L8 are in the other map: the debug app `hopcim_seq_dbg`, which reads layers back
+  by S's map parity, is not adapted. The production firmware reads only the logits and the class.
+- The line-buffer source check is kept although it never binds in this order; a different fill order or a smaller
+  buffer could need it.
+
+## 8. Reproduce
 
 ```
 cd hopcim

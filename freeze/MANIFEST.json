@@ -1,5 +1,5 @@
 {
- "tag": "freeze-2026-11-08s",
+ "tag": "freeze-2026-11-08b1",
  "note": "Hashes of everything the frozen results depend on that is not in this repository.",
  "tools": [
   "Verilator: Verilator 5.040 2025-08-30 rev v5.040",
@@ -10,12 +10,18 @@
  ],
  "sources": {
   "xheep_base_commit": "b3eb3c8d626d3debe8e5cf99ecff32a5a31549fd",
-  "xheep_patch_sha256": "8b612c014e2be0c7ef19c1f90d2869c147bc0bc24b8f6e2162a073b9ddc44875",
-  "xheep_overlay": {
-   "files": 33,
-   "tree_sha256": "a9cc245e9c10d43999ad8dd148e22bea3c29346f581d98d7903ed1d5949647cd"
+  "xheep_series_tree": "fae0b21025cdce91dbeab08ed3f1c44e44be3015",
+  "xheep_patches": {
+   "0001-Build-environment-SiFive-GCC-10.1-multilib-Verilator.patch": "78e5d15ed6b982c9f8c549ce9a5f679ae00a5bafabbcbc3abbe98a6f03290f5d",
+   "0002-Nexys-A7-debug-over-the-on-board-USB-BSCANE2-and-the.patch": "2d915a49f24680268d8b450623a35f990c55c96238db2d97bd022445e945fc5e",
+   "0003-HopCIM-endpoint-hw-ip-hopcim-behind-FuseSoC-flags.patch": "af1b1f087729c8f621ca4b78de7bb29f26f2426c74f85578239a611ed411b672",
+   "0004-HopCIM-StreamFuse-B-in-block-1-behind-use_cim_b1.patch": "70c7d9f9e4cd90118376cebd732e99ec0c170f05a28fa97870deb014ce3f2671"
   },
-  "xheep_generated_system_sha256": "ceffa165d848c845ee9e203709ab2d8bcbb5fe03dfbeab1d7eb70897ae411d7b"
+  "xheep_generated_sha256": "3587562e2c60daf373125a89b6bbc45796ee4b40f414b84ba5d5408f67ecd429",
+  "firmware": {
+   "files": 26,
+   "tree_sha256": "59f1c74619a0ce16c6bad09055f051c01dd30b8d17e7fa3d9c5497f5283adada"
+  }
  },
  "bitstreams": {
   "xheep_nexys_bscan.bit": {
@@ -27,6 +33,12 @@
    "bytes": 3825915,
    "timing_rpt_sha256": "2af09c2343f7fe910b10d29feee944872639db6a0b76c81bc99eb2acc96e85c5",
    "carries": "every-k-hops option; the speaker test at 20, 40, 80 ms; the current live design (15.36 MHz)"
+  },
+  "xheep_nexys_bscan_cim128kb1.bit": {
+   "sha256": "738e5197b87e575ecd9cced4abceb08e6e33c2bf9055d4f3841e45fba8307755",
+   "bytes": 3825915,
+   "timing_rpt_sha256": "b95122f62c833bac504cb76c6b2c6016981a1c5533526ffdb02994949f11b150",
+   "carries": "B1: S with StreamFuse B in block 1, live design with k hops (15.36 MHz)"
   },
   "xheep_nexys_bscan_cim128ks.bit": {
    "sha256": "971ddb49bbf9e3a05574487a11ebd2f7ecc4511e53c1f0b81b3f5d7dd182d1fb",

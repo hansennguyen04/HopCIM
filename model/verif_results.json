@@ -8,13 +8,16 @@
   "log2": true,
   "mic_cim_div15_k1": true,
   "mic_cim_div15_k16": true,
+  "mic_cim_div15_k1_b1": true,
   "mic_cim_div15_k1_s": true,
   "mic_cim_div15_k2": true,
   "mic_cim_div15_k3": true,
   "mic_cim_div15_k4": true,
   "mic_cim_div15_k5": true,
+  "mic_cim_div4_k1_b1": true,
   "mic_cim_div4_k1_s": true,
   "mic_cim_div4_k2_s": true,
+  "mic_cim_div4_k4_b1": true,
   "mic_cim_div4_k4_s": true,
   "mic_cim_div5_k1": true,
   "mic_cim_div5_k1_s": true,
@@ -29,10 +32,13 @@
   "pdm": true,
   "pdm_sat": true,
   "seq_cim": true,
+  "seq_cim_b1": true,
   "seq_cim_s": true,
   "seq_ded": true,
+  "seq_ded_b1": true,
   "seq_ded_s": true,
   "stream_cim": true,
+  "stream_cim_b1": true,
   "stream_cim_edge": true,
   "stream_cim_s": true,
   "stream_cim_s_edge": true,
@@ -42,214 +48,238 @@
  },
  "assertions": {
   "audio.decision_count_steps": {
-   "active": 1246,
+   "active": 1475,
    "fail": 0
   },
   "audio.decision_only_on_network_hop": {
-   "active": 1246,
+   "active": 1475,
    "fail": 0
   },
   "audio.fe_go_when_allowed": {
-   "active": 3913,
+   "active": 4409,
    "fail": 0
   },
   "audio.hop_count_steps": {
-   "active": 3951,
+   "active": 4451,
    "fail": 0
   },
   "audio.hop_is_320_samples": {
-   "active": 3952,
+   "active": 4452,
    "fail": 0
   },
   "audio.pending_after_decision": {
-   "active": 1246,
+   "active": 1475,
    "fail": 0
   },
   "audio.row_in_range": {
-   "active": 771881333,
+   "active": 846928595,
    "fail": 0
   },
   "audio.sample_period": {
-   "active": 1270355,
+   "active": 1431282,
    "fail": 0
   },
   "audio.seq_go_when_allowed": {
-   "active": 3951,
+   "active": 4451,
    "fail": 0
   },
   "audio.stride_counter_bounded": {
-   "active": 771881333,
+   "active": 846928595,
    "fail": 0
   },
   "audio.wptr_follows_samples": {
-   "active": 1270431,
+   "active": 1431366,
    "fail": 0
   },
   "endpoint.cpu_go_not_on_owned_engine": {
-   "active": 34,
+   "active": 42,
    "fail": 0
   },
   "endpoint.irq_only_when_enabled": {
-   "active": 39313,
+   "active": 46770,
    "fail": 0
   },
   "endpoint.irq_when_enabled_and_pending": {
-   "active": 39313,
+   "active": 46770,
    "fail": 0
   },
   "endpoint.no_gnt_without_req": {
-   "active": 8068406,
+   "active": 9218162,
    "fail": 0
   },
   "endpoint.one_engine_master_seq_fe": {
-   "active": 16003005,
+   "active": 19189659,
    "fail": 0
   },
   "endpoint.rvalid_follows_gnt": {
-   "active": 8068406,
+   "active": 9218162,
    "fail": 0
   },
   "endpoint.seq_fe_not_with_cim_fe": {
-   "active": 169420111,
+   "active": 198653448,
    "fail": 0
   },
   "engine.busy_covers_pass": {
-   "active": 162287031,
+   "active": 191533060,
    "fail": 0
   },
   "engine.done_at_d_plus_5": {
-   "active": 16006040,
+   "active": 19192702,
    "fail": 0
   },
   "engine.done_is_a_pulse": {
-   "active": 32012080,
+   "active": 38385404,
    "fail": 0
   },
   "engine.input_bank_stable_port1": {
-   "active": 4888391,
+   "active": 5897161,
    "fail": 0
   },
   "engine.input_bank_stable_port2": {
-   "active": 109859875,
+   "active": 131540787,
    "fail": 0
   },
   "engine.no_done_without_pass": {
-   "active": 16006040,
+   "active": 19192702,
    "fail": 0
   },
   "engine.ready_low_d_minus_1": {
-   "active": 822888354,
+   "active": 913467167,
    "fail": 0
   },
   "engine.start_only_when_ready": {
-   "active": 16006040,
+   "active": 19192702,
    "fail": 0
   },
   "engine.tile_not_written_in_pass": {
-   "active": 577792,
+   "active": 679680,
    "fail": 0
   },
   "frontend.base_stable_while_busy": {
-   "active": 35933192,
+   "active": 40524156,
    "fail": 0
   },
   "frontend.done_ends_busy": {
-   "active": 5259,
+   "active": 5908,
    "fail": 0
   },
   "frontend.frame_time_bounded": {
-   "active": 35938451,
+   "active": 40530064,
    "fail": 0
   },
   "frontend.reads_inside_its_frame": {
-   "active": 35938451,
+   "active": 40530064,
    "fail": 0
   },
   "pdm.pdm_clock_duty_40_60": {
-   "active": 83356649,
+   "active": 93656604,
    "fail": 0
   },
   "pdm.pdm_clock_period": {
-   "active": 83356630,
+   "active": 93656585,
    "fail": 0
   },
   "pdm.valid_is_a_pulse": {
-   "active": 2604876,
+   "active": 2926746,
+   "fail": 0
+  },
+  "seq.b1_dw_not_to_act": {
+   "active": 1744000,
+   "fail": 0
+  },
+  "seq.b1_fill_each_word_once": {
+   "active": 545436,
+   "fail": 0
+  },
+  "seq.b1_fill_overwrites_dead_words": {
+   "active": 545000,
+   "fail": 0
+  },
+  "seq.b1_fv_overwrite_after_read": {
+   "active": 436000,
+   "fail": 0
+  },
+  "seq.b1_fv_read_complete": {
+   "active": 436000,
+   "fail": 0
+  },
+  "seq.b1_lb_read_holds_its_word": {
+   "active": 4137640,
    "fail": 0
   },
   "seq.block_slot_in_range": {
-   "active": 5580775,
+   "active": 6443448,
    "fail": 0
   },
   "seq.done_ends_busy": {
-   "active": 5203,
+   "active": 6012,
    "fail": 0
   },
   "seq.gather_starts_on_free_bank": {
-   "active": 11808914,
+   "active": 14161302,
    "fail": 0
   },
   "seq.go_only_when_ready": {
-   "active": 15851841,
+   "active": 19006983,
    "fail": 0
   },
   "seq.l8_act_only_when_stopped_after_l8": {
-   "active": 24000,
+   "active": 48000,
    "fail": 0
   },
   "seq.lane_channel_parity": {
-   "active": 33654064,
+   "active": 49773392,
    "fail": 0
   },
   "seq.layer_in_range": {
-   "active": 169420111,
+   "active": 198653448,
    "fail": 0
   },
   "seq.no_error_flag": {
-   "active": 169420111,
+   "active": 198653448,
    "fail": 0
   },
   "seq.one_phase_at_a_time": {
-   "active": 169420111,
+   "active": 198653448,
    "fail": 0
   },
   "seq.pair_writes_distinct_lanes": {
-   "active": 25903000,
+   "active": 36906500,
    "fail": 0
   },
   "seq.pop_has_a_tag": {
-   "active": 15744539,
+   "active": 18882927,
    "fail": 0
   },
   "seq.position_in_range": {
-   "active": 121868404,
+   "active": 137987732,
    "fail": 0
   },
   "seq.requant_keeps_count": {
-   "active": 5203,
+   "active": 6012,
    "fail": 0
   },
   "seq.results_drained_before_pop": {
-   "active": 15744539,
+   "active": 18882927,
    "fail": 0
   },
   "seq.row_in_range": {
-   "active": 5580775,
+   "active": 6443448,
    "fail": 0
   },
   "seq.sign_gate_exact": {
-   "active": 23865844,
+   "active": 35085333,
    "fail": 0
   },
   "seq.tag_queue_bounded": {
-   "active": 169420111,
+   "active": 198653448,
    "fail": 0
   }
  },
  "cover": {
-  "seq.requant_clamp_high": 450669,
-  "seq.requant_clamp_low": 42363294,
-  "seq.feature_clamp_high": 4133,
+  "seq.requant_clamp_high": 635194,
+  "seq.requant_clamp_low": 42436382,
+  "seq.feature_clamp_high": 4546,
   "seq.feature_clamp_low": 0
  },
  "coverage": {
@@ -363,20 +393,20 @@
   },
   "cim_seq": {
    "v_toggle": [
-    6030,
-    6348
-   ],
-   "v_branch": [
-    241,
-    246
+    8796,
+    9138
    ],
    "v_line": [
-    91,
-    91
+    107,
+    107
+   ],
+   "v_branch": [
+    311,
+    318
    ],
    "v_expr": [
-    202,
-    205
+    262,
+    268
    ]
   },
   "mfcc_ded": {
@@ -400,26 +430,26 @@
  },
  "totals": {
   "v_branch": [
-   557,
-   568
+   627,
+   640
   ],
   "v_expr": [
-   542,
-   556
+   602,
+   619
   ],
   "v_line": [
-   279,
-   281
+   295,
+   297
   ],
   "v_toggle": [
-   17593,
-   18920
+   20359,
+   21710
   ]
  },
  "uncovered": [
   {
    "module": "cim_endpoint",
-   "line": 444,
+   "line": 445,
    "text": "else if (seq_bmax_take) blk_max <= samp_wr ? obi_req_i.wdata[15:0] : 16'h8000;"
   },
   {
@@ -454,28 +484,38 @@
   },
   {
    "module": "cim_seq",
-   "line": 156,
+   "line": 173,
    "text": "if (t > 27'sd127) return 8'h7F;"
   },
   {
    "module": "cim_seq",
-   "line": 157,
+   "line": 174,
    "text": "if (t < -27'sd128) return 8'h80;"
   },
   {
    "module": "cim_seq",
-   "line": 421,
+   "line": 443,
    "text": "end else if (wp_frame_q) begin"
   },
   {
    "module": "cim_seq",
-   "line": 495,
+   "line": 517,
    "text": "if (rb_v) fb[rb_k] <= ($signed(rq_t) > 13'sd127) ? 8'h7F : ($signed(rq_t) < -13'sd128) ? 8'h80 : rq_t[7:0];"
   },
   {
    "module": "cim_seq",
-   "line": 853,
+   "line": 938,
    "text": "else if (pop && ((tq_cnt == 3'd0) || (d_rem > (RQ_2L ? 5'd2 : 5'd1)))) err_q <= 1'b1;"
+  },
+  {
+   "module": "cim_seq",
+   "line": 1213,
+   "text": "assign f_ly    = (f_yo == 5'd24) ? 5'd24 : f_yo + 5'd1;"
+  },
+  {
+   "module": "cim_seq",
+   "line": 1246,
+   "text": "fv_wp <= fv_we0 ? q4_d.p : r4_d.p;"
   },
   {
    "module": "mfcc_ded",

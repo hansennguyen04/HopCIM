@@ -343,6 +343,80 @@
    "bench_pass": false,
    "finished": true,
    "first": []
+  },
+  {
+   "name": "B1: fusion-vector source interlock removed",
+   "want": "seq.b1_fv_read_complete",
+   "caught": true,
+   "fails": [
+    "b1_fv_read_complete"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "b1_fv_read_complete tb_cim_seq.dut.i_seq.u_sva_b1 a pointwise chunk read an incomplete or wrong fusion-vector word at 761405000"
+   ]
+  },
+  {
+   "name": "B1: a fill ignores the readers of the word it replaces",
+   "want": "seq.b1_fill_overwrites_dead_words",
+   "caught": true,
+   "fails": [
+    "b1_fill_overwrites_dead_words",
+    "b1_lb_read_holds_its_word"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "b1_fill_overwrites_dead_words tb_cim_seq.dut.i_seq.u_sva_b1 a fill replaces a word that still has reads at 605745000",
+    "b1_lb_read_holds_its_word tb_cim_seq.dut.i_seq.u_sva_b1.unnamedblk6 a depthwise tap read a slot that does not hold its word at 605845000"
+   ]
+  },
+  {
+   "name": "B1: the fill writes the neighbouring slot",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "B1: pointwise reads the other fusion-vector half",
+   "want": "seq.b1_fv_read_complete",
+   "caught": true,
+   "fails": [
+    "b1_fv_overwrite_after_read",
+    "b1_fv_read_complete"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "b1_fv_read_complete tb_cim_seq.dut.i_seq.u_sva_b1 a pointwise chunk read an incomplete or wrong fusion-vector word at 606265000",
+    "b1_fv_overwrite_after_read tb_cim_seq.dut.i_seq.u_sva_b1.unnamedblk7.unnamedblk8 a fusion-vector word overwritten before it was read at 606925000"
+   ]
+  },
+  {
+   "name": "B1: a depthwise result also written to ACT",
+   "want": "seq.b1_dw_not_to_act",
+   "caught": true,
+   "fails": [
+    "b1_dw_not_to_act"
+   ],
+   "bench_pass": true,
+   "finished": true,
+   "first": [
+    "b1_dw_not_to_act tb_cim_seq.dut.i_seq.u_sva_b1 a depthwise result of the fused segment written to ACT at 604765000"
+   ]
+  },
+  {
+   "name": "B1: L2 written to map 0",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
   }
  ],
  "equivalent": [
@@ -358,6 +432,15 @@
   {
    "name": "S: no drain pacing with two lanes",
    "want": "seq.results_drained_before_pop",
+   "caught": false,
+   "fails": [],
+   "bench_pass": true,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "B1: line-buffer source interlock removed",
+   "want": "seq.b1_lb_read_holds_its_word",
    "caught": false,
    "fails": [],
    "bench_pass": true,

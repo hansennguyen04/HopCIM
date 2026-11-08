@@ -18,3 +18,14 @@ layer L2 (stop after it): 0 / 8000 mismatches, 20313 cycles from go
 layer L3 (stop after it): 0 / 8000 mismatches, 31586 cycles from go
 layer L4 (stop after it): 0 / 8000 mismatches, 36117 cycles from go
 layer L5 (stop after it): 0 / 8000 mismatches, 47390 cycles from go
+layer L6 (stop after it): 0 / 8000 mismatches, 51921 cycles from go
+layer L7 (stop after it): 0 / 8000 mismatches, 63194 cycles from go
+layer L8 (stop after it): 0 / 8000 mismatches, 67725 cycles from go
+  full clip  0: class  0 (golden  0), 67817 cycles go -> interrupt
+RESULT (medium): 0 errors
+PASS
+$finish called at time : 5746636 ns : File "/home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv" Line 331
+run: Time (s): cpu = 00:00:00.86 ; elapsed = 01:31:46 . Memory (MB): peak = 1301.035 ; gain = 0.000 ; free physical = 605 ; free virtual = 14695
+exit
+INFO: xsimkernel Simulation Memory Usage: 242328 KB (Peak: 296860 KB), Simulation CPU Usage: 5505080 ms
+INFO: [Common 17-206] Exiting xsim at Sun Nov  8 21:41:58 2026...

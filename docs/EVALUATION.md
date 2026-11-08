@@ -179,3 +179,20 @@ baseline that any later optimisation must beat.
 
 The bottleneck moves again: with S, the depthwise layers (engine-bound, 45,092 of 67,841 cycles) and leakage
 (36 of 69 µW at 40 ms [E]) dominate.
+
+## 12. B1: one StreamFuse-B block in RTL (2026-11-08)
+
+The one-block prototype the gates allow (`STREAMFUSE_B1.md`): L1 → line buffer → fusion vector → L2, on top of S.
+
+| | S | B1 |
+|---|---:|---:|
+| Network, go → interrupt (board) | 67,909 | **67,885** |
+| Network cycles, RTL against the schedule model | 67,841 = model | **67,817 = model**, every segment and access count |
+| ACT word reads / byte writes per inference | 42,960 / 64,000 | 33,470 / 56,000 |
+| Network energy per inference [E] | 1,120.8 nJ | **1,094.1 nJ** (−2.4 %) |
+| Total power at 40 ms [E] | 68.8 µW | 68.7 µW |
+| Endpoint, LUT / FF (out of context, same source) | 8,126 / 5,980 | 8,761 / 6,182 |
+| Live path on the board: overrun, CPU-active, real-audio logits | 0, 263, exact | 0, 263, exact |
+
+B1 is not worth keeping for its own gain; it shows that the schedule model behind the four-block numbers (B: 0.837 × S,
+0.575 × the storage) predicts B's mechanisms in RTL exactly, and that their control costs +420 LUT, +197 FF.

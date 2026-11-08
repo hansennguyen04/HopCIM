@@ -1,0 +1,1 @@
+check: PASS  /home/hansen0411/APlus_Project/planenest/hw/x-heep = X-HEEP b3eb3c8d626d + series (29 files) + generator (97 files); 26 firmware links and hw/ip/hopcim lead to /home/hansen0411/APlus_Project/hopcim; no other change

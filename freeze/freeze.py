@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Freeze and check HopCIM's results. Standard library only.
 
-  freeze.py snapshot    copy what lives outside hopcim/ into freeze/: the X-HEEP changes as a patch on its
-                        base commit, firmware and board scripts, UART logs, the accuracy gate, the novelty
-                        documents, tool versions. Proves that the patch reproduces the live X-HEEP files.
+  freeze.py snapshot    copy what lives outside hopcim/ into freeze/: board scripts, UART logs, the accuracy
+                        gate, the novelty documents, tool versions; check that the working X-HEEP tree is the
+                        patch series xheep/ (xheep/check.sh), whose patches and firmware are in this repository.
   freeze.py manifest    write freeze/MANIFEST.json (hashes of bitstreams, ELFs, models, dataset) and
                         freeze/RESULTS.md (every headline claim, its evidence, how to reproduce it)
   freeze.py check       recompute all hashes and check every claim against its evidence and the documents;
@@ -30,7 +30,7 @@ XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
 DISCOVERY = PROJECT / "research_discovery" / "20261026_application_driven"
 PILOT = PROJECT / "recim-rv" / "accelforge_pilot"
-TAG = "freeze-2026-11-08s"
+TAG = "freeze-2026-11-08b1"
 
 BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "board_kwlog.sh", "xheep_env.sh"]
 GATE_FILES = ["GATE_RESULTS.md", "GATE2_MANIFEST.md", "gate2_eval.py", "gate2_frozen.sha256", "gate2_results.json", "gate2_run.log"]
@@ -53,6 +53,7 @@ BITSTREAM_USE = {
     "xheep_nexys_bscan_pdm_cim128s_ded.bit": "layer sequencer (R6b), B3",
     "xheep_nexys_bscan_cim128ks.bit": "the baseline S, live design with k hops (15.36 MHz)",
     "xheep_nexys_bscan_cim128mic4s.bit": "the baseline S at its lowest real-time clock (4.096 MHz)",
+    "xheep_nexys_bscan_cim128kb1.bit": "B1: S with StreamFuse B in block 1, live design with k hops (15.36 MHz)",
 }
 STALE = [  # statements that were true once and must not come back
     ("docs/HOPCIM_PROPOSAL.md", "The full pipeline and f_min are open"),
@@ -103,50 +104,24 @@ def tree_hash(root):
     return h.hexdigest(), n
 
 
-def xheep_lists():
-    changed = [x for x in run("git", "diff", "--name-only", "HEAD", cwd=XHEEP).splitlines() if x]
-    others = [x for x in run("git", "ls-files", "--others", "--exclude-standard", cwd=XHEEP).splitlines() if x]
-    overlay = [x for x in others if not re.match(r"build_\w*/", x) and x != "hw/ip/hopcim"]
-    return changed, overlay
-
-
-# ------------------------------------------------------------------ snapshot
-def verify_patch(patch, changed):
-    """The patch on a clean copy of the base commit must reproduce the live files byte for byte."""
-    with tempfile.TemporaryDirectory() as tmp:
-        archive = subprocess.run(["git", "archive", "HEAD"], cwd=XHEEP, capture_output=True, check=True).stdout
-        subprocess.run(["tar", "-x", "-C", tmp], input=archive, check=True)
-        subprocess.run(["git", "apply", "--whitespace=nowarn", str(patch)], cwd=tmp, check=True)
-        bad = [c for c in changed if sha(Path(tmp) / c) != sha(XHEEP / c)]
-    return bad
+def xheep_check():
+    """xheep/check.sh on the working X-HEEP tree, with this repository's patches; the tree's links lead to the
+    repository in PROJECT (the same one, except in the self-test's throw-away clone)."""
+    env = {**os.environ, "XHEEP_CHECK_HOPCIM": str(PROJECT / "hopcim")}
+    r = subprocess.run(["bash", str(ROOT / "xheep" / "check.sh"), str(XHEEP)], capture_output=True, text=True, env=env)
+    return r.returncode == 0, (r.stdout + r.stderr).strip()
 
 
 def snapshot():
     x = HERE / "xheep"
     if x.exists():
         shutil.rmtree(x)
-    (x / "overlay").mkdir(parents=True)
-    changed, overlay = xheep_lists()
+    x.mkdir()
+    ok, txt = xheep_check()
+    if not ok:
+        sys.exit("the working X-HEEP tree is not the patch series:\n" + txt)
+    (x / "CHECK.txt").write_text(txt + "\n")
     base = run("git", "rev-parse", "HEAD", cwd=XHEEP).strip()
-    patch = x / "tracked_changes.patch"
-    patch.write_bytes(subprocess.run(["git", "diff", "--binary", "HEAD"], cwd=XHEEP, capture_output=True, check=True).stdout)
-    bad = verify_patch(patch, changed)
-    if bad:
-        sys.exit(f"the patch does not reproduce: {bad}")
-    for rel in overlay:
-        if rel.endswith(".core"):
-            sys.exit(f"{rel}: a .core file under hopcim/ would be found by FuseSoC through hw/ip/hopcim")
-        d = x / "overlay" / rel
-        d.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(XHEEP / rel, d)
-    gen = XHEEP / "hw" / "system" / "x_heep_system.sv"
-    (x / "generated").mkdir()
-    shutil.copy2(gen, x / "generated" / gen.name)
-    (x / "BASE.txt").write_text(
-        f"https://github.com/x-heep/x-heep.git\n{base}\n\n"
-        "To rebuild this tree: clone at that commit, `git apply tracked_changes.patch`, copy overlay/ over it,\n"
-        "and link the IP: ln -s <path to hopcim> hw/ip/hopcim. generated/ is what the build generator produced\n"
-        "(ignored by X-HEEP's git), kept for comparison.\n")
 
     b = HERE / "board"
     if b.exists():
@@ -179,8 +154,7 @@ def snapshot():
     for name, py in (("planenest", Path.home() / "venvs/planenest/bin/python"), ("kwsgate", Path.home() / "venvs/kwsgate/bin/python"),
                      ("accelforge_pilot", PILOT / ".venv312/bin/python")):
         (e / f"python_{name}.txt").write_text(tool_output(str(py), "-V") + "\n" + tool_output(str(py), "-m", "pip", "freeze"))
-    print(f"snapshot: X-HEEP {base[:12]}, {len(changed)} files patched (patch verified byte for byte), {len(overlay)} overlay files; "
-          f"{len(logs)} board logs")
+    print(f"snapshot: X-HEEP {base[:12]} = the patch series (xheep/check.sh PASS); {len(logs)} board logs")
 
 
 # ------------------------------------------------------------------ manifest
@@ -203,12 +177,12 @@ def artefacts():
 
 
 def source_hashes():
-    x = HERE / "xheep"
-    tree, n = tree_hash(x / "overlay")
-    return {"xheep_base_commit": (x / "BASE.txt").read_text().splitlines()[1],
-            "xheep_patch_sha256": sha(x / "tracked_changes.patch"),
-            "xheep_overlay": {"files": n, "tree_sha256": tree},
-            "xheep_generated_system_sha256": sha(x / "generated" / "x_heep_system.sv")}
+    env = dict(l.split("=", 1) for l in (ROOT / "xheep" / "base.env").read_text().splitlines() if l and not l.startswith("#"))
+    fw, n = tree_hash(ROOT / "sw" / "applications")
+    return {"xheep_base_commit": env["XHEEP_COMMIT"], "xheep_series_tree": env["XHEEP_SERIES_TREE"],
+            "xheep_patches": {p.name: sha(p) for p in sorted((ROOT / "xheep" / "patches").glob("*.patch"))},
+            "xheep_generated_sha256": sha(ROOT / "xheep" / "generated.sha256"),
+            "firmware": {"files": n, "tree_sha256": fw}}
 
 
 def manifest():
@@ -300,6 +274,39 @@ def far_check():
             and all(has(FAR_LOG, rf"{name}\s+reports\s+{n},\s+{rate} per hour") for name, n, rate in pooled))
 
 
+UTIL_B1 = "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1_SEQ_B11/utilization.rpt"
+UTIL_S_SAME = "syn/ooc_cim_endpoint_S_same_source_as_B1/utilization.rpt"
+
+
+def timing_s_check():
+    r = json.loads((ROOT / "model" / "timing_results.json").read_text())
+    h = {x["name"]: x for x in r["hop_s"]}
+    s = r["seq_s"]
+    base = [x for x in s if x["d"] == 9 and x["lat"] == 5]
+    return ({n: h[n]["nmin"] for n in h} == {"baseline": 4, "own_clock": 4, "2b": 8, "2b_plus_8": 11}
+            and all(x["at"]["passed"] and x["at"]["overrun"] == 0 and x["below"]["overrun"] > 0 for x in h.values())
+            and h["baseline"]["worst"] == 80072 and len(s) == 28 and all(x["data_errors"] == 0 and x["hazards"] == 0 for x in s)
+            and len(base) == 1 and base[0]["cycles"] == 67841 and round(100 * 7501 * 9 / base[0]["cycles"], 1) == 99.5)
+
+
+def b1_check():
+    m = json.loads((ROOT / "model" / "streamfuse_results.json").read_text())["B1"]
+    e = json.loads((ROOT / "model" / "energy_b1_rtl.json").read_text())
+    log = (ROOT / "sim" / "seq_tb_cim_b1.log").read_text()
+    stops = [int(v) for v in re.findall(r"stop after it\): 0 / 8000 mismatches, (\d+) cycles from go", log)]
+    cum, acc = [], 0
+    for x in m["B1"]["segments"]:
+        acc += x
+        cum.append(acc)
+    rtl = [stops[0], stops[1]] + stops[3:] + [int(re.search(r"full inference (\d+)\.\.(\d+)", log)[1])]
+    mc = m["B1"]
+    return (m["B1"]["total"] == 67817 and cum == rtl and stops[1] == stops[2] and len(stops) == 9 and m["exact"]["clips"] == 4890 and m["exact"]["bad_clips"] == 0
+            and e["cycles"] == 67817 and e["cycles_S"] == 67841 and e["act_reads"] == mc["reads"]["act"]
+            and e["counts"] == dict(gather_lb=mc["reads"]["lb"], gather_fv=mc["reads"]["fv"], fill_act_reads=mc["word_writes"]["lb"],
+                                     lb_writes=mc["word_writes"]["lb"], fv_byte_writes=mc["byte_writes"]["fv"])
+            and has("sim/seq_allclips_b1.log", r"4890 clips, 0 with a logit or class error, 0 errors; 67817\.\.67817") and has("sim/seq_tb_cim_b1.log", r"(?m)^PASS"))
+
+
 def claims():
     """id, label, text, evidence file, check, documents that must quote it, how to reproduce."""
     py = "`~/venvs/planenest/bin/python`"
@@ -356,23 +363,23 @@ def claims():
         dict(id="D2", label="[M]", text="Endpoint with cim_fe, out of context: 7,635 LUT, 5,819 FF, 145 DSP",
              evidence=UTIL, check=lambda: has(UTIL, r"\| cim_endpoint\s+\|\s+\(top\) \|\s+7635 \|.*\|\s+5819 \|.*\|\s+145 \|"),
              docs=[("docs/LIVE_AUDIO.md", "7,635 (+18)")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15`"),
-        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository, R6b and the baseline S: 40 of 40 benches pass",
-             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"40 of 40 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
+        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository, R6b, the baseline S and B1: 46 of 46 benches pass",
+             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"46 of 46 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
              docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 15 min"),
-        dict(id="D4", label="[M]", text="RTL regression in the main tree, R6b and the baseline S, with the directed benches of extreme input, stalls and overrun: 40 of 40 benches pass (one of them: R6b must overrun at 4.096 MHz)",
-             evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"40 of 40 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL")
+        dict(id="D4", label="[M]", text="RTL regression in the main tree, R6b, the baseline S and B1, with the directed benches of extreme input, stalls and overrun: 46 of 46 benches pass (one of them: R6b must overrun at 4.096 MHz)",
+             evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"46 of 46 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL")
              and has("freeze/regression_main.log", r"PASS  !run_mic_tb\.sh cim 4 1 "),
-             docs=[("docs/VERIFICATION.md", "40 of 40 pass")], how="`sim/run_all.sh`, about 15 min"),
-        dict(id="D5", label="[M]", text="Assertions: 51, all exercised, none failing over 39 benches (R6b and S); every uncovered line explained",
+             docs=[("docs/VERIFICATION.md", "46 of 46 pass")], how="`sim/run_all.sh`, about 15 min"),
+        dict(id="D5", label="[M]", text="Assertions: 57, all exercised, none failing over 45 benches (R6b, S and B1); every uncovered line explained",
              evidence="model/verif_results.json",
-             check=lambda: len(jget("model/verif_results.json", "assertions")) == 51 and all(v["active"] > 0 and v["fail"] == 0 for v in jget("model/verif_results.json", "assertions").values())
-             and len(jget("model/verif_results.json", "benches")) == 39 and all(jget("model/verif_results.json", "benches").values()),
-             docs=[("docs/VERIFICATION.md", "51, all exercised, none failing")], how="`sim/run_cov.sh 6`, then `python3 model/verif_report.py`"),
-        dict(id="D6", label="[M]", text="Mutation test: 27 of 27 broken designs caught (16 of R6b, 11 of S), by the assertion named or the bench; the 2 equivalent changes change nothing",
+             check=lambda: len(jget("model/verif_results.json", "assertions")) == 57 and all(v["active"] > 0 and v["fail"] == 0 for v in jget("model/verif_results.json", "assertions").values())
+             and len(jget("model/verif_results.json", "benches")) == 45 and all(jget("model/verif_results.json", "benches").values()),
+             docs=[("docs/VERIFICATION.md", "57, all exercised, none failing")], how="`sim/run_cov.sh 6`, then `python3 model/verif_report.py`"),
+        dict(id="D6", label="[M]", text="Mutation test: 33 of 33 broken designs caught (16 of R6b, 11 of S, 6 of B1), by the assertion named or the bench; the 3 equivalent changes change nothing",
              evidence="model/verif_mutants.json",
-             check=lambda: len(jget("model/verif_mutants.json", "mutants")) == 27 and all(m["caught"] for m in jget("model/verif_mutants.json", "mutants"))
-             and all(m["bench_pass"] and not m["fails"] for m in jget("model/verif_mutants.json", "equivalent")),
-             docs=[("docs/VERIFICATION.md", "27 of 27 caught")], how="`python3 model/verif_mutants.py 4`, about 15 min"),
+             check=lambda: len(jget("model/verif_mutants.json", "mutants")) == 33 and all(m["caught"] for m in jget("model/verif_mutants.json", "mutants"))
+             and len(jget("model/verif_mutants.json", "equivalent")) == 3 and all(m["bench_pass"] and not m["fails"] for m in jget("model/verif_mutants.json", "equivalent")),
+             docs=[("docs/VERIFICATION.md", "33 of 33 caught")], how="`python3 model/verif_mutants.py 4`, about 30 min"),
         dict(id="D7", label="[M]", text="Post-synthesis, whole endpoint with cim_fe: every layer of a clip and one full inference exact on the Vivado netlist",
              evidence="sim/xsim_endpoint_nl/run.log",
              check=lambda: has("sim/xsim_endpoint_nl/run.log", r"RESULT \(medium\): 0 errors") and has("sim/xsim_endpoint_nl/run.log", r"(?m)^PASS"),
@@ -450,6 +457,39 @@ def claims():
              and has(MICREC4_CHECK, r"at 4096000 Hz, overrun 0") and has(MICREC4_CHECK, r"25 with the window inside the recording: 0 differ from the golden model"),
              docs=[("docs/BASELINE_S.md", "**6,000 decisions in 120 s, 500 per 10 s, overrun 0**"), ("docs/LIVE_AUDIO.md", "6,000 decisions in 120 s")],
              how="`board_run.sh hopcim_live_nexys_4m096.elf bitstreams/xheep_nexys_bscan_cim128mic4s.bit 130`; hopcim_micrec_nexys_4m096.elf, then `model/check_micrec.py --k 1 <log>`"),
+        dict(id="H3", label="[M]", text="Timing sweep with S: lowest real-time clock 4.096 MHz at max(8, b) and with a macro on its own clock, 8.192 MHz at max(8, 2b), 11.264 MHz at max(8, 2b + 8); 28 grid points bit-exact; the engine is busy 99.5 % at today's timing",
+             evidence="model/timing_results.json", check=timing_s_check,
+             docs=[("docs/TIMING_SENSITIVITY.md", "11.264 MHz"), ("docs/TIMING_SENSITIVITY.md", "99.5 %")], how="`python3 model/timing_sweep.py seq_s; hop_s`, about 45 min"),
+        dict(id="X1", label="[M]", text="X-HEEP integration as a patch series: a clean clone, xheep/setup.sh on upstream X-HEEP and xheep/build.sh s give the S bitstream bit for bit, except the 4 bytes of the build time in its header",
+             evidence="xheep/cleanclone_s.log",
+             check=lambda: has("xheep/cleanclone_s.log", r"differing bytes: 4, at offsets 115 117 120 121") and has("xheep/cleanclone_s.log", r"identical after the header: yes")
+             and has("xheep/cleanclone_s.log", "original   : " + jget("freeze/MANIFEST.json", "bitstreams", "xheep_nexys_bscan_cim128ks.bit", "sha256")),
+             docs=[("docs/INTEGRATION.md", "apart from the 4 bytes of the build time")], how="`xheep/setup.sh <dir>; xheep/build.sh <dir> s`, about 40 min"),
+        dict(id="U1", label="[M]", text="B1 (StreamFuse B in block 1) in RTL equals its schedule model: 67,817 cycles (S 67,841), every segment and every access count; all 4,890 test clips bit-exact",
+             evidence="sim/seq_allclips_b1.log", check=b1_check,
+             docs=[("docs/STREAMFUSE_B1.md", "**67,817**"), ("docs/STREAMFUSE_B1.md", "**4,890 clips, 0 logit or class errors**")],
+             how=f"{py} model/streamfuse_sched.py b1; `sim/run_seq_tb.sh cim b1`; `sim/run_seq_allclips.sh b1`; `sim/run_energy_counts.sh cim 5 1 b1`"),
+        dict(id="U2", label="[E]", text="Estimate: B1 priced from its RTL counters, 1,094.1 nJ per inference (2.4 % below S), 68.7 µW at 40 ms (S 68.8); equal to its model",
+             evidence="model/energy_b1_rtl.json",
+             check=lambda: round(jget("model/energy_b1_rtl.json", "variants", "baseline", "B1_nJ"), 1) == 1094.1 and round(jget("model/energy_b1_rtl.json", "variants", "baseline", "S_nJ"), 1) == 1120.8
+             and round(jget("model/energy_b1_rtl.json", "variants", "baseline", "power_B1_uW", "2"), 1) == 68.7
+             and all(abs(v["B1_nJ"] - v["B1_model_nJ"]) < 1e-6 for v in jget("model/energy_b1_rtl.json", "variants").values()),
+             docs=[("docs/STREAMFUSE_B1.md", "1,094.1 nJ (−2.4 %)")], how="`python3 model/energy_est.py b1_rtl`"),
+        dict(id="U3", label="[M]", text="Endpoint with B1, out of context: 8,761 LUT, 6,182 FF, 46.5 BRAM tiles, 147 DSP; against S on the same source +635 LUT (+218 of it LUT RAM), +202 FF, no BRAM or DSP",
+             evidence=UTIL_B1,
+             check=lambda: has(UTIL_B1, r"\| Slice LUTs\s+\|\s+8761 \|") and has(UTIL_B1, r"\| Slice Registers\s+\|\s+6182 \|") and has(UTIL_B1, r"\| DSPs\s+\|\s+147 \|")
+             and has(UTIL_B1, r"\| Block RAM Tile\s+\|\s+46\.5 \|") and has(UTIL_S_SAME, r"\| Slice LUTs\s+\|\s+8126 \|") and has(UTIL_S_SAME, r"\| Slice Registers\s+\|\s+5980 \|"),
+             docs=[("docs/STREAMFUSE_B1.md", "**8,761**")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15 SEQ_S=1 SEQ_B1=1`"),
+        dict(id="U4", label="[M]", text="B1 on the board at 15.36 MHz: 67,885 cycles go to interrupt, 60 runs bit-exact; 500, 250, 125 decisions per 10 s with no overrun, 263, 263, 266 CPU-active cycles; real-microphone logits exact at 25, 13, 7 of 25, 13, 7 decisions",
+             evidence=B + "khop_board_20261108_204925.log",
+             check=lambda: has(B + "hopcim_seq_nexys_15m36_board_20261108_204404.uart.log", r"sequencer per inference \(go -> interrupt\): 67885\.\.67885 cycles")
+             and has(B + "hopcim_seq_nexys_15m36_board_20261108_204404.uart.log", r"60 runs bit-exact -> PASS")
+             and has(B + "khop_board_20261108_204925.log", r"recordings all exact")
+             and all(has(B + "khop_board_20261108_204925.log", rf"\[10 s\] {n} decisions \(0 missed while printing\), 0 keywords, overrun 0; CPU-active per decision {c} cycles") for n, c in ((500, 263), (250, 263), (125, 266)))
+             and all(has(B + "khop_board_20261108_204925.log", rf"{n} with the window inside the recording: 0 differ from the golden model") for n in (25, 13, 7))
+             and not has(B + "khop_board_20261108_204925.log", r"overrun [1-9]"),
+             docs=[("docs/STREAMFUSE_B1.md", "67,885 cycles go to interrupt")],
+             how="`board_run.sh hopcim_seq_nexys_15m36.elf bitstreams/xheep_nexys_bscan_cim128kb1.bit 300`; `board/board_khop.sh 42 bitstreams/xheep_nexys_bscan_cim128kb1.bit`"),
     ]
 
 
@@ -478,13 +518,15 @@ THESIS_TABLES = [
     ("Where the cycles go: CPU only, CPU-driven CIM, hardware sequencer, window path", ["B1", "B2", "B3", "B4"]),
     ("Live system: decisions, overrun, CPU-active cycles, real audio, lowest clock, k hops", ["C1", "C2", "C3", "C4"]),
     ("Spoken keywords, same-audio logger, GSC streams, false alarms", ["C5", "G1", "G2", "G3"]),
-    ("Macro timing sensitivity", ["H1", "H2"]),
+    ("Macro timing sensitivity", ["H1", "H2", "H3"]),
     ("Verification: regression, assertions, mutants, netlists", ["D1", "D3", "D4", "D5", "D6", "D7"]),
     ("FPGA resources", ["D2"]),
     ("Energy estimate [E]", ["F1", "F2", "F3"]),
     ("Activation reuse against a lower cadence", ["E1", "F2"]),
     ("Dataflow options (StreamFuse model study)", ["S1", "S2"]),
     ("The baseline S: RTL, lowest clock, energy, cost, board", ["S3", "S4", "S5", "S6", "S7", "S8"]),
+    ("B1: one StreamFuse-B block in RTL against its model and S", ["U1", "U2", "U3", "U4"]),
+    ("Reproducible build: the X-HEEP patch series", ["X1"]),
 ]
 FINAL_TABLE = [  # the baseline table of docs/HopCIM_Specific_Next_Steps_and_Professor_Advice.md section 18
     ("CPU only", "B1", "measured on the board"),
@@ -492,7 +534,7 @@ FINAL_TABLE = [  # the baseline table of docs/HopCIM_Specific_Next_Steps_and_Pro
     ("R6b sequencer (today)", "B3, F1, D2", "measured; energy [E]"),
     ("S (sign gating, second lane, no L8 write)", "S3, S4, S5, S6, S7, S8", "built: RTL and board measured, lowest clock 4.096 MHz; energy [E] from the RTL's counters"),
     ("40-ms S", "S7, S5", "board: 250 decisions per 10 s, no overrun, real-audio logits exact; energy [E]"),
-    ("StreamFuse-B (optional)", "S2", "model only"),
+    ("StreamFuse-B (optional)", "S2, U1, U2, U3, U4", "all of B: model only; one block (B1) built: RTL = model, board measured, energy [E] from the RTL's counters"),
     ("B3 dedicated MFCC", "A3", "measured; resources in docs/B3_BASELINE.md"),
 ]
 SPEAKER_LOGS = ["hopcim_kwtest_nexys_board_20261107_151805.uart.log", "hopcim_kwtest_k2_nexys_board_20261107_152243.uart.log",
@@ -511,9 +553,12 @@ def results_freeze_md(m):
          "Generated by `freeze/freeze.py manifest`; `freeze/freeze.py check` fails if it is out of date. Every thesis table "
          "is traceable to the commit that tag `" + TAG + "` names, a command, and an output file.", "",
          "## 1. Freeze point", "",
-         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`, `freeze-2026-11-08` (before S).",
-         f"- X-HEEP base commit `{m['sources']['xheep_base_commit']}`, changes as `freeze/xheep/tracked_changes.patch` "
-         f"(sha256 `{m['sources']['xheep_patch_sha256'][:16]}…`), overlay {m['sources']['xheep_overlay']['files']} files.", "",
+         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`, "
+         "`freeze-2026-11-08` (before S), `freeze-2026-11-08s` (S; X-HEEP still as one patch and an overlay).",
+         f"- X-HEEP base commit `{m['sources']['xheep_base_commit']}` with the patch series `xheep/patches` "
+         f"({len(m['sources']['xheep_patches'])} patches, result tree `{m['sources']['xheep_series_tree'][:12]}`), built by "
+         "`xheep/setup.sh` and checked by `xheep/check.sh`; firmware in `sw/applications` "
+         f"({m['sources']['firmware']['files']} files).", "",
          "## 2. Model and data", "", "| Item | Path | sha256 |", "|---|---|---|"]
     for k, v in m["models"].items():
         L.append(f"| {k} | `{v['path']}` | `{v['sha256']}` |")
@@ -558,16 +603,17 @@ def check():
     a = artefacts()
     for key in ("bitstreams", "elfs", "models", "dataset"):
         say(a[key] == m[key], f"{key}: {len(a[key])} entries" if key != "dataset" else f"dataset: {a[key]['clips']} clips, tree {a[key]['tree_sha256'][:12]}")
-    say(source_hashes() == m["sources"], "X-HEEP snapshot hashes")
+    s, ms = source_hashes(), m["sources"]
+    say({k: v for k, v in s.items() if k != "firmware"} == {k: v for k, v in ms.items() if k != "firmware"}, "X-HEEP series hashes")
+    say(s["firmware"] == ms["firmware"], f"firmware hashes ({s['firmware']['files']} files)")
     rf = HERE / "RESULTS_FREEZE.md"
     say(rf.exists() and rf.read_text() == results_freeze_md(m), "RESULTS_FREEZE.md is current")
 
     print("Snapshot against the live files")
-    changed, overlay = xheep_lists()
-    base = run("git", "rev-parse", "HEAD", cwd=XHEEP).strip()
-    say(base == m["sources"]["xheep_base_commit"], f"X-HEEP base commit {base[:12]}")
-    say(not verify_patch(HERE / "xheep" / "tracked_changes.patch", changed), f"patch reproduces the {len(changed)} live changed files")
-    say(all((HERE / "xheep" / "overlay" / r).exists() and sha(HERE / "xheep" / "overlay" / r) == sha(XHEEP / r) for r in overlay), f"{len(overlay)} overlay files equal the live ones")
+    ok, txt = xheep_check()
+    say(ok, "the working X-HEEP tree is the patch series (xheep/check.sh)")
+    if not ok:
+        print("        " + "\n        ".join(txt.splitlines()[:8]))
     say(all(sha(HERE / "board" / s) == sha(HW / s) for s in BOARD_SCRIPTS), "board scripts equal the live ones")
     say(all(sha(HERE / "gate" / f) == sha(GATE / f) for f in GATE_FILES), "accuracy gate files equal the live ones")
 
