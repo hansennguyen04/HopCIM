@@ -6,12 +6,13 @@
 # Then run the binary from hopcim/ with plusargs, e.g.
 #   sim/obj_tm_seq_cim/Vtb_cim_seq +CIM_DMIN=9 +CIM_LAT=5
 # HOLD=1 builds with the sequencer's input-bank hold following the plusarg +CIM_HOLD (see below).
+# S=1 builds the baseline S in the sequencer (bench parameter S, BASELINE_S.md); the objects get the suffix _s.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$HOME/APlus_Project/planenest/hw/xheep_env.sh" >/dev/null
 PKG="$HOME/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv"
 [ "${1:-}" = build ] || { sed -n 2,9p "$0"; exit 1; }
-BENCH="$2"; MODE="${3:-cim}"; DIV="${4:-15}"; K="${5:-1}"; HOLD="${HOLD:-0}"
+BENCH="$2"; MODE="${3:-cim}"; DIV="${4:-15}"; K="${5:-1}"; HOLD="${HOLD:-0}"; SB="${S:-0}"
 DED=0; [ "$MODE" = ded ] && DED=1
 SEQ="$ROOT/rtl/cim_seq.sv"
 SUF=""
@@ -54,6 +55,9 @@ case "$BENCH" in
           EXTRA=(-GDED=$DED -GCLKDIV=$DIV -GNET_K=$K); TB=("$ROOT/tb/hop_monitor.sv" "$ROOT/tb/tb_cim_mic.sv") ;;
   *) echo "unknown bench $BENCH"; exit 1 ;;
 esac
+if [ "$SB" = 1 ]; then
+  case "$BENCH" in seq|mic) EXTRA+=(-GS=1); SUF="${SUF}_s" ;; *) echo "S=1 is for the seq and mic benches"; exit 1 ;; esac
+fi
 OBJ="$ROOT/sim/$OBJ$SUF"
 LOG="$ROOT/sim/build_${OBJ##*/}.log"
 verilator --binary --timing -Wno-fatal -j "${JOBS:-6}" -O2 --top-module "$TOP" ${EXTRA[@]+"${EXTRA[@]}"} -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \

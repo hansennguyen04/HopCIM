@@ -5,6 +5,8 @@ tb/cim_engine_tm.sv at many macro timings. Standard library only.
   timing_sweep.py seq     cycles per inference over issue interval and result latency, bit-exactness
   timing_sweep.py hop     for each macro assumption: worst hop in the live path, the lowest real-time
                           divider, confirmed by running at it and one below
+  timing_sweep.py seq_s   the same for the baseline S, over the plan's D = max(8, alpha b + beta) and L grid
+  timing_sweep.py hop_s   the live path with S at max(8, b), max(8, 2b), max(8, 2b + 8) and a fast macro
   timing_sweep.py report  tables from model/timing_results.json
 The D in the tables is the interval of a network pass (b = 9): ceil(9 / BPC) * CPB, at least DMIN, + D0.
 """
@@ -158,6 +160,104 @@ def do_hop():
         return list(ex.map(do_hop_one, ASSUME))
 
 
+# ------------------------------------------------------------------ the baseline S (BASELINE_S.md)
+# The plan's sweep D = max(Dmin, alpha b + beta): alpha is cycles per bit (cpb), beta the constant (d0).
+# The engine model computes max(Dmin, alpha b) + beta, the same value whenever alpha b >= Dmin, which
+# holds for every pass here (b >= 8). alpha = 1.5 has no integer form; ceil(b / 2) * 3 (15 for b = 9) stands in.
+def seq_configs_s():
+    cfgs = [dict(bpc=24, dmin=1, lat=2)]                       # a macro on its own fast clock, D = 1
+    for cpb in (1, 2):
+        for d0 in (0, 4, 8):
+            for lat in (3, 5, 8, 16):
+                cfgs.append(dict(cpb=cpb, d0=d0, lat=lat))
+    for d0 in (0, 4, 8):
+        cfgs.append(dict(bpc=2, cpb=3, d0=d0, lat=5))
+    return cfgs
+
+
+def model_cycles_s(d, lat):
+    """S: two requantisation lanes, so a pass of 16 results needs 8 cycles; the gather of depthwise passes stays at 9."""
+    d8 = max(d, 8, (d + lat) / 4)
+    d9 = max(d, 9, (d + lat) / 4)
+    return 2500 * d8 + 5000 * d9 + 10 * (lat + 30)
+
+
+def run_seq_s(c):
+    b = os.path.join(ROOT, "sim", "obj_tm_seq_cim_hold_s", "Vtb_cim_seq")
+    r = subprocess.run([b] + plus(c), cwd=ROOT, capture_output=True, text=True)
+    t = re.search(r"CIM_TM .*?: (\d+) passes, mean D ([\d.]+)", r.stdout)
+    return dict(cfg=c, d=d_net(c), lat=c.get("lat", 5), passes=int(t.group(1)) if t else None,
+                mean_d=float(t.group(2)) if t else None, **parse_seq(r.stdout))
+
+
+def do_seq_s():
+    subprocess.run(["bash", "sim/run_timing.sh", "build", "seq", "cim"], cwd=ROOT, check=True, env=dict(os.environ, HOLD="1", S="1"))
+    res = []
+    with cf.ThreadPoolExecutor(JOBS) as ex:
+        for x in ex.map(run_seq_s, seq_configs_s()):
+            res.append(x)
+            print(f"S: D {x['d']:3d} L {x['lat']:3d}: {x['cycles']} cycles, data errors {x['data_errors']}, hazards {x['hazards']}, "
+                  f"model {model_cycles_s(x['d'], x['lat']):.0f}", flush=True)
+    return res
+
+
+ASSUME_S = [
+    ("baseline", "max(8, b), L = 5: HopCIM's engine (ENGINE_SPEC)", dict(lat=5)),
+    ("own_clock", "own fast macro clock, D = 1, 2-cycle synchroniser", dict(bpc=24, dmin=1, lat=2)),
+    ("2b", "max(8, 2b), L = 5: 2 system cycles per bit", dict(cpb=2, lat=5)),
+    ("2b_plus_8", "max(8, 2b + 8), L = 5: the plan's very conservative point", dict(cpb=2, d0=8, lat=5)),
+]
+BUILT_S = {}
+
+
+def mic_bin_s(n):
+    with BUILT_LOCK:
+        entry = BUILT_S.setdefault(n, dict(lock=threading.Lock(), path=None))
+    with entry["lock"]:
+        if entry["path"] is None:
+            env = dict(os.environ, HOLD="1", S="1", JOBS="4")
+            r = subprocess.run(["bash", "sim/run_timing.sh", "build", "mic", "cim", str(n)], cwd=ROOT, env=env, capture_output=True, text=True)
+            if r.returncode:
+                raise RuntimeError(r.stdout[-2000:])
+            entry["path"] = r.stdout.strip().splitlines()[-1]
+    return entry["path"]
+
+
+def do_hop_one_s(item):
+    name, text, c = item
+    d = d_net(c)
+    pred = model_cycles_s(d, c.get("lat", 5)) + 12500
+    first = max(math.ceil(pred / HOP) + 1, 5)
+    a = run_mic(mic_bin_s(first), c)
+    worst = a["worst"]
+    nmin = math.ceil(worst / HOP)
+    while nmin * HOP - worst < 16:
+        nmin += 1
+    at = run_mic(mic_bin_s(nmin), c)
+    below = run_mic(mic_bin_s(nmin - 1), c) if nmin > 2 else None   # the PDM divider is at least 2
+    print(f"S {name}: D {d}, worst hop {worst} (at divider {first}), lowest divider {nmin} = {nmin * 1.024:.3f} MHz; "
+          f"at it pass={at['passed']} overrun={at['overrun']}; below pass={below and below['passed']} overrun={below and below['overrun']}", flush=True)
+    return dict(name=name, text=text, cfg=c, d=d, lat=c.get("lat", 5), worst=worst, mean_net=a["mean_net"], worst_nonet=a["worst_nonet"],
+                first_divider=first, first_pass=a["passed"], nmin=nmin, fmin_mhz=nmin * 1.024, at=at, below=below)
+
+
+def do_hop_s():
+    with cf.ThreadPoolExecutor(min(JOBS, 4)) as ex:
+        return list(ex.map(do_hop_one_s, ASSUME_S))
+
+
+def report_s(res):
+    if res.get("seq_s"):
+        rows = [x for x in res["seq_s"] if x["cycles"]]
+        errs = [abs(x["cycles"] - model_cycles_s(x["d"], x["lat"])) / x["cycles"] for x in rows]
+        print(f"S: model against the benches: worst error {100 * max(errs):.2f} %, over {len(rows)} timings; "
+              f"bit-exact at {sum(x['data_errors'] == 0 for x in rows)} of {len(res['seq_s'])}; hazards at {sum(bool(x['hazards']) for x in rows)}")
+    if res.get("hop_s"):
+        for h in res["hop_s"]:
+            print(f"S {h['name']}: D {h['d']} L {h['lat']}: worst hop {h['worst']}, lowest clock {h['fmin_mhz']:.3f} MHz "
+                  f"(at it: pass {h['at']['passed']}, overrun {h['at']['overrun']}; below: {h['below'] and h['below']['overrun']} overruns)")
+
+
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "report"
     res = json.load(open(OUT)) if os.path.exists(OUT) else {}
@@ -165,6 +265,10 @@ def main():
         res["seq"] = do_seq()
     elif cmd == "hop":
         res["hop"] = do_hop()
+    elif cmd == "seq_s":
+        res["seq_s"] = do_seq_s()
+    elif cmd == "hop_s":
+        res["hop_s"] = do_hop_s()
     elif cmd != "report":
         sys.exit(__doc__)
     with open(OUT, "w") as f:
@@ -178,6 +282,7 @@ def main():
         for x in res["seq"]:
             if not x["cycles"]:
                 print(f"  D {x['d']} L {x['lat']}: stopped by the bench's 400-ms watchdog, {x['data_errors']} data errors until then")
+    report_s(res)
 
 
 if __name__ == "__main__":

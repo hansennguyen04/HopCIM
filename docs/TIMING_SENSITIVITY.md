@@ -125,6 +125,60 @@ estimate of the second row was 3.6 % and 6.1 % low on these two counts; the cloc
 **Energy [E].** The array's energy per pass does not depend on D. The sequencer's logic does scale with its busy time: at the estimate's 2.3 pJ per cycle, D = 18
 adds at most 115 nJ per inference (8 %), and D = 36 at most 424 nJ (31 %). D below 9 saves nothing.
 
+## 6a. The baseline S (2026-11-08)
+
+The plan's sweep D = max(8, αb + β) with L = 3, 5, 8, 16, run on S (`BASELINE_S.md`) with the same behavioural
+engine (`timing_sweep.py seq_s`, `hop_s`; `run_timing.sh` with `S=1`). For every pass here αb ≥ 8, so the model's
+max(8, αb) + β is the plan's formula exactly. α = 1.5 has no integer form; ⌈b/2⌉·3 (15 for b = 9) stands in.
+
+**Validation:** at the RTL's timing the S bench with the behavioural engine gives a log identical to the RTL's
+(67,841 cycles, 0 errors), and the live path the worst hop measured on the RTL, 80,072.
+
+| Network passes (b = 9) | D | L = 3 | L = 5 | L = 8 | L = 16 | Engine busy (L = 5) |
+|---|---:|---:|---:|---:|---:|---:|
+| own fast clock (L = 2) | 1 | | 65,236 (L = 2) | | | 11.5 % |
+| **max(8, b), HopCIM's assumption** | 9 | 67,821 | **67,841** | 67,871 | 67,951 | 99.5 % |
+| max(8, b + 4) | 13 | 97,825 | 97,845 | 97,875 | 97,955 | 99.7 % |
+| ≈ max(8, 1.5b) | 15 | | 112,847 | | | 99.7 % |
+| max(8, b + 8) | 17 | 127,829 | 127,849 | 127,879 | 127,959 | 99.7 % |
+| **max(8, 2b)** | 18 | 135,330 | **135,350** | 135,380 | 135,460 | 99.8 % |
+| ≈ max(8, 1.5b + 4) | 19 | | 142,851 | | | 99.8 % |
+| max(8, 2b + 4) | 22 | 165,334 | 165,354 | 165,384 | 165,464 | 99.8 % |
+| ≈ max(8, 1.5b + 8) | 23 | | 172,855 | | | 99.8 % |
+| **max(8, 2b + 8)** | 26 | 195,338 | **195,358** | 195,388 | 195,468 | 99.8 % |
+
+Cycles per inference; engine busy = 7,501 passes × D / cycles. All 28 points are bit-exact (layers, synthetic sets,
+logits) with no bank hazard. One line fits them within 0.13 %:
+
+```
+S: cycles ≈ 2,500 max(D, 8, (D + L) / 4) + 5,000 max(D, 9, (D + L) / 4) + 10 (L + 30)
+```
+
+| Live path (`tb_cim_mic`, 101 decisions) | D | L | Worst hop | Lowest real-time clock | One divider below |
+|---|---:|---:|---:|---:|---|
+| own fast clock | 1 | 2 | 75,038 | **4.096 MHz** | 101 overruns |
+| **max(8, b)** | 9 | 5 | 80,072 | **4.096 MHz** | 101 overruns |
+| **max(8, 2b)** | 18 | 5 | 149,857 | **8.192 MHz** | 101 overruns |
+| **max(8, 2b + 8)** | 26 | 5 | 211,065 | **11.264 MHz** | 76 overruns |
+
+At each lowest clock all 101 decisions are bit-exact with no overrun.
+
+What this adds to §4:
+
+1. **S moved the bottleneck onto the macro.** With two requantisation lanes a pointwise pass needs 8 cycles to drain,
+   so at D = 9 the macro's interval binds every pass: the engine is busy 99.5 % of the network (R6b: 7,501 × 9 /
+   85,352 = 79.1 %). Every cycle of D above 9 costs about 7,500 cycles per inference, with no slack in between.
+2. **S gains nothing over R6b once D ≥ 16.** At D = 18, S takes 135,350 cycles against R6b's 135,40x (§4), and the
+   lowest clock is 8.19 MHz for both; at D = 26 R6b's line gives the same 195.4k. S's 20 % and its 4.096 MHz depend on
+   a macro that issues a 9-bit pass in about 9 cycles or less.
+3. **A faster macro does not lower the clock.** D = 1 saves 3.8 % of the network (the depthwise gather still needs 9
+   cycles per pass) and the lowest clock stays 4.096 MHz: 75,038 cycles do not fit the 61,440 of 3.072 MHz.
+4. **L hardly matters:** 3 → 16 adds 130 cycles (0.2 %) at every D, since at most 4 passes are in flight.
+5. The plan's very conservative point, max(8, 2b + 8), gives 11.26 MHz, still real time on this FPGA (its clock is
+   15.36 MHz), but 2.75 × the lowest clock of HopCIM's assumption.
+
+The thesis wording stays: a parameterised cycle-faithful CIM architectural model, not the timing of a fabricated macro.
+
 ## 7. Limits
 
 - The macro figures come from the tools' files. **Please check bits per cycle, pipeline stages, clock and array size against Chih et al. (ISSCC 2021) and
@@ -140,5 +194,7 @@ adds at most 115 nJ per inference (8 %), and D = 36 at most 424 nJ (31 %). D bel
 cd hopcim
 python3 model/timing_sweep.py seq      # cycles and exactness over the timings, about 5 min on 8 cores
 python3 model/timing_sweep.py hop      # the live path per assumption, about 15 min on 16 cores
+JOBS=6 python3 model/timing_sweep.py seq_s   # S over the plan's grid, about 2.5 min (§6a)
+JOBS=4 python3 model/timing_sweep.py hop_s   # S's live path at 4 points, about 40 min
 python3 model/timing_sweep.py report   # results in model/timing_results.json
 ```

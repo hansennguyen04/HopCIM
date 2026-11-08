@@ -988,5 +988,673 @@
     "worst_nonet": 48346
    }
   }
+ ],
+ "seq_s": [
+  {
+   "cfg": {
+    "bpc": 24,
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 1,
+   "lat": 2,
+   "passes": 330137,
+   "mean_d": 1.0,
+   "cycles": 65236,
+   "cycles_max": 65236,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 1,
+   "hazards": 0,
+   "bench_lines": 3
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 0,
+    "lat": 3
+   },
+   "d": 9,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 9.0,
+   "cycles": 67821,
+   "cycles_max": 67821,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 0,
+    "lat": 5
+   },
+   "d": 9,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 9.0,
+   "cycles": 67841,
+   "cycles_max": 67841,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 0,
+    "lat": 8
+   },
+   "d": 9,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 9.0,
+   "cycles": 67871,
+   "cycles_max": 67871,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 0,
+    "lat": 16
+   },
+   "d": 9,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 9.0,
+   "cycles": 67951,
+   "cycles_max": 67951,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 4,
+    "lat": 3
+   },
+   "d": 13,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 13.0,
+   "cycles": 97825,
+   "cycles_max": 97825,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 4,
+    "lat": 5
+   },
+   "d": 13,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 13.0,
+   "cycles": 97845,
+   "cycles_max": 97845,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 4,
+    "lat": 8
+   },
+   "d": 13,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 13.0,
+   "cycles": 97875,
+   "cycles_max": 97875,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 4,
+    "lat": 16
+   },
+   "d": 13,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 13.0,
+   "cycles": 97955,
+   "cycles_max": 97955,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 8,
+    "lat": 3
+   },
+   "d": 17,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 17.0,
+   "cycles": 127829,
+   "cycles_max": 127829,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 8,
+    "lat": 5
+   },
+   "d": 17,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 17.0,
+   "cycles": 127849,
+   "cycles_max": 127849,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 8,
+    "lat": 8
+   },
+   "d": 17,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 17.0,
+   "cycles": 127879,
+   "cycles_max": 127879,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 1,
+    "d0": 8,
+    "lat": 16
+   },
+   "d": 17,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 17.0,
+   "cycles": 127959,
+   "cycles_max": 127959,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 0,
+    "lat": 3
+   },
+   "d": 18,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 18.01,
+   "cycles": 135330,
+   "cycles_max": 135330,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 0,
+    "lat": 5
+   },
+   "d": 18,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 18.01,
+   "cycles": 135350,
+   "cycles_max": 135350,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 0,
+    "lat": 8
+   },
+   "d": 18,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 18.01,
+   "cycles": 135380,
+   "cycles_max": 135380,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 0,
+    "lat": 16
+   },
+   "d": 18,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 18.01,
+   "cycles": 135460,
+   "cycles_max": 135460,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 4,
+    "lat": 3
+   },
+   "d": 22,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 22.01,
+   "cycles": 165334,
+   "cycles_max": 165334,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 4,
+    "lat": 5
+   },
+   "d": 22,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 22.01,
+   "cycles": 165354,
+   "cycles_max": 165354,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 4,
+    "lat": 8
+   },
+   "d": 22,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 22.01,
+   "cycles": 165384,
+   "cycles_max": 165384,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 4,
+    "lat": 16
+   },
+   "d": 22,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 22.01,
+   "cycles": 165464,
+   "cycles_max": 165464,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 8,
+    "lat": 3
+   },
+   "d": 26,
+   "lat": 3,
+   "passes": 330137,
+   "mean_d": 26.01,
+   "cycles": 195338,
+   "cycles_max": 195338,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 8,
+    "lat": 5
+   },
+   "d": 26,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 26.01,
+   "cycles": 195358,
+   "cycles_max": 195358,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 8,
+    "lat": 8
+   },
+   "d": 26,
+   "lat": 8,
+   "passes": 330137,
+   "mean_d": 26.01,
+   "cycles": 195388,
+   "cycles_max": 195388,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "d0": 8,
+    "lat": 16
+   },
+   "d": 26,
+   "lat": 16,
+   "passes": 330137,
+   "mean_d": 26.01,
+   "cycles": 195468,
+   "cycles_max": 195468,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 3,
+    "d0": 0,
+    "lat": 5
+   },
+   "d": 15,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 15.0,
+   "cycles": 112847,
+   "cycles_max": 112847,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 3,
+    "d0": 4,
+    "lat": 5
+   },
+   "d": 19,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 19.0,
+   "cycles": 142851,
+   "cycles_max": 142851,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 3,
+    "d0": 8,
+    "lat": 5
+   },
+   "d": 23,
+   "lat": 5,
+   "passes": 330137,
+   "mean_d": 23.0,
+   "cycles": 172855,
+   "cycles_max": 172855,
+   "data_errors": 0,
+   "layer_checks": 27,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  }
+ ],
+ "hop_s": [
+  {
+   "name": "baseline",
+   "text": "max(8, b), L = 5: HopCIM's engine (ENGINE_SPEC)",
+   "cfg": {
+    "lat": 5
+   },
+   "d": 9,
+   "lat": 5,
+   "worst": 80072,
+   "mean_net": 76498,
+   "worst_nonet": 12233,
+   "first_divider": 5,
+   "first_pass": true,
+   "nmin": 4,
+   "fmin_mhz": 4.096,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 80072,
+    "mean_net": 76498,
+    "worst_nonet": 12233
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     101
+    ],
+    "hazards": 0,
+    "worst": 80072,
+    "mean_net": 73340,
+    "worst_nonet": 12233
+   }
+  },
+  {
+   "name": "own_clock",
+   "text": "own fast macro clock, D = 1, 2-cycle synchroniser",
+   "cfg": {
+    "bpc": 24,
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 1,
+   "lat": 2,
+   "worst": 75038,
+   "mean_net": 72566,
+   "worst_nonet": 9804,
+   "first_divider": 5,
+   "first_pass": true,
+   "nmin": 4,
+   "fmin_mhz": 4.096,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 75038,
+    "mean_net": 72566,
+    "worst_nonet": 9804
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     101
+    ],
+    "hazards": 0,
+    "worst": 75038,
+    "mean_net": 69871,
+    "worst_nonet": 9804
+   }
+  },
+  {
+   "name": "2b",
+   "text": "max(8, 2b), L = 5: 2 system cycles per bit",
+   "cfg": {
+    "cpb": 2,
+    "lat": 5
+   },
+   "d": 18,
+   "lat": 5,
+   "worst": 149857,
+   "mean_net": 145218,
+   "worst_nonet": 14509,
+   "first_divider": 9,
+   "first_pass": true,
+   "nmin": 8,
+   "fmin_mhz": 8.192,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 149857,
+    "mean_net": 145218,
+    "worst_nonet": 14509
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 149857,
+    "mean_net": 141644,
+    "worst_nonet": 14509
+   }
+  },
+  {
+   "name": "2b_plus_8",
+   "text": "max(8, 2b + 8), L = 5: the plan's very conservative point",
+   "cfg": {
+    "cpb": 2,
+    "d0": 8,
+    "lat": 5
+   },
+   "d": 26,
+   "lat": 5,
+   "worst": 211065,
+   "mean_net": 205818,
+   "worst_nonet": 15709,
+   "first_divider": 12,
+   "first_pass": true,
+   "nmin": 11,
+   "fmin_mhz": 11.264,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 211065,
+    "mean_net": 205818,
+    "worst_nonet": 15709
+   },
+   "below": {
+    "passed": false,
+    "overrun": 76,
+    "wrong": [
+     75
+    ],
+    "hazards": 0,
+    "worst": 211065,
+    "mean_net": 204980,
+    "worst_nonet": 15709
+   }
+  }
  ]
 }
