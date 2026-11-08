@@ -1,0 +1,4 @@
+layer by layer: activation memories 613.6 nJ; act reads 101489 (439.4 nJ), writes 44695 (174.2 nJ)
+depth-first, one row, fully cached: activation memories 278.2 nJ; line_buffers reads 100395 (63.0 nJ), writes 46560 (65.8 nJ); act reads 23397 (101.3 nJ), writes 12345 (48.1 nJ)
+last block, layer by layer: depthwise reads 10500 against 9490 valid taps (1.106) or 11250 with the padded taps (0.933); pointwise reads 1250 against 1250 (1.000); depthwise output writes 1250 words against 8000 bytes = 1143 words (1.094)
+layer by layer -> depth-first, activation-memory energy: 55 % less in DeFiNES

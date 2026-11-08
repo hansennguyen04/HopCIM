@@ -44,6 +44,11 @@ MEMS = {
     "weights":   (128, 4416),    # 69 tiles of 64 rows x 16 int8, for the cell leakage per bit
     "act_plus_32k": (56, 7072),  # ACT with the reuse cache of 1 phase (+32 KB), one flat array
     "act_plus_72k": (56, 12786), # ACT with the reuse cache of 2 phases (+72 KB), one flat array
+    # StreamFuse (docs/STREAMFUSE_GATES.md), sizes from model/streamfuse_sched.py
+    "act_1300":  (56, 1300),     # B: one map of 26 rows
+    "act_1250":  (56, 1250),     # B with a 25-row map (no row lag)
+    "lb_120":    (56, 120),      # A, B: the smallest hazard-free line buffer
+    "lb_150":    (56, 150),      # C: each of the 4 line buffers
 }
 MULTS = {"requant_25x31": (25, 31), "window_16x15": (16, 15), "twiddle_16x16": (16, 16),
          "butterfly_18x18": (18, 18), "square_21x21": (21, 21), "mel_18x8": (18, 8), "fir_17x16": (17, 16)}

@@ -30,7 +30,7 @@ XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
 DISCOVERY = PROJECT / "research_discovery" / "20261026_application_driven"
 PILOT = PROJECT / "recim-rv" / "accelforge_pilot"
-TAG = "freeze-2026-11-07b"
+TAG = "freeze-2026-11-08"
 
 BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "board_kwlog.sh", "xheep_env.sh"]
 GATE_FILES = ["GATE_RESULTS.md", "GATE2_MANIFEST.md", "gate2_eval.py", "gate2_frozen.sha256", "gate2_results.json", "gate2_run.log"]
@@ -222,6 +222,7 @@ def manifest():
         "evidence file, and checks that the documents quote the same numbers.\n\n"
         "Labels, as in the proposal: **[M]** measured in this project; **[E]** estimate or model, not measured.\n\n"
         "| ID | Label | Claim | Evidence | Reproduce |\n|---|---|---|---|---|\n" + "\n".join(rows) + "\n")
+    (HERE / "RESULTS_FREEZE.md").write_text(results_freeze_md(m))
     print(f"manifest: {len(m['bitstreams'])} bitstreams, {len(m['elfs'])} ELFs, {len(m['models'])} models, "
           f"dataset {m['dataset']['clips']} clips; {len(rows)} claims")
 
@@ -398,7 +399,103 @@ def claims():
              check=lambda: round(jget("model/zigzag_results.json", "group16_macros1", "rows", "pw", "ratio"), 3) == 1.0 and round(jget("model/zigzag_results.json", "like_for_like", "ratio"), 3) == 1.029
              and [round(jget("model/zigzag_results.json", "like_for_like", "power", k, "with_tool_uW")) for k in ("1", "2", "4")] == [140, 90, 65],
              docs=[("docs/ENERGY_ESTIMATE.md", "140 / 90 / 65 µW")], how="`~/venvs/zigzag/bin/python model/zigzag_run/run_zigzag.py`, about 1 min"),
+        dict(id="S1", label="[M]", text="Schedule model of the sequencer equals the RTL (85,352 cycles, all 10 layers, every access count); its replay of B0, S, A, B, C is exact on all 4,890 clips",
+             evidence="model/streamfuse_results.json", check=sf_model_check,
+             docs=[("docs/STREAMFUSE_STUDY.md", "total 85,352 (all 10 layers equal)")], how=f"{py} model/streamfuse_sched.py all, about 7 min"),
+        dict(id="S2", label="[E]", text="Model, not built: S (sign gating, second requantisation lane, no L8 write) 67,841 cycles, 1,119.8 nJ, 68.8 µW at 40 ms; B 0.837 x S and 0.575 x the storage; C 0.821 x S; A fails (0.903)",
+             evidence="model/streamfuse_energy.json", check=sf_energy_check,
+             docs=[("docs/STREAMFUSE_STUDY.md", "**1,119.8**"), ("docs/STREAMFUSE_STUDY.md", "80,544 (0.575)")],
+             how="`python3 model/energy_est.py streamfuse` (after streamfuse_sched.py all)"),
     ]
+
+
+def sf_model_check():
+    r = jget("model/streamfuse_results.json")
+    v1 = r["V1"]
+    ex = r["exact"]
+    return (v1["passed"] and v1["total"] == v1["rtl_total"] == 85352 and v1["exact_layers"] == 10 and v1["segments"] == v1["rtl"]
+            and all(ex[k]["clips"] == 4890 and ex[k]["bad_clips"] == 0 and ex[k]["bad_values"] == 0 and ex[k]["bad_logit_clips"] == 0 for k in ("B0", "S", "A", "B", "C")))
+
+
+def sf_energy_check():
+    e = jget("model/streamfuse_energy.json")
+    g = e["gates_G2"]
+    c = jget("model/streamfuse_results.json", "cycles")
+    return (e["V3"]["passed"] and round(g["B"]["S_nJ"], 1) == 1119.8 and round(g["B"]["S_power_uW"]["2"], 1) == 68.8 and c["S"]["total"] == 67841
+            and round(g["B"]["ratio"], 3) == 0.837 and round(g["C"]["ratio"], 3) == 0.821 and round(g["A"]["ratio"], 3) == 0.903 and not g["A"]["G2"]
+            and c["B"]["storage_bits"] == 80544 and c["S"]["storage_bits"] == 140000)
+
+
+# ------------------------------------------------------------------ RESULTS_FREEZE.md: every thesis table -> claims -> command, output
+THESIS_TABLES = [
+    ("Accuracy: the unchanged model with the integer CIM-MFCC, TFLite equality, B3", ["A1", "A2", "A3", "A4"]),
+    ("Where the cycles go: CPU only, CPU-driven CIM, hardware sequencer, window path", ["B1", "B2", "B3", "B4"]),
+    ("Live system: decisions, overrun, CPU-active cycles, real audio, lowest clock, k hops", ["C1", "C2", "C3", "C4"]),
+    ("Spoken keywords, same-audio logger, GSC streams, false alarms", ["C5", "G1", "G2", "G3"]),
+    ("Macro timing sensitivity", ["H1", "H2"]),
+    ("Verification: regression, assertions, mutants, netlists", ["D1", "D3", "D4", "D5", "D6", "D7"]),
+    ("FPGA resources", ["D2"]),
+    ("Energy estimate [E]", ["F1", "F2", "F3"]),
+    ("Activation reuse against a lower cadence", ["E1", "F2"]),
+    ("Dataflow options (StreamFuse model study)", ["S1", "S2"]),
+]
+FINAL_TABLE = [  # the baseline table of docs/HopCIM_Specific_Next_Steps_and_Professor_Advice.md section 18
+    ("CPU only", "B1", "measured on the board"),
+    ("CPU-driven CIM", "B2", "measured on the board"),
+    ("R6b sequencer (today)", "B3, F1, D2", "measured; energy [E]"),
+    ("S (sign gating, second lane, no L8 write)", "S2", "model only; RTL not built at this freeze"),
+    ("40-ms S", "-", "not built at this freeze"),
+    ("StreamFuse-B (optional)", "S2", "model only"),
+    ("B3 dedicated MFCC", "A3", "measured; resources in docs/B3_BASELINE.md"),
+]
+SPEAKER_LOGS = ["hopcim_kwtest_nexys_board_20261107_151805.uart.log", "hopcim_kwtest_k2_nexys_board_20261107_152243.uart.log",
+                "hopcim_kwtest_k4_nexys_board_20261107_152720.uart.log"]
+MODEL_VERSIONS = [
+    ("energy model", ["model/energy_est.py", "model/energy_tool_run.py", "model/energy_components.json", "model/energy_activity.json"]),
+    ("StreamFuse schedule model", ["model/streamfuse_sched.py", "model/cim_net_map.py", "model/dscnn_int.py"]),
+    ("DeFiNES cross-check", ["model/defines_run/run_defines.py", "model/defines_run/hopcim_hw.py", "model/defines_run/hopcim_dscnn_wl.py"]),
+    ("integer golden models", ["model/mfcc_int.py", "model/stream_int.py", "model/pdm_dec.py", "model/dscnn_params.npz", "model/mfcc_tables.npz"]),
+]
+
+
+def results_freeze_md(m):
+    cl = {c["id"]: c for c in claims()}
+    L = [f"# Results freeze ({TAG})", "",
+         "Generated by `freeze/freeze.py manifest`; `freeze/freeze.py check` fails if it is out of date. Every thesis table "
+         "is traceable to the commit that tag `" + TAG + "` names, a command, and an output file.", "",
+         "## 1. Freeze point", "",
+         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`.",
+         f"- X-HEEP base commit `{m['sources']['xheep_base_commit']}`, changes as `freeze/xheep/tracked_changes.patch` "
+         f"(sha256 `{m['sources']['xheep_patch_sha256'][:16]}…`), overlay {m['sources']['xheep_overlay']['files']} files.", "",
+         "## 2. Model and data", "", "| Item | Path | sha256 |", "|---|---|---|"]
+    for k, v in m["models"].items():
+        L.append(f"| {k} | `{v['path']}` | `{v['sha256']}` |")
+    ds = m["dataset"]
+    L += [f"| dataset ({ds['clips']} clips, {ds['files']} files) | `{ds['path']}` | tree `{ds['tree_sha256']}` |", "",
+          "## 3. Tools", ""] + [f"- {t}" for t in m["tools"]] + [
+          "- Python environments: `freeze/env/python_planenest.txt` (models, energy, StreamFuse), `python_kwsgate.txt` "
+          "(TensorFlow, accuracy gate), `python_accelforge_pilot.txt` (CACTI, AccelForge); ZigZag-IMC in `~/venvs/zigzag`, "
+          "DeFiNES in `~/venvs/defines` (`~/tools/energy/DeFiNES` at 7097d60)", "",
+          "## 4. Bitstreams that carry a result", "", "| Bitstream | sha256 | Carries |", "|---|---|---|"]
+    for name, e in m["bitstreams"].items():
+        if "carries" in e:
+            L.append(f"| `{name}` | `{e['sha256'][:16]}…` | {e['carries']} |")
+    L += ["", f"All {len(m['bitstreams'])} bitstreams and {len(m['elfs'])} ELFs are pinned in `freeze/MANIFEST.json`.", "",
+          "## 5. Speaker logs", "", "| Log | sha256 |", "|---|---|"]
+    for s in SPEAKER_LOGS:
+        L.append(f"| `freeze/board/logs/{s}` | `{sha(HERE / 'board' / 'logs' / s)[:16]}…` |")
+    L += ["", "## 6. Model versions", "", "| Model | File | sha256 |", "|---|---|---|"]
+    for name, files in MODEL_VERSIONS:
+        for f in files:
+            L.append(f"| {name} | `{f}` | `{sha(ROOT / f)[:16]}…` |")
+    L += ["", "## 7. Thesis tables", "", "| Table | Claim | Label | Result | Command | Output |", "|---|---|---|---|---|---|"]
+    for title, ids in THESIS_TABLES:
+        for i in ids:
+            c = cl[i]
+            L.append(f"| {title} | {i} | {c['label']} | {c['text']} | {c['how']} | `{c['evidence']}` |")
+    L += ["", "## 8. The final baseline table (advice §18) at this freeze", "", "| Configuration | Claims | State |", "|---|---|---|"]
+    L += [f"| {a} | {b} | {s} |" for a, b, s in FINAL_TABLE]
+    return "\n".join(L) + "\n"
 
 
 def check():
@@ -415,6 +512,8 @@ def check():
     for key in ("bitstreams", "elfs", "models", "dataset"):
         say(a[key] == m[key], f"{key}: {len(a[key])} entries" if key != "dataset" else f"dataset: {a[key]['clips']} clips, tree {a[key]['tree_sha256'][:12]}")
     say(source_hashes() == m["sources"], "X-HEEP snapshot hashes")
+    rf = HERE / "RESULTS_FREEZE.md"
+    say(rf.exists() and rf.read_text() == results_freeze_md(m), "RESULTS_FREEZE.md is current")
 
     print("Snapshot against the live files")
     changed, overlay = xheep_lists()

@@ -1,0 +1,536 @@
+{
+ "layer by layer": {
+  "memories": {
+   "wcell": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "cim_cells": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "dram": {
+    "read_pJ": 14923300.0,
+    "write_pJ": 11021250.0,
+    "r_cost": 700,
+    "w_cost": 750,
+    "reads": 21319.0,
+    "writes": 14695.0
+   },
+   "xbank": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "act": {
+    "read_pJ": 439370.8758754285,
+    "write_pJ": 174212.95501714287,
+    "r_cost": 4.329228,
+    "w_cost": 3.89783,
+    "reads": 101489.42857142857,
+    "writes": 44694.857142857145
+   },
+   "acc": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   }
+  },
+  "activation_nJ": 613.5838308925713,
+  "results": 19,
+  "per_layer": {
+   "datamovement_b4_InputLayerNode_-1 act I1": [
+    0.0,
+    296.0
+   ],
+   "datamovement_b4_InputLayerNode_-1 act O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_0 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_0 act O": [
+    0.0,
+    0.0
+   ],
+   "0 act O": [
+    3922.2857142857133,
+    4290.0
+   ],
+   "0 act I": [
+    702.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_1 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_1 act O": [
+    0.0,
+    0.0
+   ],
+   "1 act O": [
+    0.0,
+    4092.0
+   ],
+   "1 act I": [
+    28644.0,
+    9956.571428571428
+   ],
+   "datamovement_b4_LayerNode_2 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_2 act O": [
+    0.0,
+    0.0
+   ],
+   "2 act O": [
+    3117.7142857142853,
+    4092.0
+   ],
+   "2 act I": [
+    3410.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_3 act I1": [
+    0.0,
+    3117.7142857142853
+   ],
+   "datamovement_b4_LayerNode_3 act O": [
+    0.0,
+    0.0
+   ],
+   "3 act O": [
+    2386.2857142857138,
+    2436.0
+   ],
+   "3 act I": [
+    21924.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_4 act I1": [
+    0.0,
+    2386.285714285714
+   ],
+   "datamovement_b4_LayerNode_4 act O": [
+    0.0,
+    0.0
+   ],
+   "4 act O": [
+    2386.2857142857138,
+    3132.0
+   ],
+   "4 act I": [
+    2610.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_5 act I1": [
+    0.0,
+    2386.285714285714
+   ],
+   "datamovement_b4_LayerNode_5 act O": [
+    0.0,
+    0.0
+   ],
+   "5 act O": [
+    1728.0,
+    1764.0
+   ],
+   "5 act I": [
+    15875.999999999998,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_6 act I1": [
+    0.0,
+    1728.0
+   ],
+   "datamovement_b4_LayerNode_6 act O": [
+    0.0,
+    0.0
+   ],
+   "6 act O": [
+    0.0,
+    2268.0
+   ],
+   "6 act I": [
+    1890.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_7 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_7 act O": [
+    0.0,
+    0.0
+   ],
+   "7 act O": [
+    0.0,
+    1250.0
+   ],
+   "7 act I": [
+    10500.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 act O": [
+    0.0,
+    0.0
+   ],
+   "8 act O": [
+    1142.857142857143,
+    1500.0
+   ],
+   "8 act I": [
+    1250.0,
+    0.0
+   ]
+  }
+ },
+ "depth-first, one row, fully cached": {
+  "memories": {
+   "wcell": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "cim_cells": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "dram": {
+    "read_pJ": 2040500.0,
+    "write_pJ": 862500.0,
+    "r_cost": 700,
+    "w_cost": 750,
+    "reads": 2915.0,
+    "writes": 1150.0
+   },
+   "xbank": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   },
+   "line_buffers": {
+    "read_pJ": 62980.373691,
+    "write_pJ": 65823.8146953143,
+    "r_cost": 0.6273258,
+    "w_cost": 1.4137504,
+    "reads": 100395.0,
+    "writes": 46559.7142857143
+   },
+   "act": {
+    "read_pJ": 101289.09213257143,
+    "write_pJ": 48118.71135,
+    "r_cost": 4.329228,
+    "w_cost": 3.89783,
+    "reads": 23396.57142857143,
+    "writes": 12345.0
+   },
+   "acc": {
+    "read_pJ": 0.0,
+    "write_pJ": 0.0,
+    "r_cost": 0.0,
+    "w_cost": 0.0,
+    "reads": null,
+    "writes": null
+   }
+  },
+  "activation_nJ": 278.2119918688858,
+  "results": 19,
+  "per_layer": {
+   "datamovement_b4_InputLayerNode_-1 line_buffers I1": [
+    192.0,
+    296.0
+   ],
+   "datamovement_b4_InputLayerNode_-1 act I1": [
+    296.0,
+    296.0
+   ],
+   "datamovement_b4_InputLayerNode_-1 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_InputLayerNode_-1 act O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_0 line_buffers I1": [
+    0.0,
+    767.9999999999999
+   ],
+   "datamovement_b4_LayerNode_0 act I1": [
+    768.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_0 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_0 act O": [
+    0.0,
+    0.0
+   ],
+   "0 line_buffers O": [
+    1069.7142857142856,
+    4212.0
+   ],
+   "0 act O": [
+    0.0,
+    1079.0
+   ],
+   "0 line_buffers I": [
+    2067.0000000000005,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_1 line_buffers I1": [
+    0.0,
+    5705.142857142857
+   ],
+   "datamovement_b4_LayerNode_1 act I1": [
+    5705.142857142858,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_1 line_buffers O": [
+    2733.7142857142853,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_1 act O": [
+    0.0,
+    2733.7142857142853
+   ],
+   "1 line_buffers O": [
+    0.0,
+    3564.0000000000005
+   ],
+   "1 line_buffers I": [
+    28644.000000000004,
+    2496.0
+   ],
+   "1 act I": [
+    2520.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_2 line_buffers I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_2 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_2 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_2 act O": [
+    0.0,
+    0.0
+   ],
+   "2 line_buffers O": [
+    704.0,
+    4092.0
+   ],
+   "2 act O": [
+    0.0,
+    704.0
+   ],
+   "2 line_buffers I": [
+    3410.0000000000005,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_3 line_buffers I1": [
+    0.0,
+    5531.428571428572
+   ],
+   "datamovement_b4_LayerNode_3 act I1": [
+    5531.428571428572,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_3 line_buffers O": [
+    2313.1428571428573,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_3 act O": [
+    0.0,
+    2313.1428571428573
+   ],
+   "3 line_buffers O": [
+    411.4285714285714,
+    2436.0
+   ],
+   "3 act O": [
+    0.0,
+    412.0
+   ],
+   "3 line_buffers I": [
+    21923.999999999996,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_4 line_buffers I1": [
+    0.0,
+    411.42857142857133
+   ],
+   "datamovement_b4_LayerNode_4 act I1": [
+    411.4285714285714,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_4 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_4 act O": [
+    0.0,
+    0.0
+   ],
+   "4 line_buffers O": [
+    0.0,
+    3131.9999999999995
+   ],
+   "4 line_buffers I": [
+    2610.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_5 line_buffers I1": [
+    0.0,
+    3949.714285714286
+   ],
+   "datamovement_b4_LayerNode_5 act I1": [
+    3949.714285714286,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_5 line_buffers O": [
+    2057.142857142857,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_5 act O": [
+    0.0,
+    2057.142857142857
+   ],
+   "5 line_buffers O": [
+    0.0,
+    1876.0
+   ],
+   "5 line_buffers I": [
+    15876.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_6 line_buffers I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_6 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_6 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_6 act O": [
+    0.0,
+    0.0
+   ],
+   "6 line_buffers O": [
+    0.0,
+    2268.0
+   ],
+   "6 line_buffers I": [
+    1890.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_7 line_buffers I1": [
+    0.0,
+    3071.9999999999995
+   ],
+   "datamovement_b4_LayerNode_7 act I1": [
+    3072.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_7 line_buffers O": [
+    1600.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_7 act O": [
+    0.0,
+    1599.9999999999998
+   ],
+   "7 line_buffers O": [
+    0.0,
+    1250.0
+   ],
+   "7 line_buffers I": [
+    10499.999999999998,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 line_buffers I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 act I1": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 line_buffers O": [
+    0.0,
+    0.0
+   ],
+   "datamovement_b4_LayerNode_8 act O": [
+    0.0,
+    0.0
+   ],
+   "8 line_buffers O": [
+    1142.8571428571427,
+    1499.9999999999998
+   ],
+   "8 act O": [
+    1142.857142857143,
+    1150.0
+   ],
+   "8 line_buffers I": [
+    1250.0000000000002,
+    0.0
+   ]
+  }
+ },
+ "last block against the schedule model": {
+  "dw7_reads": 10500.0,
+  "dw_vs_valid": 1.106427818756586,
+  "dw_vs_all_chunks": 0.9333333333333333,
+  "pw8_reads": 1250.0,
+  "pw_vs_sched": 1.0,
+  "dw7_writes_words": 1250.0,
+  "writes_vs_sched": 1.09375,
+  "reduction_defines": 0.5465786778243897
+ }
+}

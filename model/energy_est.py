@@ -13,7 +13,8 @@ input, kept apart:
                                            its repository, checked against its chip figures in chips()
   assumed    ASSUME below                  what no tool here gives; sensitivity() varies each one
 
-Usage: energy_est.py    prints the tables, writes energy_results.json
+Usage: energy_est.py               prints the tables, writes energy_results.json
+       energy_est.py streamfuse    the StreamFuse designs of docs/STREAMFUSE_GATES.md, streamfuse_energy.json
 """
 import json
 import math
@@ -352,6 +353,161 @@ class Model:
                     macros=macros)
 
 
+# ---------------------------------------------------------------- StreamFuse (docs/STREAMFUSE_GATES.md)
+# Costing rules frozen in the gates: added control as a share of the network sequencer (SEQUENCER.md section 6),
+# the second requantisation lane as 2 multipliers of 1,500 gate equivalents, line buffers and maps by CACTI at their
+# size, fusion vectors as flip-flops. Counts per inference come from model/streamfuse_sched.py.
+SF_SHARE = {"B0": 0.0, "S": 0.0, "A": 0.10, "B": 0.25, "C": 0.60}
+SF_SEQ = dict(lut=1176, ff=894)
+SF_R2_GE = 2 * 1500
+SF_MEM = {("act", 2500): "act_word", ("act", 1300): "act_1300", ("act", 1250): "act_1250", ("lb", 120): "lb_120",
+          ("lb", 150): "lb_150"}
+
+
+def sf_mem_name(buf, words):
+    return SF_MEM[("lb" if buf.startswith("lb") else buf, words)]
+
+
+def sf_network(m, d, skipped, share, scale=1.0):
+    """Network energy of one inference (pJ, by part) of a design described by the schedule model's counts d."""
+    c, mem, g = d["counts"], m.mem, m.g
+    byte_w = 0.3 + 0.7 * 8 / 56
+    act = fv = 0.0
+    for buf, n in d["words"].items():
+        if buf.startswith("fv"):
+            fv += (c["byte_writes"].get(buf, 0) * 8 * g["dff"] * 0.5 + c["reads"].get(buf, 0) * 64 * 4 * g["nand"] * 0.5) / 1000
+            continue
+        e = mem[sf_mem_name(buf, n)]
+        act += (c["reads"].get(buf, 0) * e["read_pJ"] + c["byte_writes"].get(buf, 0) * byte_w * e["write_pJ"]
+                + c["word_writes"].get(buf, 0) * e["write_pJ"])
+    rq = c["requant"]
+    add_bits = 25 + 56 + 32
+    added = share * scale * (SF_SEQ["lut"] * m.e_lut + SF_SEQ["ff"] * m.e_ff) / 1000
+    return {
+        "CIM array": sum(m.macro_pass_pj(x) for x in NET_GROUPS),
+        "tile select": sum(m.select_pj(x) for x in NET_GROUPS),
+        "ACT memory": act + fv,
+        "FEAT memory": c["feat_reads"] * mem["feat"]["read_pJ"],
+        "requant parameters": rq * mem["params"]["read_pJ"],
+        "requant arithmetic": ((rq - skipped) * (m.mul("requant_25x31", 25, 31) + add_bits * g["fa"] / 1000)
+                               + skipped * 25 * g["fa"] / 1000),
+        "input and result registers": (c["x_rows"] * 9 * g["dff"] * 0.5 + rq * 23 * g["dff"] * 0.5) / 1000,
+        "sequencer logic": d["total"] * (m.block_cycle_pj("cim_seq") + added),
+    }
+
+
+def sf_leak(m, d, share, r2, scale=1.0):
+    """Leakage (uW, by part) with the design's activation buffers, added control and second lane."""
+    lk, _ = m.leak("cim")
+    a = m.a
+    act = 0.0
+    fv_ff = 0
+    for buf, n in d["words"].items():
+        if buf.startswith("fv"):
+            fv_ff += n * 64
+        else:
+            v = m.mem[sf_mem_name(buf, n)]
+            act += m.sram_uw(sf_mem_name(buf, n)) if a["sram_pw_per_bit"] is None else v["width"] * v["depth"] * a["sram_pw_per_bit"] * 1e-6
+    lk["other SRAM"] += act - m.sram_uw("act_word")
+    ge = share * scale * (SF_SEQ["lut"] * a["ge_per_lut"] + SF_SEQ["ff"] * a["ge_per_ff"]) + (SF_R2_GE if r2 else 0) + fv_ff * a["ge_per_ff"]
+    lk["digital logic"] += ge * a["leak_pw_per_ge"] * 1e-6
+    return lk
+
+
+def sf_power(m, net_pj, leak):
+    """Average total power at 20 / 40 / 80 ms with this network energy and leakage, the rest as today."""
+    out = {}
+    for k in (1, 2, 4):
+        b, _ = m.budget("cim", k)
+        base_leak = sum(v for p, v in b.items() if p.startswith("leakage"))
+        out[k] = sum(b.values()) - b["network"] + net_pj / (HOP_S * k) * 1e-6 - base_leak + sum(leak.values())
+    return out
+
+
+def streamfuse(out=print):
+    tools = json.load(open(os.path.join(HERE, "energy_components.json")))
+    act = json.load(open(os.path.join(HERE, "energy_activity.json")))
+    reuse = json.load(open(os.path.join(HERE, "reuse_results.json")))
+    sf = json.load(open(os.path.join(HERE, "streamfuse_results.json")))
+    cc = load_counts("cim")
+    check_counts(cc, "cim")
+    cy = sf["cycles"]
+    skipped = sf["exact"]["S"]["sg_skipped_per_inference"]
+    names = ["B0", "S", "A", "B", "C"]
+    lanes2 = {"B0": False, "S": True, "A": True, "B": True, "C": True}
+    res = dict(skipped_per_inference=skipped, variants={})
+
+    def evaluate(m, name, scale=1.0, design=None):
+        dd = cy[design or name]
+        sk = 0.0 if name == "B0" else skipped
+        net = sf_network(m, dd, sk, SF_SHARE[name], scale)
+        lk = sf_leak(m, dd, SF_SHARE[name], lanes2[name], scale)
+        return net, lk, sf_power(m, sum(net.values()), lk)
+
+    # V3: B0 from the schedule model's counts reproduces today's network energy and leakage, in every variant
+    v3 = []
+    for vname, o in VARIANTS:
+        m = Model(tools, act, cc, reuse, **o)
+        net, lk, _ = evaluate(m, "B0")
+        today, tlk = sum(m.network().values()), sum(m.leak("cim")[0].values())
+        v3.append(dict(variant=vname, model=sum(net.values()), today=today, leak_model=sum(lk.values()), leak_today=tlk,
+                       ok=abs(sum(net.values()) - today) < 1e-6 * today and abs(sum(lk.values()) - tlk) < 1e-9 * max(tlk, 1)))
+    res["V3"] = dict(passed=all(x["ok"] for x in v3), rows=v3)
+    out(f"V3: B0 from the schedule model's counts against today's energy model, {len(v3)} variants: "
+        f"{'all equal' if res['V3']['passed'] else 'DIFFERENT'} (baseline {v3[0]['model'] / 1000:.1f} nJ against {v3[0]['today'] / 1000:.1f})")
+
+    base = Model(tools, act, cc, reuse)
+    out(f"\nSign gating: {skipped:.0f} of 72,000 requantisations per inference skip the multiply ({100 * skipped / 72000:.1f} %), "
+        f"mean over the {sf['exact']['S']['clips']} test clips")
+    out("\nOne inference, nJ, baseline variant (B0 today; S = B0 + sign gating + second lane; options with both):")
+    ev = {n: evaluate(base, n) for n in names}
+    parts = list(ev["B0"][0])
+    tab([[p] + [f"{ev[n][0][p] / 1000:.1f}" for n in names] for p in parts]
+        + [["total"] + [f"{sum(ev[n][0].values()) / 1000:.1f}" for n in names]]
+        + [["leakage, uW"] + [f"{sum(ev[n][1].values()):.2f}" for n in names]]
+        + [["total power at 20 / 40 / 80 ms, uW"] + [" / ".join(f"{ev[n][2][k]:.1f}" for k in (1, 2, 4)) for n in names]],
+        ["part"] + names)
+    eS = sum(ev["S"][0].values())
+    gates = {}
+    for n in ("A", "B", "C"):
+        e = sum(ev[n][0].values())
+        gates[n] = dict(network_nJ=e / 1000, S_nJ=eS / 1000, ratio=e / eS, G2=e <= 0.90 * eS,
+                        guard_40ms=ev[n][2][2] <= ev["S"][2][2], power_uW=ev[n][2], S_power_uW=ev["S"][2])
+    res["baseline"] = {n: dict(network_pJ=ev[n][0], leak_uW=ev[n][1], power_uW=ev[n][2]) for n in names}
+    out("\nG2, network energy against S (pass if <= 0.90), and the guard on total power at 40 ms:")
+    tab([[n, f"{g['network_nJ']:.1f}", f"{g['ratio']:.3f}", "pass" if g["G2"] else "FAIL",
+          f"{g['power_uW'][2]:.2f} vs {g['S_power_uW'][2]:.2f}", "pass" if g["guard_40ms"] else "FAIL"] for n, g in gates.items()],
+        ["option", "nJ", "against S", "G2", "40 ms, uW (S)", "guard"])
+    # variants and doubled overheads
+    rows = []
+    for vname, o in VARIANTS:
+        m = Model(tools, act, cc, reuse, **o)
+        es = sum(evaluate(m, "S")[0].values())
+        r = {n: sum(evaluate(m, n)[0].values()) / es for n in ("A", "B", "C")}
+        r2 = {n: sum(evaluate(m, n, 2.0)[0].values()) / es for n in ("A", "B", "C")}
+        res["variants"][vname] = dict(ratio=r, ratio_double_overhead=r2)
+        rows.append([vname] + [f"{r[n]:.3f} / {r2[n]:.3f}" for n in ("A", "B", "C")])
+    out("\nNetwork energy against S in every variant (overheads as frozen / doubled); G2 needs <= 0.900:")
+    tab(rows, ["variant", "A", "B", "C"])
+    # for information: the designs without the second lane, and B with its first fusion-vector layout
+    info = {}
+    for label, n, design in (("B0 + sign gating", "S", "B0+SG"), ("B, 1 lane", "B", "B, 1 lane"),
+                             ("C, 1 lane", "C", "C, 1 lane"), ("B, 7-byte fusion vector", "B", "B, 7-byte fusion vector")):
+        lanes2_save = lanes2[n]
+        lanes2[n] = "1 lane" not in label and label != "B0 + sign gating"
+        net, lk, pw = evaluate(base, n, design=design)
+        lanes2[n] = lanes2_save
+        info[label] = dict(network_nJ=sum(net.values()) / 1000, cycles=cy[design]["total"], power_uW=pw)
+    res["info"] = info
+    out("\nFor information:")
+    tab([[k, f"{v['network_nJ']:.1f}", v["cycles"], " / ".join(f"{v['power_uW'][j]:.1f}" for j in (1, 2, 4))] for k, v in info.items()],
+        ["design", "nJ", "cycles", "uW at 20 / 40 / 80 ms"])
+    res["gates_G2"] = gates
+    with open(os.path.join(HERE, "streamfuse_energy.json"), "w") as f:
+        json.dump(res, f, indent=1, default=float)
+    return res
+
+
 def tab(rows, head):
     w = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
     print("  " + "  ".join(str(h).ljust(w[i]) for i, h in enumerate(head)))
@@ -498,4 +654,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "streamfuse":
+        streamfuse()
+        sys.exit(0)
     sys.exit(main())

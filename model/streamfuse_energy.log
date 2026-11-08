@@ -1,0 +1,51 @@
+V3: B0 from the schedule model's counts against today's energy model, 18 variants: all equal (baseline 1389.3 nJ against 1389.3)
+
+Sign gating: 36338 of 72,000 requantisations per inference skip the multiply (50.5 %), mean over the 4890 test clips
+
+One inference, nJ, baseline variant (B0 today; S = B0 + sign gating + second lane; options with both):
+  part                                B0                   S                   A                   B                   C                 
+  CIM array                                         134.2               134.2               134.2               134.2               134.2
+  tile select                                       169.1               169.1               169.1               169.1               169.1
+  ACT memory                                        298.2               285.8               170.2                85.8                42.4
+  FEAT memory                                         0.4                 0.4                 0.4                 0.4                 0.4
+  requant parameters                                152.0               152.0               152.0               152.0               152.0
+  requant arithmetic                                435.9               219.0               219.0               219.0               219.0
+  input and result registers                          3.9                 3.9                 3.9                 3.9                 3.9
+  sequencer logic                                   195.6               155.5               162.7               173.2               198.0
+  total                                            1389.3              1119.8              1011.4               937.6               918.9
+  leakage, uW                                       36.18               36.33               36.51               36.03               36.72
+  total power at 20 / 40 / 80 ms, uW  110.3 / 75.3 / 57.9  96.9 / 68.8 / 54.7  91.7 / 66.2 / 53.5  87.5 / 63.9 / 52.1  87.3 / 64.1 / 52.5
+
+G2, network energy against S (pass if <= 0.90), and the guard on total power at 40 ms:
+  option  nJ      against S  G2    40 ms, uW (S)   guard
+  A       1011.4      0.903  FAIL  66.23 vs 68.76   pass
+  B        937.6      0.837  pass  63.90 vs 68.76   pass
+  C        918.9      0.821  pass  64.13 vs 68.76   pass
+
+Network energy against S in every variant (overheads as frozen / doubled); G2 needs <= 0.900:
+  variant                    A              B              C            
+  baseline                   0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  alpha 0.25 (validated)     0.922 / 0.927  0.869 / 0.882  0.856 / 0.887
+  Colonnade array, 0.8 V     0.960 / 0.963  0.934 / 0.940  0.927 / 0.942
+  multipliers: Horowitz      0.888 / 0.896  0.812 / 0.831  0.793 / 0.837
+  logic activity 0.05        0.898 / 0.903  0.827 / 0.839  0.804 / 0.833
+  logic activity 0.2         0.913 / 0.922  0.856 / 0.878  0.851 / 0.905
+  6 -> 4 GE per LUT          0.901 / 0.906  0.832 / 0.847  0.813 / 0.847
+  6 -> 10 GE per LUT         0.908 / 0.916  0.846 / 0.866  0.836 / 0.882
+  logic leak 20 pW/GE        0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  logic leak 100 pW/GE       0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  SRAM 7.4 pW/bit (silicon)  0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  SRAM 25 pW/bit             0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  tiles per macro 1          0.886 / 0.894  0.808 / 0.827  0.789 / 0.834
+  tiles per macro 4          0.892 / 0.899  0.818 / 0.836  0.799 / 0.842
+  tiles per macro 8          0.896 / 0.903  0.825 / 0.842  0.807 / 0.848
+  tiles per macro 32         0.915 / 0.921  0.857 / 0.872  0.843 / 0.877
+  reuse: flat array          0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+  5.12 MHz clock             0.903 / 0.910  0.837 / 0.853  0.821 / 0.859
+
+For information:
+  design                   nJ      cycles  uW at 20 / 40 / 80 ms
+  B0 + sign gating         1160.0   85352     98.8 / 69.6 / 55.0
+  B, 1 lane                 982.3   85256     89.6 / 64.9 / 52.5
+  C, 1 lane                 970.2   85132     89.7 / 65.3 / 53.0
+  B, 7-byte fusion vector   938.9   68241     87.7 / 64.0 / 52.2

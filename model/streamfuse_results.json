@@ -1,0 +1,1294 @@
+{
+ "cycles": {
+  "B0": {
+   "total": 85352,
+   "segments": [
+    8034,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    98
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 42960
+    },
+    "byte_writes": {
+     "act": 72000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 0,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "act": 2500
+   },
+   "storage_bits": 140000,
+   "bits": {
+    "act": 140000
+   },
+   "lb_words": null,
+   "lb_curve": null,
+   "lb_large_total": null
+  },
+  "S": {
+   "total": 67841,
+   "segments": [
+    4533,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 42960
+    },
+    "byte_writes": {
+     "act": 64000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 0,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "act": 2500
+   },
+   "storage_bits": 140000,
+   "bits": {
+    "act": 140000
+   },
+   "lb_words": null,
+   "lb_curve": null,
+   "lb_large_total": null
+  },
+  "A": {
+   "total": 67841,
+   "segments": [
+    4533,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 10000,
+     "lb": 37960
+    },
+    "byte_writes": {
+     "act": 64000
+    },
+    "word_writes": {
+     "lb": 5000
+    },
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 0,
+    "dest_stalls": 0,
+    "fill_stalls": 37812
+   },
+   "words": {
+    "act": 2500,
+    "lb": 120
+   },
+   "storage_bits": 146720,
+   "bits": {
+    "act": 140000,
+    "lb": 6720
+   },
+   "lb_words": 120,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     67841
+    ],
+    [
+     130,
+     67841
+    ],
+    [
+     140,
+     67841
+    ],
+    [
+     150,
+     67841
+    ],
+    [
+     160,
+     67841
+    ],
+    [
+     170,
+     67841
+    ],
+    [
+     180,
+     67841
+    ],
+    [
+     190,
+     67841
+    ],
+    [
+     200,
+     67841
+    ],
+    [
+     210,
+     67841
+    ],
+    [
+     220,
+     67841
+    ],
+    [
+     230,
+     67841
+    ],
+    [
+     240,
+     67841
+    ],
+    [
+     250,
+     67841
+    ]
+   ],
+   "lb_large_total": 67841
+  },
+  "B": {
+   "total": 67745,
+   "segments": [
+    4533,
+    15780,
+    15780,
+    15780,
+    15780,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 5000,
+     "lb": 37960,
+     "fv": 4000
+    },
+    "byte_writes": {
+     "act": 32000,
+     "fv": 32000
+    },
+    "word_writes": {
+     "lb": 5000
+    },
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 4000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 24,
+    "dest_stalls": 0,
+    "fill_stalls": 54660
+   },
+   "words": {
+    "act": 1300,
+    "lb": 120,
+    "fv": 16
+   },
+   "storage_bits": 80544,
+   "bits": {
+    "act": 72800,
+    "lb": 6720,
+    "fv": 1024
+   },
+   "lb_words": 120,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     67745
+    ],
+    [
+     130,
+     67745
+    ],
+    [
+     140,
+     67745
+    ],
+    [
+     150,
+     67745
+    ],
+    [
+     160,
+     67745
+    ],
+    [
+     170,
+     67745
+    ],
+    [
+     180,
+     67745
+    ],
+    [
+     190,
+     67745
+    ],
+    [
+     200,
+     67745
+    ],
+    [
+     210,
+     67745
+    ],
+    [
+     220,
+     67745
+    ],
+    [
+     230,
+     67745
+    ],
+    [
+     240,
+     67745
+    ],
+    [
+     250,
+     67745
+    ]
+   ],
+   "lb_large_total": 67745
+  },
+  "C": {
+   "total": 67625,
+   "segments": [
+    67533,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "lb0": 9490,
+     "fv1": 1000,
+     "lb1": 9490,
+     "fv2": 1000,
+     "lb2": 9490,
+     "fv3": 1000,
+     "lb3": 9490,
+     "fv4": 1000
+    },
+    "byte_writes": {
+     "lb0": 8000,
+     "fv1": 8000,
+     "lb1": 8000,
+     "fv2": 8000,
+     "lb2": 8000,
+     "fv3": 8000,
+     "lb3": 8000,
+     "fv4": 8000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 4000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 600,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "lb0": 150,
+    "lb1": 150,
+    "lb2": 150,
+    "lb3": 150,
+    "fv1": 16,
+    "fv2": 16,
+    "fv3": 16,
+    "fv4": 16
+   },
+   "storage_bits": 37696,
+   "bits": {
+    "lb0": 8400,
+    "lb1": 8400,
+    "lb2": 8400,
+    "lb3": 8400,
+    "fv1": 1024,
+    "fv2": 1024,
+    "fv3": 1024,
+    "fv4": 1024
+   },
+   "lb_words": 150,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     null
+    ],
+    [
+     130,
+     null
+    ],
+    [
+     140,
+     null
+    ],
+    [
+     150,
+     67625
+    ],
+    [
+     160,
+     67625
+    ],
+    [
+     170,
+     67625
+    ],
+    [
+     180,
+     67625
+    ],
+    [
+     190,
+     67625
+    ],
+    [
+     200,
+     67625
+    ],
+    [
+     210,
+     67625
+    ],
+    [
+     220,
+     67625
+    ],
+    [
+     230,
+     67625
+    ],
+    [
+     240,
+     67625
+    ],
+    [
+     250,
+     67625
+    ]
+   ],
+   "lb_large_total": 67625
+  },
+  "B0+SG": {
+   "total": 85352,
+   "segments": [
+    8034,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    98
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 42960
+    },
+    "byte_writes": {
+     "act": 64000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 0,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "act": 2500
+   },
+   "storage_bits": 140000,
+   "bits": {
+    "act": 140000
+   },
+   "lb_words": null,
+   "lb_curve": null,
+   "lb_large_total": null
+  },
+  "A, 1 lane": {
+   "total": 85352,
+   "segments": [
+    8034,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    11273,
+    8032,
+    98
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 10000,
+     "lb": 37960
+    },
+    "byte_writes": {
+     "act": 64000
+    },
+    "word_writes": {
+     "lb": 5000
+    },
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 0,
+    "dest_stalls": 0,
+    "fill_stalls": 37812
+   },
+   "words": {
+    "act": 2500,
+    "lb": 120
+   },
+   "storage_bits": 146720,
+   "bits": {
+    "act": 140000,
+    "lb": 6720
+   },
+   "lb_words": 120,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     85352
+    ],
+    [
+     130,
+     85352
+    ],
+    [
+     140,
+     85352
+    ],
+    [
+     150,
+     85352
+    ],
+    [
+     160,
+     85352
+    ],
+    [
+     170,
+     85352
+    ],
+    [
+     180,
+     85352
+    ],
+    [
+     190,
+     85352
+    ],
+    [
+     200,
+     85352
+    ],
+    [
+     210,
+     85352
+    ],
+    [
+     220,
+     85352
+    ],
+    [
+     230,
+     85352
+    ],
+    [
+     240,
+     85352
+    ],
+    [
+     250,
+     85352
+    ]
+   ],
+   "lb_large_total": 85352
+  },
+  "B, 1 lane": {
+   "total": 85256,
+   "segments": [
+    8034,
+    19281,
+    19281,
+    19281,
+    19281,
+    98
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 5000,
+     "lb": 37960,
+     "fv": 4000
+    },
+    "byte_writes": {
+     "act": 32000,
+     "fv": 32000
+    },
+    "word_writes": {
+     "lb": 5000
+    },
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 4000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 24,
+    "dest_stalls": 0,
+    "fill_stalls": 67764
+   },
+   "words": {
+    "act": 1300,
+    "lb": 120,
+    "fv": 16
+   },
+   "storage_bits": 80544,
+   "bits": {
+    "act": 72800,
+    "lb": 6720,
+    "fv": 1024
+   },
+   "lb_words": 120,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     85256
+    ],
+    [
+     130,
+     85256
+    ],
+    [
+     140,
+     85256
+    ],
+    [
+     150,
+     85256
+    ],
+    [
+     160,
+     85256
+    ],
+    [
+     170,
+     85256
+    ],
+    [
+     180,
+     85256
+    ],
+    [
+     190,
+     85256
+    ],
+    [
+     200,
+     85256
+    ],
+    [
+     210,
+     85256
+    ],
+    [
+     220,
+     85256
+    ],
+    [
+     230,
+     85256
+    ],
+    [
+     240,
+     85256
+    ],
+    [
+     250,
+     85256
+    ]
+   ],
+   "lb_large_total": 85256
+  },
+  "C, 1 lane": {
+   "total": 85132,
+   "segments": [
+    85034,
+    98
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "lb0": 9490,
+     "fv1": 1000,
+     "lb1": 9490,
+     "fv2": 1000,
+     "lb2": 9490,
+     "fv3": 1000,
+     "lb3": 9490,
+     "fv4": 1000
+    },
+    "byte_writes": {
+     "lb0": 8000,
+     "fv1": 8000,
+     "lb1": 8000,
+     "fv2": 8000,
+     "lb2": 8000,
+     "fv3": 8000,
+     "lb3": 8000,
+     "fv4": 8000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 4000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 600,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "lb0": 150,
+    "lb1": 150,
+    "lb2": 150,
+    "lb3": 150,
+    "fv1": 16,
+    "fv2": 16,
+    "fv3": 16,
+    "fv4": 16
+   },
+   "storage_bits": 37696,
+   "bits": {
+    "lb0": 8400,
+    "lb1": 8400,
+    "lb2": 8400,
+    "lb3": 8400,
+    "fv1": 1024,
+    "fv2": 1024,
+    "fv3": 1024,
+    "fv4": 1024
+   },
+   "lb_words": 150,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     null
+    ],
+    [
+     130,
+     null
+    ],
+    [
+     140,
+     null
+    ],
+    [
+     150,
+     85132
+    ],
+    [
+     160,
+     85132
+    ],
+    [
+     170,
+     85132
+    ],
+    [
+     180,
+     85132
+    ],
+    [
+     190,
+     85132
+    ],
+    [
+     200,
+     85132
+    ],
+    [
+     210,
+     85132
+    ],
+    [
+     220,
+     85132
+    ],
+    [
+     230,
+     85132
+    ],
+    [
+     240,
+     85132
+    ],
+    [
+     250,
+     85132
+    ]
+   ],
+   "lb_large_total": 85132
+  },
+  "B, 7-byte fusion vector": {
+   "total": 68241,
+   "segments": [
+    4533,
+    15904,
+    15904,
+    15904,
+    15904,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "act": 5000,
+     "lb": 37960,
+     "fv": 5000
+    },
+    "byte_writes": {
+     "act": 32000,
+     "fv": 32000
+    },
+    "word_writes": {
+     "lb": 5000
+    },
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 12,
+    "dest_stalls": 0,
+    "fill_stalls": 55128
+   },
+   "words": {
+    "act": 1300,
+    "lb": 120,
+    "fv": 20
+   },
+   "storage_bits": 80640,
+   "bits": {
+    "act": 72800,
+    "lb": 6720,
+    "fv": 1120
+   },
+   "lb_words": 120,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     68241
+    ],
+    [
+     130,
+     68241
+    ],
+    [
+     140,
+     68241
+    ],
+    [
+     150,
+     68241
+    ],
+    [
+     160,
+     68241
+    ],
+    [
+     170,
+     68241
+    ],
+    [
+     180,
+     68241
+    ],
+    [
+     190,
+     68241
+    ],
+    [
+     200,
+     68241
+    ],
+    [
+     210,
+     68241
+    ],
+    [
+     220,
+     68241
+    ],
+    [
+     230,
+     68241
+    ],
+    [
+     240,
+     68241
+    ],
+    [
+     250,
+     68241
+    ]
+   ],
+   "lb_large_total": 68241
+  },
+  "C, 7-byte fusion vector": {
+   "total": 68025,
+   "segments": [
+    67933,
+    92
+   ],
+   "hazards": 0,
+   "first_hazards": [],
+   "counts": {
+    "reads": {
+     "lb0": 9490,
+     "fv1": 1250,
+     "lb1": 9490,
+     "fv2": 1250,
+     "lb2": 9490,
+     "fv3": 1250,
+     "lb3": 9490,
+     "fv4": 1250
+    },
+    "byte_writes": {
+     "lb0": 8000,
+     "fv1": 8000,
+     "lb1": 8000,
+     "fv2": 8000,
+     "lb2": 8000,
+     "fv3": 8000,
+     "lb3": 8000,
+     "fv4": 8000
+    },
+    "word_writes": {},
+    "feat_reads": 1175,
+    "pool_reads": 64,
+    "pool_updates": 8000,
+    "chunks": {
+     "conv1": 1250,
+     "dw": 45000,
+     "pw": 5000,
+     "fc": 64
+    },
+    "passes": 7501,
+    "requant": 72012,
+    "x_rows": 325064,
+    "src_stalls": 300,
+    "dest_stalls": 0,
+    "fill_stalls": 0
+   },
+   "words": {
+    "lb0": 150,
+    "lb1": 150,
+    "lb2": 150,
+    "lb3": 150,
+    "fv1": 20,
+    "fv2": 20,
+    "fv3": 20,
+    "fv4": 20
+   },
+   "storage_bits": 38080,
+   "bits": {
+    "lb0": 8400,
+    "lb1": 8400,
+    "lb2": 8400,
+    "lb3": 8400,
+    "fv1": 1120,
+    "fv2": 1120,
+    "fv3": 1120,
+    "fv4": 1120
+   },
+   "lb_words": 150,
+   "lb_curve": [
+    [
+     100,
+     null
+    ],
+    [
+     110,
+     null
+    ],
+    [
+     120,
+     null
+    ],
+    [
+     130,
+     null
+    ],
+    [
+     140,
+     null
+    ],
+    [
+     150,
+     68025
+    ],
+    [
+     160,
+     68025
+    ],
+    [
+     170,
+     68025
+    ],
+    [
+     180,
+     68025
+    ],
+    [
+     190,
+     68025
+    ],
+    [
+     200,
+     68025
+    ],
+    [
+     210,
+     68025
+    ],
+    [
+     220,
+     68025
+    ],
+    [
+     230,
+     68025
+    ],
+    [
+     240,
+     68025
+    ],
+    [
+     250,
+     68025
+    ]
+   ],
+   "lb_large_total": 68025
+  }
+ },
+ "V1": {
+  "segments": [
+   8034,
+   11273,
+   8032,
+   11273,
+   8032,
+   11273,
+   8032,
+   11273,
+   8032,
+   98
+  ],
+  "rtl": [
+   8034,
+   11273,
+   8032,
+   11273,
+   8032,
+   11273,
+   8032,
+   11273,
+   8032,
+   98
+  ],
+  "total": 85352,
+  "rtl_total": 85352,
+  "exact_layers": 10,
+  "counts": {
+   "dw_reads": 37960,
+   "pw_reads": 5000,
+   "act_byte_writes": 72000,
+   "dw_chunks": 45000,
+   "feat_reads": 1175,
+   "conv1_chunks": 1250,
+   "passes": 7501,
+   "requant": 72012
+  },
+  "passed": true
+ },
+ "self_test": {
+  "sign gate too wide": {
+   "result": "ran",
+   "hazards": 0,
+   "bad_values": 634239,
+   "cycles": 67841,
+   "caught": true
+  },
+  "tap rows shifted": {
+   "result": "ran",
+   "hazards": 0,
+   "bad_values": 2094085,
+   "cycles": 67841,
+   "caught": true
+  },
+  "fusion vector swapped": {
+   "result": "deadlock",
+   "hazards": null,
+   "bad_values": null,
+   "cycles": null,
+   "caught": true
+  },
+  "line buffer slot shifted": {
+   "result": "deadlock",
+   "hazards": null,
+   "bad_values": null,
+   "cycles": null,
+   "caught": true
+  },
+  "B without its source interlock": {
+   "result": "ran",
+   "hazards": 38940,
+   "bad_values": 2057589,
+   "cycles": 67745
+  },
+  "B with a 25-row map": {
+   "result": "ran",
+   "hazards": 0,
+   "bad_values": 0,
+   "cycles": 67745
+  }
+ },
+ "exact": {
+  "B0": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 0,
+   "sg_skipped_per_inference": 0.0
+  },
+  "S": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 177695259,
+   "sg_skipped_per_inference": 36338.49877300613
+  },
+  "A": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 177695259,
+   "sg_skipped_per_inference": 36338.49877300613
+  },
+  "B": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 177695259,
+   "sg_skipped_per_inference": 36338.49877300613
+  },
+  "C": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 177695259,
+   "sg_skipped_per_inference": 36338.49877300613
+  }
+ }
+}
