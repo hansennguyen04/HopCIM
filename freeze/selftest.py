@@ -47,8 +47,9 @@ BREAKS = [
     ("the lowest clock changes", replace("model/timing_results.json", '"nmin": 5', '"nmin": 4', 1), r"FAIL\s+H1"),
     ("a network cycle count changes", replace("model/timing_results.json", '"cycles": 85352', '"cycles": 85353'), r"FAIL\s+H2"),
     ("ZigZag-IMC disagrees", replace("model/zigzag_results.json", '"ratio": 1.0', '"ratio": 1.1'), r"FAIL\s+F3"),
-    ("the StreamFuse replay has a mismatch", replace("model/streamfuse_results.json", '"bad_values": 0', '"bad_values": 1', 1), r"FAIL\s+S1"),
+    ("the StreamFuse replay has a mismatch", replace("model/streamfuse_results.json", '"bad_logit_clips": 0', '"bad_logit_clips": 1', 1), r"FAIL\s+S1"),
     ("the modelled S energy changes", replace("model/streamfuse_energy.json", "1119.818640181629", "1129.818640181629", 1), r"FAIL\s+S2"),
+    ("a StreamFuse broken design is no longer caught", replace("model/streamfuse_results.json", '"caught": true', '"caught": false', 1), r"FAIL\s+S1"),
     ("the results freeze index is edited by hand", replace("freeze/RESULTS_FREEZE.md", "## 7. Thesis tables", "## 7. Thesis table"), r"FAIL\s+RESULTS_FREEZE"),
 ]
 

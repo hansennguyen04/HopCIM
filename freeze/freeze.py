@@ -414,14 +414,16 @@ def sf_model_check():
     v1 = r["V1"]
     ex = r["exact"]
     return (v1["passed"] and v1["total"] == v1["rtl_total"] == 85352 and v1["exact_layers"] == 10 and v1["segments"] == v1["rtl"]
-            and all(ex[k]["clips"] == 4890 and ex[k]["bad_clips"] == 0 and ex[k]["bad_values"] == 0 and ex[k]["bad_logit_clips"] == 0 for k in ("B0", "S", "A", "B", "C")))
+            and all(ex[k]["clips"] == 4890 and ex[k]["bad_clips"] == 0 and ex[k]["bad_values"] == 0 and ex[k]["bad_logit_clips"] == 0 for k in ("B0", "S", "A", "B", "C"))
+            and all(m.get("caught") for k, m in r["self_test"].items() if k not in ("B without its source interlock", "B with a 25-row map"))
+            and r["self_test"]["B without its source interlock"]["hazards"] > 0 and r["self_test"]["B with a 25-row map"]["bad_values"] == 0)
 
 
 def sf_energy_check():
     e = jget("model/streamfuse_energy.json")
     g = e["gates_G2"]
     c = jget("model/streamfuse_results.json", "cycles")
-    return (e["V3"]["passed"] and round(g["B"]["S_nJ"], 1) == 1119.8 and round(g["B"]["S_power_uW"]["2"], 1) == 68.8 and c["S"]["total"] == 67841
+    return (e["V3"]["passed"] and all(round(g[k]["S_nJ"], 1) == 1119.8 and round(g[k]["S_power_uW"]["2"], 1) == 68.8 for k in "ABC") and round(g["B"]["S_power_uW"]["2"], 1) == 68.8 and c["S"]["total"] == 67841
             and round(g["B"]["ratio"], 3) == 0.837 and round(g["C"]["ratio"], 3) == 0.821 and round(g["A"]["ratio"], 3) == 0.903 and not g["A"]["G2"]
             and c["B"]["storage_bits"] == 80544 and c["S"]["storage_bits"] == 140000)
 
