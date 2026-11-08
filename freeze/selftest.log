@@ -9,8 +9,13 @@ caught  the gate-level check has a mismatch
 caught  a document quotes another number
 caught  a stale statement returns
 caught  a bitstream hash differs
-caught  the X-HEEP patch is damaged
-caught  a firmware file differs from the live one
+caught  an X-HEEP patch is damaged
+caught  a firmware file changes
+caught  the clean-clone bitstream differs
+caught  S's lowest clock at max(8, 2b + 8) changes
+caught  a B1 segment differs from its model
+caught  B1's energy no longer equals its model
+caught  B1's LUT count changes
 caught  a board script differs from the live one
 caught  a bench fails in the regression
 caught  an assertion fails
@@ -30,4 +35,4 @@ caught  an overrun at 4.096 MHz
 caught  S's worst hop changes
 caught  the results freeze index is edited by hand
 
-30 breaks, 0 problems
+35 breaks, 0 problems
