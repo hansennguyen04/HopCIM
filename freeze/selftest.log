@@ -25,6 +25,9 @@ caught  ZigZag-IMC disagrees
 caught  the StreamFuse replay has a mismatch
 caught  the modelled S energy changes
 caught  a StreamFuse broken design is no longer caught
+caught  a test clip fails in the RTL with S
+caught  an overrun at 4.096 MHz
+caught  S's worst hop changes
 caught  the results freeze index is edited by hand
 
-27 breaks, 0 problems
+30 breaks, 0 problems
