@@ -35,7 +35,8 @@ module tb_cim_seq #(
 `ifdef NETLIST
   cim_endpoint dut (.clk_i(clk), .rst_ni(rst_n), .\obi_req_i[req] (req.req), .\obi_req_i[we] (req.we),
       .\obi_req_i[be] (req.be), .\obi_req_i[addr] (req.addr), .\obi_req_i[wdata] (req.wdata),
-      .\obi_rsp_o[gnt] (rsp.gnt), .\obi_rsp_o[rvalid] (rsp.rvalid), .\obi_rsp_o[rdata] (rsp.rdata), .irq_o(irq));
+      .\obi_rsp_o[gnt] (rsp.gnt), .\obi_rsp_o[rvalid] (rsp.rvalid), .\obi_rsp_o[rdata] (rsp.rdata), .irq_o(irq),
+      .pdm_clk_o(), .pdm_data_i(1'b0));
 `else
   cim_endpoint #(.TILES(128), .FE_DED(DED)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
@@ -196,6 +197,9 @@ module tb_cim_seq #(
     $readmemh("tb/seq_vec/synth_logits.hex", s_logits);
     $readmemh("tb/seq_vec/synth_meta.hex", s_meta);
     nclips = int'(meta[0]);
+`ifdef NETLIST
+    #200;                                             // after the netlist's 100-ns global set/reset
+`endif
     repeat (4) @(posedge clk);
     #1 rst_n = 1'b1;
     tick();

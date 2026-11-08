@@ -1,0 +1,234 @@
+{
+ "mutants": [
+  {
+   "name": "engine issues one cycle early",
+   "want": "engine.ready_low_d_minus_1",
+   "caught": true,
+   "fails": [
+    "busy_covers_pass",
+    "done_at_d_plus_5",
+    "ready_low_d_minus_1"
+   ],
+   "bench_pass": false,
+   "finished": false,
+   "first": [
+    "ready_low_d_minus_1 tb_cim_engine.dut.u_sva ready before t0 + D at 328605000",
+    "done_at_d_plus_5 tb_cim_engine.dut.u_sva done missing at t0 + D + 5 at 332995000"
+   ]
+  },
+  {
+   "name": "engine result one cycle late",
+   "want": "engine.done_at_d_plus_5",
+   "caught": true,
+   "fails": [
+    "done_at_d_plus_5"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "done_at_d_plus_5 tb_cim_engine.dut.u_sva done missing at t0 + D + 5 at 328665000"
+   ]
+  },
+  {
+   "name": "input bank released too early",
+   "want": "engine.input_bank_stable_port2",
+   "caught": true,
+   "fails": [
+    "input_bank_stable_port2"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "input_bank_stable_port2 tb_cim_seq.dut.i_engine.u_sva wide-port write to a bank a pass reads at 354435000"
+   ]
+  },
+  {
+   "name": "CPU go granted while the engine is busy",
+   "want": "engine.start_only_when_ready",
+   "caught": true,
+   "fails": [
+    "start_only_when_ready"
+   ],
+   "bench_pass": false,
+   "finished": false,
+   "first": [
+    "start_only_when_ready tb_cim_endpoint.dut.i_engine.u_sva start while the engine is not ready at 56725000"
+   ]
+  },
+  {
+   "name": "passes too close for requantisation",
+   "want": "seq.results_drained_before_pop",
+   "caught": true,
+   "fails": [
+    "no_error_flag",
+    "results_drained_before_pop"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "results_drained_before_pop tb_cim_seq.dut.i_seq.u_sva new results before the previous ones drained at 354125000",
+    "no_error_flag tb_cim_seq.dut.i_seq.u_sva the sequencer's error flag is set at 354135000"
+   ]
+  },
+  {
+   "name": "a requantised result lost",
+   "want": "seq.requant_keeps_count",
+   "caught": true,
+   "fails": [
+    "requant_keeps_count"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "requant_keeps_count tb_cim_seq.dut.i_seq.u_sva a requantisation lost or duplicated at 434105000"
+   ]
+  },
+  {
+   "name": "hop one sample short",
+   "want": "audio.hop_is_320_samples",
+   "caught": true,
+   "fails": [
+    "hop_is_320_samples"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "hop_is_320_samples tb_cim_mic.dut.i_audio.u_sva hop end not at the 320th sample at 1412735000"
+   ]
+  },
+  {
+   "name": "decision counted twice",
+   "want": "audio.decision_count_steps",
+   "caught": true,
+   "fails": [
+    "decision_count_steps"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "decision_count_steps tb_cim_mic.dut.i_audio.u_sva decision count jumped at 52522655000"
+   ]
+  },
+  {
+   "name": "decision on a hop without the network",
+   "want": "audio.decision_only_on_network_hop",
+   "caught": true,
+   "fails": [
+    "decision_only_on_network_hop"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "decision_only_on_network_hop tb_cim_mic.dut.i_audio.u_sva a decision on a hop without the network at 50645155000"
+   ]
+  },
+  {
+   "name": "stride counter runs past k - 1",
+   "want": "audio.stride_counter_bounded",
+   "caught": true,
+   "fails": [
+    "stride_counter_bounded"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "stride_counter_bounded tb_cim_mic.dut.i_audio.u_sva stride counter past k - 1 at 54663945000"
+   ]
+  },
+  {
+   "name": "PDM clock outside 40-60 % duty",
+   "want": "pdm.pdm_clock_duty_40_60",
+   "caught": true,
+   "fails": [
+    "pdm_clock_duty_40_60"
+   ],
+   "bench_pass": true,
+   "finished": true,
+   "first": [
+    "pdm_clock_duty_40_60 tb_pdm_dec.dut.u_sva PDM clock outside 40-60 % duty at 185000"
+   ]
+  },
+  {
+   "name": "interrupt ignores its enable",
+   "want": "endpoint.irq_only_when_enabled",
+   "caught": true,
+   "fails": [
+    "irq_only_when_enabled"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "irq_only_when_enabled tb_cim_seq.dut.u_sva.unnamedblk1 irq without an enabled pending source at 26612695000"
+   ]
+  },
+  {
+   "name": "sequencer may start on cim_fe's engine",
+   "want": "endpoint.seq_fe_not_with_cim_fe",
+   "caught": true,
+   "fails": [
+    "input_bank_stable_port1",
+    "input_bank_stable_port2",
+    "no_error_flag",
+    "pop_has_a_tag",
+    "results_drained_before_pop",
+    "seq_fe_not_with_cim_fe"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "input_bank_stable_port2 tb_cim_seq.dut.i_engine.u_sva wide-port write to a bank a pass reads at 26618415000",
+    "pop_has_a_tag tb_cim_seq.dut.i_seq.u_sva a result without a tag at 26618505000"
+   ]
+  },
+  {
+   "name": "front-end reads past its frame",
+   "want": "frontend.reads_inside_its_frame",
+   "caught": true,
+   "fails": [
+    "reads_inside_its_frame"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "reads_inside_its_frame tb_cim_fe.dut.g_fe_cim.i_fe.u_sva a front-end read outside its frame at 52095000"
+   ]
+  },
+  {
+   "name": "B3 reads past its frame",
+   "want": "frontend.reads_inside_its_frame",
+   "caught": true,
+   "fails": [
+    "reads_inside_its_frame"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "reads_inside_its_frame tb_cim_fe.dut.g_fe_ded.i_fe.u_sva a front-end read outside its frame at 51915000"
+   ]
+  },
+  {
+   "name": "response one cycle late on a read path",
+   "want": "endpoint.rvalid_follows_gnt",
+   "caught": true,
+   "fails": [
+    "rvalid_follows_gnt"
+   ],
+   "bench_pass": true,
+   "finished": true,
+   "first": [
+    "rvalid_follows_gnt tb_cim_endpoint.dut.u_sva rvalid is not the cycle after gnt at 55000"
+   ]
+  }
+ ],
+ "equivalent": [
+  {
+   "name": "sequencer issue ignores ready",
+   "want": "engine.start_only_when_ready",
+   "caught": false,
+   "fails": [],
+   "bench_pass": true,
+   "finished": true,
+   "first": []
+  }
+ ]
+}

@@ -30,9 +30,9 @@ XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
 DISCOVERY = PROJECT / "research_discovery" / "20261026_application_driven"
 PILOT = PROJECT / "recim-rv" / "accelforge_pilot"
-TAG = "freeze-2026-11-07"
+TAG = "freeze-2026-11-07b"
 
-BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "xheep_env.sh"]
+BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "board_kwlog.sh", "xheep_env.sh"]
 GATE_FILES = ["GATE_RESULTS.md", "GATE2_MANIFEST.md", "gate2_eval.py", "gate2_frozen.sha256", "gate2_results.json", "gate2_run.log"]
 NOVELTY_FILES = ["NOVELTY_ASSESSMENT.md", "RESEARCH_DISCOVERY.md"]
 MODELS = {
@@ -61,6 +61,9 @@ STALE = [  # statements that were true once and must not come back
     ("docs/HOPCIM_PROPOSAL.md", "the scripted accuracy test is ready"),
     ("docs/LIVE_AUDIO.md", "waits for a speaker"),
     ("docs/EVALUATION.md", "has not been run with a speaker"),
+    ("docs/ENERGY_ESTIMATE.md", "**ZigZag-IMC itself has not been run.**"),
+    ("docs/HOPCIM_PROPOSAL.md", "the tool itself has not been run"),
+    ("docs/LIVE_AUDIO.md", "covers a restart, and the firmware enables the path once"),
 ]
 
 
@@ -265,6 +268,28 @@ KHOP_LOG = B + "khop_board_20261105_231009.log"
 UTIL = "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15/utilization_hier.rpt"
 
 
+def timing_check():
+    h = {x["name"]: x for x in jget("model/timing_results.json", "hop")}
+    want = dict(baseline=5, own_clock=5, **{"2bpc_nopipe": 5, "1bpc_nopipe": 5, "1bpc_pipe": 5, "colonnade_bp": 5}, two_steps=8, four_steps=15, colonnade_np=59)
+    return (all(h[k]["nmin"] == v for k, v in want.items()) and all(x["at"]["passed"] and x["at"]["overrun"] == 0 and x["at"]["hazards"] == 0 for x in h.values())
+            and all(not x["below"]["passed"] and x["below"]["overrun"] > 0 for x in h.values()) and h["baseline"]["worst"] == 97583)
+
+
+# the two complete ambient runs (the snapshot of 2026-11-07 held 1.46 h of them)
+FAR_LOG = "model/kwlog_checks/far_ambient.log"
+FAR_TEXT = ("Ambient room, 8.38 h without audio: the firmware rule reported 3.6, 4.1, 2.6 times per hour at 20, 40, 80 ms, all of it in the "
+            "first 1.38 h (evening) and none in the 7.0 h after; at 40 ms 0.1 per hour with a window-maximum gate of 2,000 (board)")
+FAR_DOC = "**4.1**"
+
+
+def far_check():
+    pooled = [("20 ms  5 in a row", "30\\.0", "3\\.6"), ("40 ms  3 in a row", "34\\.5", "4\\.1"), ("80 ms  3 in a row", "21\\.5", "2\\.6"),
+              ("40 ms  level >= 2000, 3 in a row", "1\\.0", "0\\.1")]
+    quiet = all(has(FAR_LOG, rf"hour {h} \(1\.00 h\):\s+0\.0,\s+0\.0,\s+0\.0;") for h in range(2, 9))
+    return (has(FAR_LOG, r"all runs together, 8\.38 h") and quiet and has(FAR_LOG, r"hour 1 \(1\.00 h\):\s+9\.5,")
+            and all(has(FAR_LOG, rf"{name}\s+reports\s+{n},\s+{rate} per hour") for name, n, rate in pooled))
+
+
 def claims():
     """id, label, text, evidence file, check, documents that must quote it, how to reproduce."""
     py = "`~/venvs/planenest/bin/python`"
@@ -321,9 +346,42 @@ def claims():
         dict(id="D2", label="[M]", text="Endpoint with cim_fe, out of context: 7,635 LUT, 5,819 FF, 145 DSP",
              evidence=UTIL, check=lambda: has(UTIL, r"\| cim_endpoint\s+\|\s+\(top\) \|\s+7635 \|.*\|\s+5819 \|.*\|\s+145 \|"),
              docs=[("docs/LIVE_AUDIO.md", "7,635 (+18)")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15`"),
-        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository: 24 of 24 benches pass",
-             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"24 of 24 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
-             docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 8 min"),
+        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository: 28 of 28 benches pass",
+             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"28 of 28 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
+             docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 10 min"),
+        dict(id="D4", label="[M]", text="RTL regression in the main tree, with the directed benches of extreme input, stalls and overrun: 28 of 28 benches pass",
+             evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"28 of 28 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL"),
+             docs=[("docs/VERIFICATION.md", "28 of 28 benches pass")], how="`sim/run_all.sh`, about 10 min"),
+        dict(id="D5", label="[M]", text="Assertions: 47, all exercised, none failing over the 28 benches; every uncovered line explained",
+             evidence="model/verif_results.json",
+             check=lambda: len(jget("model/verif_results.json", "assertions")) == 47 and all(v["active"] > 0 and v["fail"] == 0 for v in jget("model/verif_results.json", "assertions").values())
+             and len(jget("model/verif_results.json", "benches")) == 28 and all(jget("model/verif_results.json", "benches").values()),
+             docs=[("docs/VERIFICATION.md", "47, all exercised, none failing")], how="`sim/run_cov.sh 5`, then `python3 model/verif_report.py`"),
+        dict(id="D6", label="[M]", text="Mutation test: 16 of 16 broken designs caught by the assertion named for each",
+             evidence="model/verif_mutants.json",
+             check=lambda: len(jget("model/verif_mutants.json", "mutants")) == 16 and all(m["caught"] for m in jget("model/verif_mutants.json", "mutants")),
+             docs=[("docs/VERIFICATION.md", "16 of 16 broken designs caught")], how="`python3 model/verif_mutants.py 4`, about 8 min"),
+        dict(id="D7", label="[M]", text="Post-synthesis, whole endpoint with cim_fe: every layer of a clip and one full inference exact on the Vivado netlist",
+             evidence="sim/xsim_endpoint_nl/run.log",
+             check=lambda: has("sim/xsim_endpoint_nl/run.log", r"RESULT \(medium\): 0 errors") and has("sim/xsim_endpoint_nl/run.log", r"(?m)^PASS"),
+             docs=[("docs/VERIFICATION.md", "`sim/run_endpoint_nl.sh`")], how="`sim/run_endpoint_nl.sh`, about 80 min"),
+        dict(id="G1", label="[M]", text="Same-audio logger on the board at 921,600 baud: 2,850 of 2,850 decisions on real microphone audio equal the golden model",
+             evidence="model/kwlog_checks/engineering_r1.log", check=lambda: has("model/kwlog_checks/engineering_r1.log", r"2850 decisions recomputed from the recorded audio, 0 differ"),
+             docs=[("docs/SAME_AUDIO.md", "2,850 of 2,850")], how="`planenest/hw/board_kwlog.sh`, then `model/kwlog_analyse.py`"),
+        dict(id="G2", label="[M]", text="GSC streams, firmware's rule: keyword recall 86.0, 87.0, 86.5 % at 20, 40, 80 ms. Synthetic streams, no board",
+             evidence="model/rule_sweep_results.json",
+             check=lambda: [round(100 * jget("model/rule_sweep_results.json", "table", n, k, "words", "recall"), 1) for n, k in (("5 in a row", "1"), ("3 in a row", "2"), ("2 in a row", "4"))] == [86.0, 87.0, 86.5],
+             docs=[("docs/SAME_AUDIO.md", "86.0 %")], how=f"{py} model/rule_sweep.py run 4; report"),
+        dict(id="G3", label="[M]", text=FAR_TEXT,
+             evidence="model/kwlog_checks/far_ambient.log", check=far_check,
+             docs=[("docs/SAME_AUDIO.md", FAR_DOC)], how=f"{py} model/kwlog_analyse.py --far <runs>; recordings pinned by hash in the log"),
+        dict(id="H1", label="[M]", text="Timing sweep in simulation: lowest clock 5.12 MHz at every assumption with D <= 9; 8.19, 15.36, 60.42 MHz at D = 18, 36, 153; bit-exact at the lowest clock, overruns one divider below",
+             evidence="model/timing_results.json", check=timing_check,
+             docs=[("docs/TIMING_SENSITIVITY.md", "**5.12 MHz**"), ("docs/TIMING_SENSITIVITY.md", "60.42 MHz")], how="`python3 model/timing_sweep.py seq; hop`, about 20 min"),
+        dict(id="H2", label="[M]", text="A macro on its own fast clock (D = 1) changes the network's cycles from 85,352 to 85,232; the one-line model is within 1.39 % over 40 timings",
+             evidence="model/timing_results.json",
+             check=lambda: any(x["d"] == 1 and x["lat"] == 1 and x["cycles"] == 85232 for x in jget("model/timing_results.json", "seq")) and any(x["d"] == 9 and x["lat"] == 5 and x["cycles"] == 85352 for x in jget("model/timing_results.json", "seq")),
+             docs=[("docs/TIMING_SENSITIVITY.md", "1.39 %")], how="`python3 model/timing_sweep.py report`"),
         dict(id="E1", label="[M]", text="Activation reuse in software: exact on 174,216 decisions over 3,500 s (0 logit, 0 layer mismatches). Not in RTL",
              evidence="model/reuse_results.json",
              check=lambda: jget("model/reuse_results.json", "decisions") == 174216 and jget("model/reuse_results.json", "logit_mismatches") == 0 and jget("model/reuse_results.json", "layer_mismatches") == 0,
@@ -335,6 +393,11 @@ def claims():
         dict(id="F2", label="[E]", text="Estimate: simple reuse saves a net 13.0-14.1 µW at 40 ms with leakage included, using ZigZag-IMC's transcribed equations",
              evidence="model/energy_run.log", check=lambda: has("model/energy_run.log", r"40 ms, 1 cache, \+32 KB\s+15\.8-16\.9\s+2\.8\s+\+13\.0\.\.\+14\.1"),
              docs=[("docs/ENERGY_ESTIMATE.md", "+13.0 to +14.1 µW")], how="`python3 model/energy_est.py`"),
+        dict(id="F3", label="[E]", text="ZigZag-IMC itself against the transcribed equations: ratio 1.000 on the pointwise layers, 1.029 overall at the measured activity; with its raw array figure 140, 90, 65 µW",
+             evidence="model/zigzag_results.json",
+             check=lambda: round(jget("model/zigzag_results.json", "group16_macros1", "rows", "pw", "ratio"), 3) == 1.0 and round(jget("model/zigzag_results.json", "like_for_like", "ratio"), 3) == 1.029
+             and [round(jget("model/zigzag_results.json", "like_for_like", "power", k, "with_tool_uW")) for k in ("1", "2", "4")] == [140, 90, 65],
+             docs=[("docs/ENERGY_ESTIMATE.md", "140 / 90 / 65 µW")], how="`~/venvs/zigzag/bin/python model/zigzag_run/run_zigzag.py`, about 1 min"),
     ]
 
 

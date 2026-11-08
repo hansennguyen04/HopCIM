@@ -1,9 +1,9 @@
 loaded 128 tiles
-directed: 13 passes checked, 0 errors, 0 timing errors
-random: 2404 passes checked, 0 errors
-RESULT: 3004 passes checked, 0 value mismatches, 0 done-timing errors; 1759 back-to-back starts checked, 0 issue-interval errors
+directed: 17 passes checked, 0 errors, 0 timing errors
+random: 2401 passes checked, 0 errors
+RESULT: 3001 passes checked, 0 value mismatches, 0 done-timing errors; 1748 back-to-back starts checked, 0 issue-interval errors
 PASS
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_engine.sv:247: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_engine.sv:251: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 1ms; walltime 0.264 s; speed 4.918 ms/s
-- Verilator: cpu 0.263 s on 1 threads; alloced 127 MB
+- Verilator: $finish at 1ms; walltime 0.298 s; speed 4.486 ms/s
+- Verilator: cpu 0.293 s on 1 threads; alloced 127 MB

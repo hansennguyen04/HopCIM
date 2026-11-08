@@ -1,0 +1,166 @@
+streams: 1.00 h words, 0.50 h non-keyword speech, 1.00 h noise; 894 words
+
+mean over phases; recall of keywords; reports per hour: stream with words (outside any word), non-keyword speech, noise only
+rule                                         20 ms: recall  in-words speech  noise       40 ms: recall  in-words speech  noise       80 ms: recall  in-words speech  noise
+1 in a row                                          91.7       25    1982      61                90.5        6    1120      18                89.6        5     885      12  
+2 in a row                                          89.1        2     874       6                88.3        4     694      10                86.5        2     362       7  
+3 in a row                                          87.9        2     726       5                87.0        2     439       8                84.3        1     156       3  
+4 in a row                                          86.8        1     530       3                85.8        0     271       4                82.9        0      90       1  
+5 in a row                                          86.0        1     430       3                84.4        0     172       4                82.5        1      70       1  
+6 in a row                                          85.5        0     340       2                83.9        1     132       1                82.0        0      61       0  
+8 in a row                                          84.2        0     208       2                82.7        0      78       1                80.7        0      50       0  
+2 of last 3                                         90.4       16    1322      37                88.4        4     715      12                86.5        2     380       8  
+3 of last 4                                         88.0        3     852       7                87.1        2     455      10                84.6        0     168       3  
+3 of last 5                                         89.0       12    1030      24                87.1        2     469      10                84.6        1     172       3  
+4 of last 6                                         87.5        2     734       6                85.9        0     302       7                83.2        1     105       2  
+margin >= 10, 2 in a row                            82.3        0     294       2                81.9        0     231       1                79.6        0     104       1  
+margin >= 20, 2 in a row                            71.6        0      74       0                70.9        0      52       0                68.6        0      20       0  
+margin >= 40, 2 in a row                            43.6        0       0       0                44.6        0       0       0                42.1        0       0       0  
+margin >= 80, 2 in a row                             2.0        0       0       0                 2.6        0       0       0                 2.2        0       0       0  
+margin >= 10, 3 in a row                            81.2        0     244       1                80.2        0     128       1                77.5        0      46       0  
+margin >= 20, 3 in a row                            70.1        0      56       0                68.9        0      23       0                66.3        0       6       0  
+margin >= 40, 3 in a row                            42.8        0       0       0                42.8        0       0       0                39.7        0       0       0  
+margin >= 80, 3 in a row                             2.0        0       0       0                 2.3        0       0       0                 2.0        0       0       0  
+margin >= 10, 5 in a row                            78.9        1     142       1                77.4        0      56       0                74.9        0      29       0  
+margin >= 20, 5 in a row                            67.8        0      22       0                66.3        0       8       0                64.1        0       4       0  
+margin >= 40, 5 in a row                            40.1        0       0       0                39.8        0       0       0                36.2        0       0       0  
+margin >= 80, 5 in a row                             1.6        0       0       0                 2.1        0       0       0                 1.7        0       0       0  
+sum of 2, 2 in a row                                89.8        4     898      12                88.2        2     645      11                86.6        2     318       6  
+sum of 2, 3 in a row                                88.6        4     718       9                86.7        2     419       6                84.5        0     152       2  
+sum of 3, 2 in a row                                89.3        4     800      10                88.0        2     551      10                86.4        1     236       6  
+sum of 3, 3 in a row                                88.5        4     698       9                87.1        2     377       8                84.7        1     144       2  
+sum of 4, 2 in a row                                88.9        4     750       9                87.8        2     470       9                86.1        1     176       4  
+sum of 4, 3 in a row                                88.5        4     654       9                86.8        2     350       6                85.0        1     131       2  
+sum of 8, 2 in a row                                88.0        1     510       5                86.8        0     212       5                84.7        3      90       1  
+sum of 8, 3 in a row                                87.8        1     470       5                86.3        0     189       4                84.0        2      81       1  
+sum of 12, 2 in a row                               87.5        1     338       4                86.0        1     133       3                82.5        4      59       0  
+sum of 12, 3 in a row                               87.5        1     320       3                85.6        2     125       2                81.9        1      56       0  
+sum of 16, 2 in a row                               87.4        0     216       2                85.2        3      98       1                78.2        3      34       0  
+sum of 16, 3 in a row                               87.2        0     206       2                84.9        4      90       1                77.7        2      32       0  
+sum of 4, margin >= 5, 2 in a row                   86.7        0     390       2                84.8        0     243       2                82.3        0      98       1  
+sum of 4, margin >= 5, 3 in a row                   85.9        0     346       2                83.4        0     177       2                81.3        0      69       1  
+sum of 4, margin >= 10, 2 in a row                  82.3        0     236       2                80.5        0     120       1                78.1        0      56       1  
+sum of 4, margin >= 10, 3 in a row                  81.2        0     202       2                79.4        0      95       1                77.0        0      40       0  
+sum of 4, margin >= 20, 2 in a row                  71.5        0      56       1                70.0        0      26       0                67.4        0       8       0  
+sum of 4, margin >= 20, 3 in a row                  71.2        0      44       1                68.8        0      17       0                66.2        0       6       0  
+sum of 8, margin >= 5, 2 in a row                   86.0        0     250       2                83.3        0     118       1                81.0        1      56       0  
+sum of 8, margin >= 5, 3 in a row                   85.7        0     236       2                82.6        0     104       1                80.1        0      52       0  
+sum of 8, margin >= 10, 2 in a row                  80.8        0     134       2                78.5        0      66       1                76.5        0      34       0  
+sum of 8, margin >= 10, 3 in a row                  80.2        1     128       1                78.2        0      58       0                75.6        0      30       0  
+sum of 8, margin >= 20, 2 in a row                  70.7        0      30       0                68.1        0      10       0                65.2        0       4       0  
+sum of 8, margin >= 20, 3 in a row                  70.5        0      26       0                67.6        0       8       0                64.0        0       4       0  
+sum of 16, margin >= 5, 2 in a row                  84.2        0     120       1                81.6        2      60       0                71.7        2      10       0  
+sum of 16, margin >= 5, 3 in a row                  84.1        0     116       1                81.2        0      56       0                71.3        2       9       0  
+sum of 16, margin >= 10, 2 in a row                 79.1        1      76       1                76.8        0      36       0                63.0        2       1       0  
+sum of 16, margin >= 10, 3 in a row                 78.7        1      72       1                76.4        0      34       0                62.2        3       1       0  
+sum of 16, margin >= 20, 2 in a row                 67.9        0      10       0                65.9        0       5       0                43.2        0       0       0  
+sum of 16, margin >= 20, 3 in a row                 67.9        0      10       0                65.4        0       5       0                42.5        0       0       0  
+level >= 500, 2 in a row                            89.1        2     868       4                88.3        3     689       8                86.5        1     359       5  
+level >= 500, 3 in a row                            87.9        2     724       3                87.0        2     435       6                84.3        0     156       2  
+level >= 500, 5 in a row                            86.0        1     428       1                84.4        0     172       2                82.5        0      70       0  
+level >= 1000, 2 in a row                           89.1        0     864       2                88.3        1     685       6                86.5        0     358       3  
+level >= 1000, 3 in a row                           87.9        0     722       2                87.0        0     433       3                84.3        0     155       0  
+level >= 1000, 5 in a row                           86.0        0     426       0                84.4        0     171       0                82.5        0      70       0  
+level >= 2000, 2 in a row                           88.9        0     842       0                88.0        0     670       1                86.2        0     349       1  
+level >= 2000, 3 in a row                           87.6        0     706       0                86.7        0     422       1                84.1        0     152       0  
+level >= 2000, 5 in a row                           85.7        0     418       0                84.1        0     167       0                82.3        0      70       0  
+level >= 4000, 2 in a row                           85.5        0     724       0                84.6        0     564       1                82.7        0     292       1  
+level >= 4000, 3 in a row                           84.2        0     596       0                83.1        0     351       1                80.7        0     126       0  
+level >= 4000, 5 in a row                           82.3        0     356       0                80.8        0     142       0                79.0        0      57       0  
+sum of 8, level >= 500, 2 in a row                  88.0        1     508       3                86.8        0     209       3                84.6        1      90       0  
+sum of 8, level >= 1000, 2 in a row                 88.0        1     504       1                86.8        0     206       2                84.6        0      88       0  
+sum of 8, level >= 2000, 2 in a row                 87.8        0     492       0                86.5        0     199       0                84.2        0      87       0  
+sum of 8, level >= 4000, 2 in a row                 84.2        0     408       0                83.0        0     158       0                80.8        0      73       0  
+sum of 16, level >= 500, 2 in a row                 87.4        0     214       1                84.9        0      98       0                78.0        8      33       0  
+sum of 16, level >= 1000, 2 in a row                87.4        0     210       0                84.9        2      99       0                77.9       11      33       0  
+sum of 16, level >= 2000, 2 in a row                87.1        0     204       0                84.4        0      98       0                77.4        3      29       0  
+sum of 16, level >= 4000, 2 in a row                83.6        0     154       0                81.0        0      80       0                74.0        1      22       0  
+
+by noise level, reports per hour on noise only, and recall, at 40 ms:
+  noise RMS  30  3 in a row                 recall  91.4 %, wrong  4.7 %, speech    489/h, noise      6/h
+  noise RMS  30  margin >= 20, 3 in a row   recall  77.3 %, wrong  1.4 %, speech      6/h, noise      2/h
+  noise RMS  30  margin >= 40, 3 in a row   recall  53.7 %, wrong  0.0 %, speech      0/h, noise      0/h
+  noise RMS  30  margin >= 40, 2 in a row   recall  56.1 %, wrong  0.0 %, speech      0/h, noise      0/h
+  noise RMS 100  3 in a row                 recall  88.2 %, wrong  5.7 %, speech    453/h, noise      9/h
+  noise RMS 100  margin >= 20, 3 in a row   recall  71.1 %, wrong  2.1 %, speech      9/h, noise      0/h
+  noise RMS 100  margin >= 40, 3 in a row   recall  45.1 %, wrong  0.0 %, speech      0/h, noise      0/h
+  noise RMS 100  margin >= 40, 2 in a row   recall  46.4 %, wrong  0.4 %, speech      0/h, noise      0/h
+  noise RMS 300  3 in a row                 recall  81.6 %, wrong  6.9 %, speech    375/h, noise      8/h
+  noise RMS 300  margin >= 20, 3 in a row   recall  58.8 %, wrong  2.2 %, speech     54/h, noise      0/h
+  noise RMS 300  margin >= 40, 3 in a row   recall  30.2 %, wrong  0.0 %, speech      0/h, noise      0/h
+  noise RMS 300  margin >= 40, 2 in a row   recall  31.8 %, wrong  0.0 %, speech      0/h, noise      0/h
+
+rate on identical words, at the firmware's rule, against 20 ms (only 20 ms / only this rate, exact McNemar p, per phase):
+  40 ms: 2/8 p=0.109, 2/10 p=0.039 over 736 keywords
+  80 ms: 4/9 p=0.267, 6/10 p=0.454, 5/7 p=0.774, 4/7 p=0.549 over 736 keywords
+
+the best rules at each rate (no other rule is better on recall, speech and noise at once), recall at least 75 %:
+  20 ms:
+    1 in a row                             recall  91.7 %, wrong  4.8 %, speech  1982/h, noise 61.0/h
+    2 of last 3                            recall  90.4 %, wrong  4.8 %, speech  1322/h, noise 37.0/h
+    sum of 2, 2 in a row                   recall  89.8 %, wrong  4.8 %, speech   898/h, noise 12.0/h
+    sum of 3, 2 in a row                   recall  89.3 %, wrong  5.2 %, speech   800/h, noise 10.0/h
+    level >= 1000, 2 in a row              recall  89.1 %, wrong  4.9 %, speech   864/h, noise  2.0/h
+    sum of 4, 2 in a row                   recall  88.9 %, wrong  5.3 %, speech   750/h, noise  9.0/h
+    level >= 2000, 2 in a row              recall  88.9 %, wrong  4.9 %, speech   842/h, noise  0.0/h
+    sum of 2, 3 in a row                   recall  88.6 %, wrong  5.4 %, speech   718/h, noise  9.0/h
+    sum of 4, 3 in a row                   recall  88.5 %, wrong  5.4 %, speech   654/h, noise  9.0/h
+    sum of 8, level >= 1000, 2 in a row    recall  88.0 %, wrong  4.9 %, speech   504/h, noise  1.0/h
+    sum of 8, 3 in a row                   recall  87.8 %, wrong  5.0 %, speech   470/h, noise  5.0/h
+    sum of 8, level >= 2000, 2 in a row    recall  87.8 %, wrong  4.9 %, speech   492/h, noise  0.0/h
+    sum of 12, 3 in a row                  recall  87.5 %, wrong  4.6 %, speech   320/h, noise  3.0/h
+    sum of 16, level >= 1000, 2 in a row   recall  87.4 %, wrong  4.2 %, speech   210/h, noise  0.0/h
+    sum of 16, 3 in a row                  recall  87.2 %, wrong  4.3 %, speech   206/h, noise  2.0/h
+    sum of 16, level >= 2000, 2 in a row   recall  87.1 %, wrong  4.2 %, speech   204/h, noise  0.0/h
+    sum of 16, margin >= 5, 2 in a row     recall  84.2 %, wrong  4.8 %, speech   120/h, noise  1.0/h
+    sum of 16, margin >= 5, 3 in a row     recall  84.1 %, wrong  4.9 %, speech   116/h, noise  1.0/h
+    sum of 16, level >= 4000, 2 in a row   recall  83.6 %, wrong  4.3 %, speech   154/h, noise  0.0/h
+    sum of 16, margin >= 10, 2 in a row    recall  79.1 %, wrong  4.8 %, speech    76/h, noise  1.0/h
+    sum of 16, margin >= 10, 3 in a row    recall  78.7 %, wrong  4.8 %, speech    72/h, noise  1.0/h
+  40 ms:
+    1 in a row                             recall  90.5 %, wrong  4.8 %, speech  1120/h, noise 17.5/h
+    2 of last 3                            recall  88.4 %, wrong  5.7 %, speech   715/h, noise 12.0/h
+    level >= 1000, 2 in a row              recall  88.3 %, wrong  5.7 %, speech   685/h, noise  5.5/h
+    sum of 2, 2 in a row                   recall  88.2 %, wrong  5.4 %, speech   645/h, noise 11.0/h
+    sum of 3, 2 in a row                   recall  88.0 %, wrong  5.4 %, speech   551/h, noise  9.5/h
+    level >= 2000, 2 in a row              recall  88.0 %, wrong  5.7 %, speech   670/h, noise  1.0/h
+    sum of 4, 2 in a row                   recall  87.8 %, wrong  5.2 %, speech   470/h, noise  9.0/h
+    sum of 3, 3 in a row                   recall  87.1 %, wrong  5.8 %, speech   377/h, noise  7.5/h
+    level >= 1000, 3 in a row              recall  87.0 %, wrong  5.8 %, speech   433/h, noise  3.0/h
+    sum of 8, level >= 1000, 2 in a row    recall  86.8 %, wrong  4.9 %, speech   206/h, noise  1.5/h
+    level >= 2000, 3 in a row              recall  86.7 %, wrong  5.8 %, speech   422/h, noise  1.0/h
+    sum of 8, level >= 2000, 2 in a row    recall  86.5 %, wrong  4.9 %, speech   199/h, noise  0.5/h
+    sum of 8, 3 in a row                   recall  86.3 %, wrong  5.0 %, speech   189/h, noise  4.0/h
+    sum of 12, 2 in a row                  recall  86.0 %, wrong  5.0 %, speech   133/h, noise  3.0/h
+    sum of 12, 3 in a row                  recall  85.6 %, wrong  5.1 %, speech   125/h, noise  2.0/h
+    sum of 16, 2 in a row                  recall  85.2 %, wrong  5.0 %, speech    98/h, noise  1.0/h
+    sum of 16, level >= 500, 2 in a row    recall  84.9 %, wrong  5.2 %, speech    98/h, noise  0.0/h
+    sum of 16, 3 in a row                  recall  84.9 %, wrong  5.1 %, speech    90/h, noise  1.0/h
+    8 in a row                             recall  82.7 %, wrong  6.4 %, speech    78/h, noise  1.0/h
+    sum of 16, margin >= 5, 2 in a row     recall  81.6 %, wrong  5.3 %, speech    60/h, noise  0.5/h
+    sum of 16, margin >= 5, 3 in a row     recall  81.2 %, wrong  5.2 %, speech    56/h, noise  0.5/h
+    sum of 16, level >= 4000, 2 in a row   recall  81.0 %, wrong  5.3 %, speech    80/h, noise  0.0/h
+    sum of 16, margin >= 10, 2 in a row    recall  76.8 %, wrong  4.1 %, speech    36/h, noise  0.5/h
+    sum of 16, margin >= 10, 3 in a row    recall  76.4 %, wrong  4.1 %, speech    34/h, noise  0.5/h
+  80 ms:
+    1 in a row                             recall  89.6 %, wrong  5.3 %, speech   885/h, noise 12.5/h
+    sum of 2, 2 in a row                   recall  86.6 %, wrong  5.9 %, speech   318/h, noise  6.5/h
+    level >= 1000, 2 in a row              recall  86.5 %, wrong  5.9 %, speech   358/h, noise  3.0/h
+    sum of 3, 2 in a row                   recall  86.4 %, wrong  5.6 %, speech   236/h, noise  6.0/h
+    level >= 2000, 2 in a row              recall  86.2 %, wrong  5.9 %, speech   349/h, noise  0.8/h
+    sum of 4, 2 in a row                   recall  86.1 %, wrong  5.4 %, speech   176/h, noise  4.0/h
+    sum of 4, 3 in a row                   recall  85.0 %, wrong  5.7 %, speech   131/h, noise  2.0/h
+    sum of 8, 2 in a row                   recall  84.7 %, wrong  5.2 %, speech    90/h, noise  1.2/h
+    sum of 8, level >= 1000, 2 in a row    recall  84.6 %, wrong  5.3 %, speech    88/h, noise  0.2/h
+    sum of 8, level >= 2000, 2 in a row    recall  84.2 %, wrong  5.4 %, speech    87/h, noise  0.0/h
+    sum of 8, 3 in a row                   recall  84.0 %, wrong  5.5 %, speech    81/h, noise  1.0/h
+    level >= 500, 5 in a row               recall  82.5 %, wrong  6.5 %, speech    70/h, noise  0.0/h
+    level >= 1000, 5 in a row              recall  82.5 %, wrong  6.5 %, speech    70/h, noise  0.0/h
+    sum of 12, 2 in a row                  recall  82.5 %, wrong  5.3 %, speech    59/h, noise  0.5/h
+    level >= 2000, 5 in a row              recall  82.3 %, wrong  6.5 %, speech    70/h, noise  0.0/h
+    sum of 12, 3 in a row                  recall  81.9 %, wrong  5.5 %, speech    56/h, noise  0.5/h
+    8 in a row                             recall  80.7 %, wrong  5.5 %, speech    50/h, noise  0.0/h
+    sum of 16, 2 in a row                  recall  78.2 %, wrong  4.7 %, speech    34/h, noise  0.5/h
+    sum of 16, level >= 500, 2 in a row    recall  78.0 %, wrong  4.7 %, speech    33/h, noise  0.0/h
+    sum of 16, 3 in a row                  recall  77.7 %, wrong  4.7 %, speech    32/h, noise  0.5/h
+    sum of 16, level >= 2000, 2 in a row   recall  77.4 %, wrong  4.6 %, speech    29/h, noise  0.0/h

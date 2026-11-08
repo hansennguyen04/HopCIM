@@ -78,6 +78,7 @@ module tb_cim_stream #(
     longint unsigned n_one_min = '1, n_one_max = 0, n_all_min = '1, n_all_max = 0;    // + network
     int n_chk_feat = 0, n_dec = 0, bad_hop = 0, bad_feat = 0, bad_logit = 0;
     vec = DED ? "tb/stream_vec_ded" : "tb/stream_vec_cim";
+    if ($value$plusargs("VEC=%s", vec)) $display("vectors from %s", vec);  // tb/stream_vec_edge_*: extreme input
     req = '0;
     $readmemh("tb/fe_vec/tiles.hex", fe_tiles);
     $readmemh("tb/seq_vec/tiles.hex", tiles);

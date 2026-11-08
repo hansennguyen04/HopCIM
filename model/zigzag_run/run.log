@@ -1,0 +1,54 @@
+ZigZag-IMC commit df34a6f
+
+group depth 16, 1 macro(s): 10 layers; clock {'tclk (ns)': 3.52764, 'tclk_breakdown (ns)': {'mults': 0.0478, 'adders': 2.50472, 'adders_pv': 0, 'accumulators': 0.97512}}, area {'total_area': 0.8334857296, 'total_area_breakdown:': {'imc_area': 0.09906041360000001, 'mem_area': 0.7344253159999999}, 'total_area_breakdown_further': {'imc_area_breakdown': {'cells': 0.0480601, 'mults': 0.005029888, 'adders': 0.0429878592, 'adders_pv': 0.0, 'accumulators': 0.0029825664}, 'mem_area_breakdown': {'cell_group': 0, 'rf_I1': 2.9472000000000002e-05, 'rf_O1': 5.8944000000000003e-05, 'sram_256KB': 0.7343369, 'dram_1GB': 0}}}
+  part     tool mults  adders  accum  precharge   sum pJ   | transcribed array  select   | ratio tool/transcribed   tool cycles (mac)
+  conv1        5806      78055      7185     12338     103385 |     138620     12338 |  0.685        4000
+  dw          39017      84478     28740        18     152253 |     554481     77729 |  0.241       51200
+  pw          37159     488582     28740     78963     633443 |     554481     78963 |  1.000       16000
+  fc             19        183        11        30        242 |        208        30 |  1.020           8
+    conv1: MAC utilisation [{'ideal': 0.626, 'stalls': 0.6019230769230769, 'stalls_onloading': 0.5796296296296296, 'stalls_onloading_offloading': 0.5794954871557509}]
+    dw: MAC utilisation [{'ideal': 0.044375, 'stalls': 0.040158371040723985, 'stalls_onloading': 0.04013566986998304, 'stalls_onloading_offloading': 0.04013283402812125}]
+    pw: MAC utilisation [{'ideal': 1.0, 'stalls': 0.9398496240601504, 'stalls_onloading': 0.8865248226950354, 'stalls_onloading_offloading': 0.886328384666519}]
+    fc: MAC utilisation [{'ideal': 1.0, 'stalls': 0.1111111111111111, 'stalls_onloading': 0.06666666666666667, 'stalls_onloading_offloading': 0.06611570247933884}]
+  total  tool 889323 pJ, transcribed at the same settings (input 8 bits, activity 1) 1416848 pJ, ratio 0.628
+  tool memory energy (its template: 256 KB SRAM, DRAM) 890265 pJ; MAC cycles 71208
+
+group depth 1, 1 macro(s): 10 layers; clock {'tclk (ns)': 3.52764, 'tclk_breakdown (ns)': {'mults': 0.0478, 'adders': 2.50472, 'adders_pv': 0, 'accumulators': 0.97512}}, area {'total_area': 0.7893092295999999, 'total_area_breakdown:': {'imc_area': 0.0548839136, 'mem_area': 0.7344253159999999}, 'total_area_breakdown_further': {'imc_area_breakdown': {'cells': 0.0038836, 'mults': 0.005029888, 'adders': 0.0429878592, 'adders_pv': 0.0, 'accumulators': 0.0029825664}, 'mem_area_breakdown': {'cell_group': 0, 'rf_I1': 2.9472000000000002e-05, 'rf_O1': 5.8944000000000003e-05, 'sram_256KB': 0.7343369, 'dram_1GB': 0}}}
+  part     tool mults  adders  accum  precharge   sum pJ   | transcribed array  select   | ratio tool/transcribed   tool cycles (mac)
+  conv1        5806      78055      7185         0      91047 |     138620         0 |  0.657        4000
+  dw          39017      84478     28740         0     152235 |     554481         0 |  0.275       51200
+  pw          37159     488582     28740         0     554481 |     554481         0 |  1.000       16000
+  fc             19        183        11         0        213 |        208         0 |  1.022           8
+    conv1: MAC utilisation [{'ideal': 0.626, 'stalls': 0.6019230769230769, 'stalls_onloading': 0.5961904761904762, 'stalls_onloading_offloading': 0.5960485598666984}]
+    dw: MAC utilisation [{'ideal': 0.044375, 'stalls': 0.040158371040723985, 'stalls_onloading': 0.040144179800692625, 'stalls_onloading_offloading': 0.040141342756183744}]
+    pw: MAC utilisation [{'ideal': 1.0, 'stalls': 0.9398496240601504, 'stalls_onloading': 0.9259259259259259, 'stalls_onloading_offloading': 0.9257116408238834}]
+    fc: MAC utilisation [{'ideal': 1.0, 'stalls': 0.1111111111111111, 'stalls_onloading': 0.06666666666666667, 'stalls_onloading_offloading': 0.06611570247933884}]
+  total  tool 797975 pJ, transcribed at the same settings (input 8 bits, activity 1) 1247789 pJ, ratio 0.640
+  tool memory energy (its template: 256 KB SRAM, DRAM) 1008890 pJ; MAC cycles 71208
+
+group depth 16, 8 macro(s): 10 layers; clock {'tclk (ns)': 3.52764, 'tclk_breakdown (ns)': {'mults': 0.0478, 'adders': 2.50472, 'adders_pv': 0, 'accumulators': 0.97512}}, area {'total_area': 1.6358882248, 'total_area_breakdown:': {'imc_area': 0.7924833088000001, 'mem_area': 0.843404916}, 'total_area_breakdown_further': {'imc_area_breakdown': {'cells': 0.3844808, 'mults': 0.040239104, 'adders': 0.3439028736, 'adders_pv': 0.0, 'accumulators': 0.0238605312}, 'mem_area_breakdown': {'cell_group': 0, 'rf_I1': 2.9472000000000002e-05, 'rf_O1': 5.8944000000000003e-05, 'sram_256KB': 0.8433165, 'dram_1GB': 0}}}
+  part     tool mults  adders  accum  precharge   sum pJ   | transcribed array  select   | ratio tool/transcribed   tool cycles (mac)
+  conv1        5806      78055      7185        31      91077 |     138620     12338 |  0.603         640
+  dw          39017      84478     28740        18     152253 |     554481     77729 |  0.241        6400
+  pw          37159     488582     28740       197     554678 |     554481     78963 |  0.876        2560
+  fc             19        183        11        30        242 |        208        30 |  1.020           8
+    conv1: MAC utilisation [{'ideal': 0.5, 'stalls': 0.4, 'stalls_onloading': 0.3902439024390244, 'stalls_onloading_offloading': 0.38976857490864797}]
+    dw: MAC utilisation [{'ideal': 0.045, 'stalls': 0.04072398190045249, 'stalls_onloading': 0.04054054054054054, 'stalls_onloading_offloading': 0.04051772650534609}]
+    pw: MAC utilisation [{'ideal': 0.7875, 'stalls': 0.5625, 'stalls_onloading': 0.5431034482758621, 'stalls_onloading_offloading': 0.542518837459634}]
+    fc: MAC utilisation [{'ideal': 1.0, 'stalls': 0.1111111111111111, 'stalls_onloading': 0.10256410256410256, 'stalls_onloading_offloading': 0.10126582278481013}]
+  total  tool 798251 pJ, transcribed at the same settings (input 8 bits, activity 1) 1416848 pJ, ratio 0.563
+  tool memory energy (its template: 256 KB SRAM, DRAM) 790181 pJ; MAC cycles 9608
+
+The tool's structure at the measured activity (input 8 bits, as the tool requires), nJ per inference:
+  part    alpha on mapped rows   tool structure   transcribed   ratio
+  conv1         0.075               13.5          13.4    1.010
+  dw            0.066               36.9          33.6    1.097
+  pw            0.077               69.3          69.3    1.000
+  fc            0.147                0.0           0.0    1.017
+  total                           119.8         116.4    1.029
+
+The estimate with the tool's raw figure (full switching, its mapping, input 8 bits) in place of array and tile select:
+  array + select 303 nJ -> 889 nJ; network 1389 -> 1975 nJ per inference
+  a decision every 20 ms: 110 -> 140 uW
+  a decision every 40 ms: 75 -> 90 uW
+  a decision every 80 ms: 58 -> 65 uW

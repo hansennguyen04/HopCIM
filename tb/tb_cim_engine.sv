@@ -216,6 +216,10 @@ module tb_cim_engine;
     random_x(16, 0); load_x();
     issue(5, 16, 0); for (int k = 0; k < 5; k++) issue(6 + k, 16, 1);
     wait_idle();
+    // directed: input widths out of range: 0 acts as 1, and anything above XB as XB
+    random_x(24, 0); load_x();
+    issue(7, 0, 0); issue(8, 25, 0); issue(9, 31, 0); issue(10, 1, 0);
+    wait_idle();
     $display("directed: %0d passes checked, %0d errors, %0d timing errors", checked, errors, timing_errors);
 
     // random: new vector, then a burst of back-to-back passes on random tiles

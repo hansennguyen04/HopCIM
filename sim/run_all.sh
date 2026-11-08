@@ -12,6 +12,7 @@ BENCHES=(
   "run_mic_tb.sh cim 15 1" "run_mic_tb.sh ded 15 1" "run_mic_tb.sh cim 5 1" "run_mic_tb.sh ded 5 1"
   "run_mic_tb.sh cim 15 2" "run_mic_tb.sh cim 15 3" "run_mic_tb.sh cim 15 4" "run_mic_tb.sh cim 15 5" "run_mic_tb.sh cim 15 16"
   "run_mic_tb.sh ded 15 2" "run_mic_tb.sh ded 15 4" "run_mic_tb.sh cim 5 2" "run_mic_tb.sh cim 5 4" "run_mic_tb.sh ded 5 4"
+  "run_unit_tb.sh audio" "run_unit_tb.sh pdm_sat" "run_stream_tb.sh cim edge" "run_stream_tb.sh ded edge"
 )
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 one() {

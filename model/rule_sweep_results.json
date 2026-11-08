@@ -1,0 +1,6211 @@
+{
+ "hours": {
+  "words": 1.0,
+  "speech": 0.5,
+  "noise": 1.0
+ },
+ "table": {
+  "1 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.9171195652173914,
+     "wrong": 0.04755434782608696,
+     "per_hour": 25.0,
+     "n_words": 736,
+     "recall_min": 0.8195488721804511,
+     "recall_max": 0.9583333333333334
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1982.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 61.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.904891304347826,
+     "wrong": 0.04823369565217391,
+     "per_hour": 6.5,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.95
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1120.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 17.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8960597826086957,
+     "wrong": 0.05264945652173913,
+     "per_hour": 4.75,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.95
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 885.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 12.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8913043478260869,
+     "wrong": 0.04891304347826087,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 874.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8831521739130435,
+     "wrong": 0.057065217391304345,
+     "per_hour": 3.5,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 694.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8648097826086957,
+     "wrong": 0.059103260869565216,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 361.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8790760869565217,
+     "wrong": 0.057065217391304345,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 726.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8695652173913043,
+     "wrong": 0.057744565217391304,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 439.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8434103260869565,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.75,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 156.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "4 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8682065217391305,
+     "wrong": 0.059782608695652176,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 530.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.858016304347826,
+     "wrong": 0.059782608695652176,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 271.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.829483695652174,
+     "wrong": 0.06555706521739131,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 90.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8600543478260869,
+     "wrong": 0.05570652173913043,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 430.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.84375,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 172.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8254076086956522,
+     "wrong": 0.06453804347826086,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 70.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "6 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8546195652173914,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7443609022556391,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 340.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8389945652173914,
+     "wrong": 0.06453804347826086,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7142857142857143,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 132.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8199728260869565,
+     "wrong": 0.0625,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6917293233082706,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 61.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "8 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.842391304347826,
+     "wrong": 0.058423913043478264,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 208.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8274456521739131,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 78.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8074048913043478,
+     "wrong": 0.0546875,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6766917293233082,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 49.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "2 of last 3": {
+   "1": {
+    "words": {
+     "recall": 0.9035326086956522,
+     "wrong": 0.04755434782608696,
+     "per_hour": 16.0,
+     "n_words": 736,
+     "recall_min": 0.8045112781954887,
+     "recall_max": 0.9491525423728814
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1322.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 37.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8838315217391305,
+     "wrong": 0.057065217391304345,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 715.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 12.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8654891304347826,
+     "wrong": 0.058763586956521736,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 380.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "3 of last 4": {
+   "1": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.057065217391304345,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 852.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8709239130434783,
+     "wrong": 0.057065217391304345,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 455.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8457880434782609,
+     "wrong": 0.06419836956521739,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 167.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "3 of last 5": {
+   "1": {
+    "words": {
+     "recall": 0.8899456521739131,
+     "wrong": 0.05570652173913043,
+     "per_hour": 12.0,
+     "n_words": 736,
+     "recall_min": 0.7969924812030075,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1030.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 24.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8709239130434783,
+     "wrong": 0.057065217391304345,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 469.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8461277173913043,
+     "wrong": 0.06419836956521739,
+     "per_hour": 0.75,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 172.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "4 of last 6": {
+   "1": {
+    "words": {
+     "recall": 0.875,
+     "wrong": 0.058423913043478264,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 734.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.859375,
+     "wrong": 0.058423913043478264,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 302.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8318614130434783,
+     "wrong": 0.06657608695652174,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 105.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 10, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8233695652173914,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 294.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8186141304347826,
+     "wrong": 0.057065217391304345,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6842105263157895,
+     "recall_max": 0.8898305084745762
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 231.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7958559782608695,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 104.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 20, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7160326086956522,
+     "wrong": 0.03125,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5488721804511278,
+     "recall_max": 0.8
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 74.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7092391304347826,
+     "wrong": 0.02717391304347826,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.5413533834586466,
+     "recall_max": 0.825
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 52.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.686141304347826,
+     "wrong": 0.016983695652173912,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.518796992481203,
+     "recall_max": 0.8166666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 19.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 40, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.4361413043478261,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2631578947368421,
+     "recall_max": 0.5967741935483871
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.44565217391304346,
+     "wrong": 0.001358695652173913,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2631578947368421,
+     "recall_max": 0.5967741935483871
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.4205163043478261,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.24812030075187969,
+     "recall_max": 0.5725806451612904
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 80, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.020380434782608696,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.04201680672268908
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.026494565217391304,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.05042016806722689
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.022418478260869564,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.05042016806722689
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 10, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8125,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6766917293233082,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 244.00000000000003,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8016304347826086,
+     "wrong": 0.05502717391304348,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6616541353383458,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 128.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7751358695652174,
+     "wrong": 0.04653532608695652,
+     "per_hour": 0.25,
+     "n_words": 736,
+     "recall_min": 0.6165413533834586,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 46.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 20, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7010869565217391,
+     "wrong": 0.025815217391304348,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5338345864661654,
+     "recall_max": 0.7916666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 56.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.688858695652174,
+     "wrong": 0.019021739130434784,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.518796992481203,
+     "recall_max": 0.8083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 23.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6633831521739131,
+     "wrong": 0.008831521739130434,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.48872180451127817,
+     "recall_max": 0.775
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 40, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.4279891304347826,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2631578947368421,
+     "recall_max": 0.5967741935483871
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.4279891304347826,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2556390977443609,
+     "recall_max": 0.5645161290322581
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.3967391304347826,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.23308270676691728,
+     "recall_max": 0.5403225806451613
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 80, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.020380434782608696,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.04201680672268908
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.02309782608695652,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.05042016806722689
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.020380434782608696,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.04838709677419355
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 10, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7894021739130435,
+     "wrong": 0.05298913043478261,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.875
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 142.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7737771739130435,
+     "wrong": 0.050271739130434784,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6090225563909775,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 56.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7493206521739131,
+     "wrong": 0.03294836956521739,
+     "per_hour": 0.25,
+     "n_words": 736,
+     "recall_min": 0.5789473684210527,
+     "recall_max": 0.8583333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 29.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 20, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.6779891304347826,
+     "wrong": 0.01358695652173913,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.518796992481203,
+     "recall_max": 0.775
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 22.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6630434782608695,
+     "wrong": 0.008831521739130434,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.49624060150375937,
+     "recall_max": 0.7666666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 8.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6413043478260869,
+     "wrong": 0.006114130434782609,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.46616541353383456,
+     "recall_max": 0.7416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 40, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.4008152173913043,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.24812030075187969,
+     "recall_max": 0.5483870967741935
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.39809782608695654,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.24060150375939848,
+     "recall_max": 0.5241935483870968
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.3617527173913043,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.21804511278195488,
+     "recall_max": 0.49193548387096775
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "margin >= 80, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.016304347826086956,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.03225806451612903
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.021059782608695652,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.04838709677419355
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.016983695652173912,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.0,
+     "recall_max": 0.04032258064516129
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 2, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8980978260869565,
+     "wrong": 0.04755434782608696,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7969924812030075,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 898.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 12.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8824728260869565,
+     "wrong": 0.05434782608695652,
+     "per_hour": 2.5,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9435483870967742
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 645.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 11.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.865828804347826,
+     "wrong": 0.059103260869565216,
+     "per_hour": 1.75,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9354838709677419
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 317.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 2, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8858695652173914,
+     "wrong": 0.05434782608695652,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 718.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8668478260869565,
+     "wrong": 0.06046195652173913,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 419.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.845108695652174,
+     "wrong": 0.06283967391304347,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7142857142857143,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 152.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 3, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8926630434782609,
+     "wrong": 0.051630434782608696,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 800.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.05366847826086957,
+     "per_hour": 2.5,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9435483870967742
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 551.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8644701086956522,
+     "wrong": 0.05570652173913043,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 235.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 3, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8845108695652174,
+     "wrong": 0.057065217391304345,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 698.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8709239130434783,
+     "wrong": 0.057744565217391304,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9274193548387096
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 377.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 7.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8471467391304348,
+     "wrong": 0.06216032608695652,
+     "per_hour": 0.75,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 143.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8885869565217391,
+     "wrong": 0.05298913043478261,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 750.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8783967391304348,
+     "wrong": 0.051630434782608696,
+     "per_hour": 2.5,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9435483870967742
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 470.00000000000006,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.860733695652174,
+     "wrong": 0.05366847826086957,
+     "per_hour": 0.75,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 176.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8845108695652174,
+     "wrong": 0.05434782608695652,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7819548872180451,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 654.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8682065217391305,
+     "wrong": 0.057744565217391304,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9274193548387096
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 350.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8495244565217391,
+     "wrong": 0.057404891304347824,
+     "per_hour": 1.25,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 131.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.04891304347826087,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 510.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8682065217391305,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 212.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8474864130434783,
+     "wrong": 0.051970108695652176,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 89.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8777173913043478,
+     "wrong": 0.050271739130434784,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9274193548387096
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 470.00000000000006,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8634510869565217,
+     "wrong": 0.050271739130434784,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 189.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8400135869565217,
+     "wrong": 0.05536684782608696,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7142857142857143,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 81.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 12, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.875,
+     "wrong": 0.04891304347826087,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9274193548387096
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 338.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8600543478260869,
+     "wrong": 0.050271739130434784,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 133.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8250679347826086,
+     "wrong": 0.05298913043478261,
+     "per_hour": 3.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 59.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 12, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.875,
+     "wrong": 0.04619565217391304,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9274193548387096
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 320.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8559782608695652,
+     "wrong": 0.050951086956521736,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7443609022556391,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 125.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8192934782608695,
+     "wrong": 0.05502717391304348,
+     "per_hour": 1.25,
+     "n_words": 736,
+     "recall_min": 0.6917293233082706,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 55.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.873641304347826,
+     "wrong": 0.042119565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9193548387096774
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 216.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8519021739130435,
+     "wrong": 0.049592391304347824,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 98.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7815896739130435,
+     "wrong": 0.04721467391304348,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 33.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8722826086956522,
+     "wrong": 0.043478260869565216,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9193548387096774
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 206.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8485054347826086,
+     "wrong": 0.050951086956521736,
+     "per_hour": 4.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 90.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7771739130434783,
+     "wrong": 0.04721467391304348,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.631578947368421,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 31.500000000000004,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 5, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8668478260869565,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9193548387096774
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 390.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8478260869565217,
+     "wrong": 0.05638586956521739,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 243.00000000000003,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8233695652173914,
+     "wrong": 0.058763586956521736,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6917293233082706,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 97.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 5, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8586956521739131,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9112903225806451
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 346.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8335597826086957,
+     "wrong": 0.058423913043478264,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7142857142857143,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 177.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8128396739130435,
+     "wrong": 0.057404891304347824,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6691729323308271,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 69.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 10, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8233695652173914,
+     "wrong": 0.05298913043478261,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6917293233082706,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 236.00000000000003,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8050271739130435,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6616541353383458,
+     "recall_max": 0.8898305084745762
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 120.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.78125,
+     "wrong": 0.049252717391304345,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6240601503759399,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 55.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 10, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8125,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6766917293233082,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 202.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7941576086956522,
+     "wrong": 0.05366847826086957,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 95.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7697010869565217,
+     "wrong": 0.042798913043478264,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6165413533834586,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 40.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 20, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7146739130434783,
+     "wrong": 0.03125,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5413533834586466,
+     "recall_max": 0.825
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 56.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6997282608695652,
+     "wrong": 0.021059782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5263157894736842,
+     "recall_max": 0.8166666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 26.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6735733695652174,
+     "wrong": 0.010869565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5037593984962406,
+     "recall_max": 0.8
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 8.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 4, margin >= 20, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7119565217391305,
+     "wrong": 0.02309782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5413533834586466,
+     "recall_max": 0.8166666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 44.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6875,
+     "wrong": 0.014945652173913044,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.518796992481203,
+     "recall_max": 0.8
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 17.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6623641304347826,
+     "wrong": 0.008491847826086956,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.49624060150375937,
+     "recall_max": 0.7916666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 5, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8600543478260869,
+     "wrong": 0.04755434782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 250.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8328804347826086,
+     "wrong": 0.05366847826086957,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.706766917293233,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 118.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8101222826086957,
+     "wrong": 0.05264945652173913,
+     "per_hour": 0.75,
+     "n_words": 736,
+     "recall_min": 0.6766917293233082,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 55.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 5, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8573369565217391,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 236.00000000000003,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8260869565217391,
+     "wrong": 0.057744565217391304,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 104.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8012907608695652,
+     "wrong": 0.052309782608695655,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6616541353383458,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 51.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 10, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8084239130434783,
+     "wrong": 0.050271739130434784,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6691729323308271,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 134.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7846467391304348,
+     "wrong": 0.050951086956521736,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.631578947368421,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 66.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7646059782608695,
+     "wrong": 0.03974184782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6090225563909775,
+     "recall_max": 0.875
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 33.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 10, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8016304347826086,
+     "wrong": 0.05298913043478261,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6616541353383458,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 128.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7819293478260869,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.631578947368421,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 58.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7561141304347826,
+     "wrong": 0.035326086956521736,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5939849624060151,
+     "recall_max": 0.8583333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 30.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 20, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7065217391304348,
+     "wrong": 0.020380434782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5413533834586466,
+     "recall_max": 0.8166666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 30.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6813858695652174,
+     "wrong": 0.012907608695652174,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5112781954887218,
+     "recall_max": 0.8
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6521739130434783,
+     "wrong": 0.0078125,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.48120300751879697,
+     "recall_max": 0.75
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, margin >= 20, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7051630434782609,
+     "wrong": 0.020380434782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5413533834586466,
+     "recall_max": 0.8166666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 26.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6759510869565217,
+     "wrong": 0.01154891304347826,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5037593984962406,
+     "recall_max": 0.8
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 8.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6396059782608695,
+     "wrong": 0.007472826086956522,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.46616541353383456,
+     "recall_max": 0.7338709677419355
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 5, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.842391304347826,
+     "wrong": 0.04755434782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 120.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8158967391304348,
+     "wrong": 0.05298913043478261,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.6917293233082706,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 60.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7167119565217391,
+     "wrong": 0.028872282608695652,
+     "per_hour": 1.75,
+     "n_words": 736,
+     "recall_min": 0.5338345864661654,
+     "recall_max": 0.825
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 5, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8410326086956522,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7142857142857143,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 116.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8125,
+     "wrong": 0.052309782608695655,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6842105263157895,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 56.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7129755434782609,
+     "wrong": 0.025815217391304348,
+     "per_hour": 2.5,
+     "n_words": 736,
+     "recall_min": 0.5338345864661654,
+     "recall_max": 0.825
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 9.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 10, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7907608695652174,
+     "wrong": 0.04755434782608696,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6466165413533834,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 76.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.7683423913043478,
+     "wrong": 0.04076086956521739,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6090225563909775,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 36.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6304347826086957,
+     "wrong": 0.013247282608695652,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.42857142857142855,
+     "recall_max": 0.7288135593220338
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 10, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.7866847826086957,
+     "wrong": 0.04755434782608696,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 72.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.764266304347826,
+     "wrong": 0.04076086956521739,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6090225563909775,
+     "recall_max": 0.875
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 34.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.6216032608695652,
+     "wrong": 0.01154891304347826,
+     "per_hour": 2.75,
+     "n_words": 736,
+     "recall_min": 0.42105263157894735,
+     "recall_max": 0.7288135593220338
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 20, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.6793478260869565,
+     "wrong": 0.012228260869565218,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5263157894736842,
+     "recall_max": 0.775
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6589673913043478,
+     "wrong": 0.008831521739130434,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.49624060150375937,
+     "recall_max": 0.7583333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.43240489130434784,
+     "wrong": 0.0016983695652173913,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2706766917293233,
+     "recall_max": 0.5806451612903226
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, margin >= 20, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.6793478260869565,
+     "wrong": 0.012228260869565218,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.5263157894736842,
+     "recall_max": 0.775
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 10.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.6542119565217391,
+     "wrong": 0.008152173913043478,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.48872180451127817,
+     "recall_max": 0.7583333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.42459239130434784,
+     "wrong": 0.0016983695652173913,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.2631578947368421,
+     "recall_max": 0.5806451612903226
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 500, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8913043478260869,
+     "wrong": 0.04891304347826087,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 868.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 4.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8831521739130435,
+     "wrong": 0.057065217391304345,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 689.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 8.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8648097826086957,
+     "wrong": 0.059103260869565216,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 359.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 500, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8790760869565217,
+     "wrong": 0.057065217391304345,
+     "per_hour": 2.0,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 724.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8695652173913043,
+     "wrong": 0.057744565217391304,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 435.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8434103260869565,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 155.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 500, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8600543478260869,
+     "wrong": 0.05570652173913043,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 428.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.84375,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 172.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8254076086956522,
+     "wrong": 0.06453804347826086,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 70.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 1000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8913043478260869,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 864.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8831521739130435,
+     "wrong": 0.057065217391304345,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 685.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8648097826086957,
+     "wrong": 0.059103260869565216,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 357.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 1000, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8790760869565217,
+     "wrong": 0.057065217391304345,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9416666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 722.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8695652173913043,
+     "wrong": 0.057744565217391304,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 433.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8434103260869565,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 155.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 1000, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8600543478260869,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 426.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.84375,
+     "wrong": 0.06385869565217392,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 171.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8254076086956522,
+     "wrong": 0.06453804347826086,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 70.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 2000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8885869565217391,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.940677966101695
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 842.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.057065217391304345,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 670.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8620923913043478,
+     "wrong": 0.058763586956521736,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 349.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 2000, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.876358695652174,
+     "wrong": 0.057065217391304345,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7669172932330827,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 706.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8668478260869565,
+     "wrong": 0.057744565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 422.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8406929347826086,
+     "wrong": 0.06351902173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 151.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 2000, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8573369565217391,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 418.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8410326086956522,
+     "wrong": 0.06317934782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 167.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8226902173913043,
+     "wrong": 0.06453804347826086,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 69.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 4000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8546195652173914,
+     "wrong": 0.04619565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 724.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8457880434782609,
+     "wrong": 0.05366847826086957,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 564.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8271059782608695,
+     "wrong": 0.05604619565217391,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 292.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.75,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 4000, 3 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.842391304347826,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7443609022556391,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 596.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8308423913043478,
+     "wrong": 0.05570652173913043,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 351.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8074048913043478,
+     "wrong": 0.06148097826086957,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 126.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "level >= 4000, 5 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8233695652173914,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7368421052631579,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 356.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8077445652173914,
+     "wrong": 0.06046195652173913,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.706766917293233,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 142.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7897418478260869,
+     "wrong": 0.06283967391304347,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6766917293233082,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 57.00000000000001,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, level >= 500, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.04891304347826087,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 508.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8682065217391305,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 209.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 3.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8457880434782609,
+     "wrong": 0.05366847826086957,
+     "per_hour": 1.25,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 89.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, level >= 1000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8804347826086957,
+     "wrong": 0.04891304347826087,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9333333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 504.00000000000006,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8682065217391305,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 206.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8457880434782609,
+     "wrong": 0.05332880434782609,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 88.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.25,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, level >= 2000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8777173913043478,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.925
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 491.99999999999994,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8654891304347826,
+     "wrong": 0.04891304347826087,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7593984962406015,
+     "recall_max": 0.9166666666666666
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 199.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.842391304347826,
+     "wrong": 0.05400815217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7218045112781954,
+     "recall_max": 0.9067796610169492
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 87.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 8, level >= 4000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.842391304347826,
+     "wrong": 0.04755434782608696,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.9083333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 408.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8301630434782609,
+     "wrong": 0.04823369565217391,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7368421052631579,
+     "recall_max": 0.9
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 158.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.8080842391304348,
+     "wrong": 0.05332880434782609,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.6992481203007519,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 73.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, level >= 500, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.873641304347826,
+     "wrong": 0.042119565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9193548387096774
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 214.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8491847826086957,
+     "wrong": 0.052309782608695655,
+     "per_hour": 0.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 98.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7802309782608695,
+     "wrong": 0.046875,
+     "per_hour": 8.25,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 33.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, level >= 1000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.873641304347826,
+     "wrong": 0.042119565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9193548387096774
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 210.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8491847826086957,
+     "wrong": 0.052309782608695655,
+     "per_hour": 1.5,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 99.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7792119565217391,
+     "wrong": 0.046875,
+     "per_hour": 10.75,
+     "n_words": 736,
+     "recall_min": 0.6390977443609023,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 33.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, level >= 2000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8709239130434783,
+     "wrong": 0.042119565217391304,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7744360902255639,
+     "recall_max": 0.9152542372881356
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 204.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8444293478260869,
+     "wrong": 0.05434782608695652,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7293233082706767,
+     "recall_max": 0.9067796610169492
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 98.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7737771739130435,
+     "wrong": 0.04585597826086957,
+     "per_hour": 3.0,
+     "n_words": 736,
+     "recall_min": 0.6240601503759399,
+     "recall_max": 0.875
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 28.500000000000004,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "sum of 16, level >= 4000, 2 in a row": {
+   "1": {
+    "words": {
+     "recall": 0.8355978260869565,
+     "wrong": 0.043478260869565216,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.7518796992481203,
+     "recall_max": 0.8916666666666667
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 154.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "2": {
+    "words": {
+     "recall": 0.8104619565217391,
+     "wrong": 0.05298913043478261,
+     "per_hour": 0.0,
+     "n_words": 736,
+     "recall_min": 0.706766917293233,
+     "recall_max": 0.8833333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 80.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   },
+   "4": {
+    "words": {
+     "recall": 0.7404891304347826,
+     "wrong": 0.043478260869565216,
+     "per_hour": 1.0,
+     "n_words": 736,
+     "recall_min": 0.6015037593984962,
+     "recall_max": 0.8583333333333333
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 22.5,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 0.0,
+     "n_words": 0,
+     "recall_min": null,
+     "recall_max": null
+    }
+   }
+  },
+  "by_noise": {
+   "30": {
+    "3 in a row": {
+     "words": {
+      "recall": 0.9139344262295082,
+      "wrong": 0.0471311475409836,
+      "per_hour": 1.5,
+      "n_words": 244,
+      "recall_min": 0.9032258064516129,
+      "recall_max": 0.925
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 489.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 6.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 20, 3 in a row": {
+     "words": {
+      "recall": 0.7725409836065574,
+      "wrong": 0.014344262295081968,
+      "per_hour": 0.0,
+      "n_words": 244,
+      "recall_min": 0.7419354838709677,
+      "recall_max": 0.8083333333333333
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 6.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 1.5,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 3 in a row": {
+     "words": {
+      "recall": 0.5368852459016393,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 244,
+      "recall_min": 0.5083333333333333,
+      "recall_max": 0.5645161290322581
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 2 in a row": {
+     "words": {
+      "recall": 0.5614754098360656,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 244,
+      "recall_min": 0.5166666666666667,
+      "recall_max": 0.5967741935483871
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    }
+   },
+   "100": {
+    "3 in a row": {
+     "words": {
+      "recall": 0.8818565400843882,
+      "wrong": 0.056962025316455694,
+      "per_hour": 3.0,
+      "n_words": 237,
+      "recall_min": 0.8571428571428571,
+      "recall_max": 0.9067796610169492
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 452.99999999999994,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 9.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 20, 3 in a row": {
+     "words": {
+      "recall": 0.7109704641350211,
+      "wrong": 0.02109704641350211,
+      "per_hour": 0.0,
+      "n_words": 237,
+      "recall_min": 0.6638655462184874,
+      "recall_max": 0.7542372881355932
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 9.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 3 in a row": {
+     "words": {
+      "recall": 0.45147679324894513,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 237,
+      "recall_min": 0.3949579831932773,
+      "recall_max": 0.5254237288135594
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 2 in a row": {
+     "words": {
+      "recall": 0.4641350210970464,
+      "wrong": 0.004219409282700422,
+      "per_hour": 0.0,
+      "n_words": 237,
+      "recall_min": 0.40336134453781514,
+      "recall_max": 0.5508474576271186
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    }
+   },
+   "300": {
+    "3 in a row": {
+     "words": {
+      "recall": 0.8156862745098039,
+      "wrong": 0.06862745098039216,
+      "per_hour": 1.5,
+      "n_words": 255,
+      "recall_min": 0.7518796992481203,
+      "recall_max": 0.8688524590163934
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 375.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 7.5,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 20, 3 in a row": {
+     "words": {
+      "recall": 0.5882352941176471,
+      "wrong": 0.021568627450980392,
+      "per_hour": 0.0,
+      "n_words": 255,
+      "recall_min": 0.518796992481203,
+      "recall_max": 0.6721311475409836
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 54.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 3 in a row": {
+     "words": {
+      "recall": 0.30196078431372547,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 255,
+      "recall_min": 0.2556390977443609,
+      "recall_max": 0.3524590163934426
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    },
+    "margin >= 40, 2 in a row": {
+     "words": {
+      "recall": 0.3176470588235294,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 255,
+      "recall_min": 0.2631578947368421,
+      "recall_max": 0.36065573770491804
+     },
+     "speech": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     },
+     "noise": {
+      "recall": 0.0,
+      "wrong": 0.0,
+      "per_hour": 0.0,
+      "n_words": 0,
+      "recall_min": null,
+      "recall_max": null
+     }
+    }
+   }
+  },
+  "paired": {
+   "2": [
+    {
+     "words": 736,
+     "only_a": 2,
+     "only_b": 8,
+     "p": 0.109375
+    },
+    {
+     "words": 736,
+     "only_a": 2,
+     "only_b": 10,
+     "p": 0.03857421875
+    }
+   ],
+   "4": [
+    {
+     "words": 736,
+     "only_a": 4,
+     "only_b": 9,
+     "p": 0.266845703125
+    },
+    {
+     "words": 736,
+     "only_a": 6,
+     "only_b": 10,
+     "p": 0.454498291015625
+    },
+    {
+     "words": 736,
+     "only_a": 5,
+     "only_b": 7,
+     "p": 0.7744140625
+    },
+    {
+     "words": 736,
+     "only_a": 4,
+     "only_b": 7,
+     "p": 0.548828125
+    }
+   ]
+  }
+ }
+}

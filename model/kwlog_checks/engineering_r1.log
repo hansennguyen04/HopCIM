@@ -1,0 +1,11 @@
+Engineering run of the same-audio logger: 1 round, nobody prompted to speak, 2026-11-07T22:41:04+08:00.
+elf hopcim_kwlog_r1_nexys.elf 98e02c11683597a3354bd6d7076d3ed86bf31323d6ba2e3a810d2cc874cb0201
+bit xheep_nexys_bscan_cim128k.bit b7102d5dff2e7e7883dae7310a9295537007f8ea968bffb7d27e6c0085ab49d9
+run kwlog_check: 2850 decisions (57 s), frames {'H': 1, 'A': 2899, 'D': 2850, 'P': 13, 'L': 5, 'R': 1, 'E': 1}, 2 bytes skipped
+integrity: 2 bytes skipped
+golden model: 2850 decisions recomputed from the recorded audio, 0 differ (audio rms 70.5, peak 7705)
+rule check: firmware 1 reports, offline 1, identical in hop and class
+classes: up 37, _unknown_ 2813
+longest run of the prompted class at 20 ms, per keyword trial: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  run L   trials   observed   predicted
+frames.bin sha256 28e499f6a2ee396f7dc2e829adf318263e58306d97aac93efa20a882a2483694, raw audio deleted after this check

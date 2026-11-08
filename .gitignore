@@ -25,3 +25,6 @@ vivado*.log
 !/syn/vivado_miscompile/**
 /syn/netlist/
 sim/regression.log
+/model/rule_sweep/
+/sim/cov/
+/sim/endpoint_nl.out

@@ -93,8 +93,9 @@ which never does these):
   misplaced rows, and then the stream is consistent again. Firmware that sees the overrun flag
   can restart the stream (`AUD_CTRL[0]` 0 → 1). No overrun has occurred at 5.12 MHz or above.
 - A restart resets the ring pointer and the hop controller, but not the decimator's filter states
-  (CIC, FIR, DC blocker). The first samples after a restart continue from the old states. No test
-  covers a restart, and the firmware enables the path once.
+  (CIC, FIR, DC blocker). The first samples after a restart continue from the old states; a sample already
+  in the FIR when the path stopped can arrive first, so the first interval can be longer by the stop. `tb_cim_audio_dir` covers restarts and overruns
+  (`VERIFICATION.md`), and the firmware enables the path once.
 
 **Pins.** X-HEEP's pad ring owns the I/O buffers of the two microphone pads. An FPGA pad has one
 I/O buffer, so the wrapper can neither drive J5 nor read H5 a second time.
@@ -189,7 +190,7 @@ So the live path is bit-exact on the board as well as in RTL, from the decimated
 - 96 % of the power lies below 300 Hz, with its strongest bins at the 60-Hz mains harmonics (62, 125, 188 Hz at a bin width of 31 Hz);
 - above 300 Hz, the noise is about 12 LSB RMS.
 
-The model calls every window of it `_unknown_`, also offline after a 100–300 Hz high-pass. So this is how the model treats faint room noise once the window normalisation scales it to full scale. It is not caused by the hum alone, and not by the hardware. GSC's `_silence_` clips are broadband background noise. For keyword spotting this is harmless: both classes mean "no keyword".
+The model calls every window of it `_unknown_`, also offline after a 100–300 Hz high-pass. So this is how the model treats faint room noise once the window normalisation scales it to full scale. It is not caused by the hum alone, and not by the hardware. GSC's `_silence_` clips are broadband background noise. Both classes mean "no keyword", so this alone is harmless. **A longer run did find false reports in this room while someone was in it, though none in the 7-hour night after:** see `SAME_AUDIO.md` §6.
 
 **Speech.** Pending: it needs someone speaking keywords near the board (§8).
 
@@ -354,6 +355,8 @@ run per rate, in the order shown; logs `hopcim_kwtest*_board_20261107_*.uart.log
   than the synthetic words. Printing the class of every decision at 20 ms for one run would settle this:
   each word could then be scored at every rate, alignment and hold on identical audio, since the decisions
   are bit-exact across rates.
+
+**Identical speech.** `SAME_AUDIO.md` replaces this comparison with one that holds all rates, phases and rules on the same audio; its spoken runs are still to be made.
 
 **Operating point: 40 ms**, an estimated 32 % below 20 ms (`ENERGY_ESTIMATE.md`). The commands:
 

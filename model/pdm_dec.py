@@ -20,6 +20,7 @@ interpolation x64, second-order sigma-delta modulator, written in C for speed).
 """
 import ctypes
 import os
+import sys
 import subprocess
 import tempfile
 
@@ -160,7 +161,26 @@ def write_vectors(clip_index=4):
     print(f"pdm vectors: clip {clip_index}, {len(bits)} bits -> {len(y)} samples (range {y.min()}..{y.max()})")
 
 
-if __name__ == "__main__":
+def write_sat_vectors():
+    """tb/pdm_vec_sat/: full-scale input, so the FIR and the DC blocker saturate both ways: 1 s of all ones, all
+    zeros, all ones and a 250-Hz full-scale square wave."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    out = os.path.join(here, "..", "tb", "pdm_vec_sat")
+    os.makedirs(out, exist_ok=True)
+    q = 256000
+    period = 1024000 // 250
+    square = (np.arange(q) % period < period // 2).astype(np.int64)
+    bits = np.concatenate([np.ones(q, np.int64), np.zeros(q, np.int64), np.ones(q, np.int64), square])
+    y = decimate(bits)
+    open(os.path.join(out, "bits.hex"), "w").write("\n".join(str(int(b)) for b in bits) + "\n")
+    open(os.path.join(out, "samples.hex"), "w").write("\n".join(f"{int(v) & 0xFFFF:04x}" for v in y) + "\n")
+    print(f"saturating pdm vectors: {len(bits)} bits -> {len(y)} samples (range {y.min()}..{y.max()}), "
+          f"at the limits {int((y == 32767).sum())} and {int((y == -32768).sum())} times")
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "sat":
+    write_sat_vectors()
+elif __name__ == "__main__":
     rtl_tables()
     write_vectors()
     f = np.array([100, 500, 1000, 2000, 3000, 3500, 4000, 5000, 6000, 7000, 7900])

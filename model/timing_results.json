@@ -1,0 +1,992 @@
+{
+ "seq": [
+  {
+   "cfg": {
+    "bpc": 24,
+    "lat": 5,
+    "dmin": 1
+   },
+   "d": 1,
+   "lat": 5,
+   "cycles": 85272,
+   "cycles_max": 85272,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 1,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "bpc": 4,
+    "lat": 5,
+    "dmin": 1
+   },
+   "d": 3,
+   "lat": 5,
+   "cycles": 85292,
+   "cycles_max": 85292,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 1,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "lat": 5,
+    "dmin": 1
+   },
+   "d": 5,
+   "lat": 5,
+   "cycles": 85312,
+   "cycles_max": 85312,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "d0": 0,
+    "lat": 5
+   },
+   "d": 9,
+   "lat": 5,
+   "cycles": 85352,
+   "cycles_max": 85352,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 1,
+    "lat": 5
+   },
+   "d": 10,
+   "lat": 5,
+   "cycles": 90358,
+   "cycles_max": 90358,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 3,
+    "lat": 5
+   },
+   "d": 12,
+   "lat": 5,
+   "cycles": 100370,
+   "cycles_max": 100370,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 5,
+    "lat": 5
+   },
+   "d": 14,
+   "lat": 5,
+   "cycles": 110382,
+   "cycles_max": 110382,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 7,
+    "lat": 5
+   },
+   "d": 16,
+   "lat": 5,
+   "cycles": 120394,
+   "cycles_max": 120394,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 9,
+    "lat": 5
+   },
+   "d": 18,
+   "lat": 5,
+   "cycles": 135396,
+   "cycles_max": 135396,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 11,
+    "lat": 5
+   },
+   "d": 20,
+   "lat": 5,
+   "cycles": 150398,
+   "cycles_max": 150398,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 15,
+    "lat": 5
+   },
+   "d": 24,
+   "lat": 5,
+   "cycles": 180402,
+   "cycles_max": 180402,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 23,
+    "lat": 5
+   },
+   "d": 32,
+   "lat": 5,
+   "cycles": 240410,
+   "cycles_max": 240410,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "d0": 39,
+    "lat": 5
+   },
+   "d": 48,
+   "lat": 5,
+   "cycles": 360426,
+   "cycles_max": 360426,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 2,
+    "lat": 5
+   },
+   "d": 18,
+   "lat": 5,
+   "cycles": 135396,
+   "cycles_max": 135396,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 3,
+    "lat": 5
+   },
+   "d": 27,
+   "lat": 5,
+   "cycles": 202905,
+   "cycles_max": 202905,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 4,
+    "lat": 5
+   },
+   "d": 36,
+   "lat": 5,
+   "cycles": 270414,
+   "cycles_max": 270414,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 8,
+    "lat": 5
+   },
+   "d": 72,
+   "lat": 5,
+   "cycles": 540450,
+   "cycles_max": 540450,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "cpb": 16,
+    "lat": 5
+   },
+   "d": 144,
+   "lat": 5,
+   "cycles": null,
+   "cycles_max": null,
+   "data_errors": 0,
+   "layer_checks": 17,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 1
+   },
+   "d": 9,
+   "lat": 1,
+   "cycles": 85312,
+   "cycles_max": 85312,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "lat": 2
+   },
+   "d": 9,
+   "lat": 2,
+   "cycles": 85322,
+   "cycles_max": 85322,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "lat": 3
+   },
+   "d": 9,
+   "lat": 3,
+   "cycles": 85332,
+   "cycles_max": 85332,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "lat": 8
+   },
+   "d": 9,
+   "lat": 8,
+   "cycles": 85382,
+   "cycles_max": 85382,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 12
+   },
+   "d": 9,
+   "lat": 12,
+   "cycles": 85422,
+   "cycles_max": 85422,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 16
+   },
+   "d": 9,
+   "lat": 16,
+   "cycles": 85462,
+   "cycles_max": 85462,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 24
+   },
+   "d": 9,
+   "lat": 24,
+   "cycles": 85542,
+   "cycles_max": 85542,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 32
+   },
+   "d": 9,
+   "lat": 32,
+   "cycles": 93110,
+   "cycles_max": 93110,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 48
+   },
+   "d": 9,
+   "lat": 48,
+   "cycles": 113238,
+   "cycles_max": 113238,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 64
+   },
+   "d": 9,
+   "lat": 64,
+   "cycles": 139566,
+   "cycles_max": 139566,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "lat": 128
+   },
+   "d": 9,
+   "lat": 128,
+   "cycles": 259758,
+   "cycles_max": 259758,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 24,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 1
+   },
+   "d": 1,
+   "lat": 1,
+   "cycles": 85232,
+   "cycles_max": 85232,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 1,
+   "hazards": 0,
+   "bench_lines": 4
+  },
+  {
+   "cfg": {
+    "bpc": 24,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 16
+   },
+   "d": 1,
+   "lat": 16,
+   "cycles": 85382,
+   "cycles_max": 85382,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 24,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 64
+   },
+   "d": 1,
+   "lat": 64,
+   "cycles": 124542,
+   "cycles_max": 124542,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 1
+   },
+   "d": 5,
+   "lat": 1,
+   "cycles": 85272,
+   "cycles_max": 85272,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 1,
+   "hazards": 0,
+   "bench_lines": 1
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 16
+   },
+   "d": 5,
+   "lat": 16,
+   "cycles": 85422,
+   "cycles_max": 85422,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 2,
+    "cpb": 1,
+    "dmin": 1,
+    "lat": 64
+   },
+   "d": 5,
+   "lat": 64,
+   "cycles": 132054,
+   "cycles_max": 132054,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 2,
+    "dmin": 1,
+    "lat": 1
+   },
+   "d": 18,
+   "lat": 1,
+   "cycles": 135356,
+   "cycles_max": 135356,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 2,
+    "dmin": 1,
+    "lat": 16
+   },
+   "d": 18,
+   "lat": 16,
+   "cycles": 135506,
+   "cycles_max": 135506,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 2,
+    "dmin": 1,
+    "lat": 64
+   },
+   "d": 18,
+   "lat": 64,
+   "cycles": 156534,
+   "cycles_max": 156534,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 4,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 4,
+    "dmin": 1,
+    "lat": 1
+   },
+   "d": 36,
+   "lat": 1,
+   "cycles": 270374,
+   "cycles_max": 270374,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 4,
+    "dmin": 1,
+    "lat": 16
+   },
+   "d": 36,
+   "lat": 16,
+   "cycles": 270524,
+   "cycles_max": 270524,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 2,
+   "hazards": 0,
+   "bench_lines": 0
+  },
+  {
+   "cfg": {
+    "bpc": 1,
+    "cpb": 4,
+    "dmin": 1,
+    "lat": 64
+   },
+   "d": 36,
+   "lat": 64,
+   "cycles": 271004,
+   "cycles_max": 271004,
+   "data_errors": 0,
+   "layer_checks": 18,
+   "in_flight": 3,
+   "hazards": 0,
+   "bench_lines": 0
+  }
+ ],
+ "hop": [
+  {
+   "name": "baseline",
+   "text": "HopCIM engine: 1 bit per cycle, 5-cycle pipeline (ENGINE_SPEC)",
+   "cfg": {
+    "lat": 5
+   },
+   "d": 9,
+   "lat": 5,
+   "worst": 97583,
+   "mean_net": 94009,
+   "worst_nonet": 12233,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 97583,
+    "mean_net": 94009,
+    "worst_nonet": 12233
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 97583,
+    "mean_net": 90851,
+    "worst_nonet": 12233
+   }
+  },
+  {
+   "name": "2bpc_nopipe",
+   "text": "2 bits per cycle, no adder-tree pipeline (ISSCC'22 15.5, ISSCC'23 7.2 in ZigZag-IMC), on the system clock",
+   "cfg": {
+    "bpc": 2,
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 5,
+   "lat": 2,
+   "worst": 96096,
+   "mean_net": 93168,
+   "worst_nonet": 10816,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 96096,
+    "mean_net": 93168,
+    "worst_nonet": 10816
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 96096,
+    "mean_net": 90278,
+    "worst_nonet": 10816
+   }
+  },
+  {
+   "name": "1bpc_nopipe",
+   "text": "1 bit per cycle, no adder-tree pipeline, on the system clock",
+   "cfg": {
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 9,
+   "lat": 2,
+   "worst": 97250,
+   "mean_net": 93790,
+   "worst_nonet": 11930,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 97250,
+    "mean_net": 93790,
+    "worst_nonet": 11930
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 97250,
+    "mean_net": 90702,
+    "worst_nonet": 11930
+   }
+  },
+  {
+   "name": "1bpc_pipe",
+   "text": "1 bit per cycle, pipelined adder tree, log2(64) + 2 stages (ISSCC'22 11.7 in ZigZag-IMC)",
+   "cfg": {
+    "dmin": 1,
+    "lat": 8
+   },
+   "d": 9,
+   "lat": 8,
+   "worst": 97916,
+   "mean_net": 94228,
+   "worst_nonet": 12536,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 97916,
+    "mean_net": 94228,
+    "worst_nonet": 12536
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 97916,
+    "mean_net": 90999,
+    "worst_nonet": 12536
+   }
+  },
+  {
+   "name": "colonnade_bp",
+   "text": "1 bit per cycle, bit-pipelined columns, weight + log2(64) + 2 stages (Colonnade, as AccelForge models it)",
+   "cfg": {
+    "dmin": 1,
+    "lat": 16
+   },
+   "d": 9,
+   "lat": 16,
+   "worst": 98804,
+   "mean_net": 94811,
+   "worst_nonet": 13344,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 98804,
+    "mean_net": 94811,
+    "worst_nonet": 13344
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 98804,
+    "mean_net": 91393,
+    "worst_nonet": 13344
+   }
+  },
+  {
+   "name": "own_clock",
+   "text": "own fast macro clock (3-5.5 ns in ZigZag-IMC's table: 9 bits in under one system cycle), 2-cycle synchroniser",
+   "cfg": {
+    "bpc": 24,
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 1,
+   "lat": 2,
+   "worst": 95044,
+   "mean_net": 92572,
+   "worst_nonet": 9804,
+   "first_divider": 7,
+   "first_pass": true,
+   "nmin": 5,
+   "fmin_mhz": 5.12,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 95044,
+    "mean_net": 92572,
+    "worst_nonet": 9804
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 95044,
+    "mean_net": 89877,
+    "worst_nonet": 9804
+   }
+  },
+  {
+   "name": "two_steps",
+   "text": "2 system cycles per bit, or a tile split into 2 time steps (32 rows or 8 columns per step)",
+   "cfg": {
+    "cpb": 2,
+    "dmin": 1,
+    "lat": 5
+   },
+   "d": 18,
+   "lat": 5,
+   "worst": 149903,
+   "mean_net": 145264,
+   "worst_nonet": 14509,
+   "first_divider": 10,
+   "first_pass": true,
+   "nmin": 8,
+   "fmin_mhz": 8.192,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 149903,
+    "mean_net": 145264,
+    "worst_nonet": 14509
+   },
+   "below": {
+    "passed": false,
+    "overrun": 101,
+    "wrong": [
+     100
+    ],
+    "hazards": 0,
+    "worst": 149903,
+    "mean_net": 141690,
+    "worst_nonet": 14509
+   }
+  },
+  {
+   "name": "four_steps",
+   "text": "a tile split into 4 time steps (32 rows and 8 columns per step)",
+   "cfg": {
+    "cpb": 4,
+    "dmin": 1,
+    "lat": 5
+   },
+   "d": 36,
+   "lat": 5,
+   "worst": 289473,
+   "mean_net": 282705,
+   "worst_nonet": 19061,
+   "first_divider": 16,
+   "first_pass": true,
+   "nmin": 15,
+   "fmin_mhz": 15.36,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 289473,
+    "mean_net": 282705,
+    "worst_nonet": 19061
+   },
+   "below": {
+    "passed": false,
+    "overrun": 76,
+    "wrong": [
+     75
+    ],
+    "hazards": 0,
+    "worst": 289473,
+    "mean_net": 281694,
+    "worst_nonet": 19061
+   }
+  },
+  {
+   "name": "colonnade_np",
+   "text": "Colonnade-style columns without bit pipelining: 17 system cycles per bit (AccelForge's scale)",
+   "cfg": {
+    "cpb": 17,
+    "dmin": 1,
+    "lat": 2
+   },
+   "d": 153,
+   "lat": 2,
+   "worst": 1196345,
+   "mean_net": 1175852,
+   "worst_nonet": 48346,
+   "first_divider": 59,
+   "first_pass": true,
+   "nmin": 59,
+   "fmin_mhz": 60.416000000000004,
+   "at": {
+    "passed": true,
+    "overrun": 0,
+    "wrong": [
+     0
+    ],
+    "hazards": 0,
+    "worst": 1196345,
+    "mean_net": 1175852,
+    "worst_nonet": 48346
+   },
+   "below": {
+    "passed": false,
+    "overrun": 76,
+    "wrong": [
+     75
+    ],
+    "hazards": 0,
+    "worst": 1196345,
+    "mean_net": 1173351,
+    "worst_nonet": 48346
+   }
+  }
+ ]
+}

@@ -213,10 +213,10 @@ lower supply voltage, which is not modelled.
 
 ## 9. Limitations
 
-- **ZigZag-IMC itself has not been run.** Its digital equations were transcribed, and they reproduce its
-  chip figures to within 3 %. Running the tool on the same inputs is the remaining check.
+- **ZigZag-IMC models full switching and its own mapping.** The tool has now been run (§11). It agrees with the transcribed
+  equations where the array shape matches, and gives an upper bound for the array.
 - **The digital logic is the weakest part:** FPGA sizes converted to gate equivalents, with an assumed
-  activity. An open ASIC flow (`HOPCIM_PROPOSAL.md` §9.5) would replace these with synthesised numbers.
+  activity. An open ASIC flow (`HOPCIM_PROPOSAL.md` §9.5) would replace these with synthesised numbers; it has not been run. It would not validate a 28-nm macro.
 - **Mixed supply voltages:** 0.9 V for ZigZag, 0.8 V for Colonnade, CACTI's own for SRAM. Nothing is
   estimated at low voltage, although a 5–15 MHz design would run there.
 - **Not modelled:** power gating, retention voltage, temperature above 300 K, clock tree, wires between
@@ -237,6 +237,52 @@ cd model
 ../../recim-rv/accelforge_pilot/.venv312/bin/python energy_tool_run.py    # tools, about 30 s: energy_components.json
 python3 energy_est.py                                    # the tables, energy_results.json (frozen run: energy_run.log)
 ```
+
+## 11. ZigZag-IMC itself (2026-11-07)
+
+Until now its equations were transcribed into `energy_est.py`. Here the tool itself runs (commit df34a6f, its own
+`mlperf_tiny/ds_cnn.onnx`, the same network), with HopCIM's macro as its hardware: 64 rows, 16 int8 columns, 1 bit per cycle, 16 tiles per macro
+(`model/zigzag_run/`, log `run.log`). Two of its limits matter here: it requires 8-bit inputs (HopCIM's are 9 bits), and it has no activity input,
+because its adders switch fully on the rows it maps (its README: "Sparsity impact is not included").
+
+**The same settings: 8-bit input, full switching, pJ per inference.**
+
+| Layers | Tool | Transcribed | Ratio | Why |
+|---|---:|---:|---:|---|
+| Pointwise, all 64 rows used | 633,443 | 633,443 | **1.000** | the same array and tile switching |
+| Fully connected | 242 | 238 | 1.020 | the tool also charges the 4 unused columns' multipliers |
+| Conv1, 40 of 64 rows | 103,385 | 150,958 | 0.685 | it charges used rows only; the transcription leaves that to the activity |
+| Depthwise | 152,253 | 632,210 | 0.241 | the same, more strongly: 9 active rows per column, and it does not reselect the tile each pass |
+
+**At the measured activity** (the tool's switching terms times the activity on the rows that hold weights, against `energy_est.py`'s equations at 8 bits):
+
+| Layers | Activity on used rows | Tool's structure, nJ | Transcribed, nJ | Ratio |
+|---|---:|---:|---:|---:|
+| Conv1 | 0.075 | 13.5 | 13.4 | 1.010 |
+| Depthwise | 0.066 | 36.9 | 33.6 | 1.097 |
+| Pointwise | 0.077 | 69.3 | 69.3 | 1.000 |
+| Fully connected | 0.147 | 0.04 | 0.04 | 1.017 |
+| **Total** | | **119.8** | **116.4** | **1.029** |
+
+So the transcription is exact where the structure matches, and within 3 % overall once the same activity is applied.
+
+**As an upper bound.** Using the tool's raw figure (full switching, its mapping) for the array and tile select changes those from 303 to 889 nJ:
+
+| | Baseline | With the tool's raw array |
+|---|---:|---:|
+| One inference, network | 1,389 nJ | 1,975 nJ |
+| A decision every 20 / 40 / 80 ms | 110 / 75 / 58 µW | 140 / 90 / 65 µW |
+
+These stay inside the ranges of §1 (94–192, 60–117, 42–84 µW), so the stated uncertainty holds.
+
+**Other cross-checks.**
+- Passes: the tool's own mapping gives exactly HopCIM's 500 (conv1), 2,000 (pointwise) and 1 (fully connected). For depthwise it needs 6,400 against HopCIM's 5,000: its
+  search found a less dense placement than the block-diagonal one.
+- Clock: 3.53 ns on this macro at 0.9 V, the input to `TIMING_SENSITIVITY.md`.
+- Area: 0.099 mm² per macro, so 0.50 mm² for 5 macros, against 0.37 mm² here (weight cells 0.097, macro logic 0.273). The difference is mostly the cell array. Area is not a claim of this work.
+- Memory is not compared: the tool's template (256 KB SRAM, DRAM) is not HopCIM's memory.
+
+Reproduce: `~/venvs/zigzag/bin/python model/zigzag_run/run_zigzag.py`, after `python3 -m venv ~/venvs/zigzag` and `pip install -r requirements.txt` in the tool's folder.
 
 ## References
 

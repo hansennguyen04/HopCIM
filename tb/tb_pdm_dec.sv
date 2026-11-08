@@ -11,6 +11,7 @@ module tb_pdm_dec;
   logic [0:0]  bits [NB];
   logic [15:0] exp_s [NS];
   int bi = 0, si = 0, bad = 0;
+  string vec;
   always #5 clk = ~clk;
   pdm_dec dut (.clk_i(clk), .rst_ni(rst_n), .en_i(en), .pdm_clk_o(pdm_clk), .pdm_data_i(pdm_data),
                .smp_valid_o(v), .smp_o(smp));
@@ -26,8 +27,9 @@ module tb_pdm_dec;
     si++;
   end
   initial begin
-    $readmemb("tb/pdm_vec/bits.hex", bits);
-    $readmemh("tb/pdm_vec/samples.hex", exp_s);
+    if (!$value$plusargs("VEC=%s", vec)) vec = "tb/pdm_vec";   // tb/pdm_vec_sat: full-scale, saturating input
+    $readmemb({vec, "/bits.hex"}, bits);
+    $readmemh({vec, "/samples.hex"}, exp_s);
     pdm_data = bits[0][0];
     repeat (3) @(posedge clk);
     #1 rst_n = 1'b1; en = 1'b1;

@@ -3,7 +3,7 @@
 **Exact, model-preserving MFCC and keyword spotting on a digital compute-in-memory accelerator inside an open RISC-V microcontroller**
 
 Master's thesis direction, NYCU · CIM × RISC-V · thesis due June 2027
-Version 1.1, 2026-11-07 (first version 2026-10-27) · Living document. Design and result details are in the linked specifications.
+Version 1.2, 2026-11-07 (first version 2026-10-27) · Living document. Design and result details are in the linked specifications.
 
 Evidence labels used throughout:
 
@@ -86,11 +86,18 @@ The front-end and the network then share one CIM. Existing MFCC-trained models d
   keywords were correct at a decision every 20 ms and 47 of 50 at 40 ms (`LIVE_AUDIO.md` §9). The
   end-to-end comparison is in `EVALUATION.md`.
 
+**Later on 2026-11-07:**
+- The results do not depend on a fast macro: the lowest real-time clock stays at 5.12 MHz for every assumption with an issue interval of at most 9 cycles, and a faster
+  macro gains about 0.1 %, because requantisation and gathering are what bind (`TIMING_SENSITIVITY.md`).
+- ZigZag-IMC itself agrees with the transcribed energy equations where the array shape matches, ratio 1.000, and within 3 % at the measured activity (`ENERGY_ESTIMATE.md` §11).
+- Assertions, coverage, mutation and extreme-input tests found no RTL defect (`VERIFICATION.md`).
+- An 8.38-h run in the room found false reports with the current rule in the evening, while the student was in the room, 25 per hour over 1.38 h, and none in the 7 h of the night (`SAME_AUDIO.md` §6). Firmware rules can reduce them; none is chosen yet.
+
 **What remains** (order and reasons in §15.2):
 1. the manual IEEE Xplore search, and repositioning the thesis claim after the H4 result (§13a);
-2. whether a decision every 80 ms can work on real speech;
-3. how far the results depend on the assumed macro timing and capacity;
-4. more live evidence: several speakers and false alarms per hour.
+2. the spoken same-audio runs, with several speakers: whether 80 ms works on real speech, and which confirmation rule to use;
+3. checking the macro assumptions against the papers;
+4. the scoped ASIC flow for the digital logic, which needs permission to install.
 
 The plan (§11) completes these by April 2027 and leaves May–June for writing.
 
@@ -310,7 +317,7 @@ Thresholds are frozen before the final runs, as was done for gate 2 (`kws_gate/G
 |---|---|---|---|
 | **H1** (bottleneck) | With the network on the CIM, the CPU-side front-end is ≥ 70 % of per-hop CPU cycles | < 50 %, measured on the board | **Holds only with the network's data movement also off the CPU** [M]. As first built, with the CPU orchestrating the network (configuration B, `EVALUATION.md`), the front-end is 146,364 of 13.17 M cycles: **1.1 %, falsified in that configuration**. With the layer sequencer and a CPU front-end it is 91–98 % (146,364 against 459 for the network and 2,120–14k for the window path; composed from measured parts, not one run). The census figure of 78–92 % came from a model of streaming hops of about 205k cycles, far less network work than the full-window inference built here |
 | **H2** (fidelity) | The integer CIM-MFCC keeps the unchanged int8 DS-CNN within 0.3 pp of float MFCC on the GSC test set | Δ < −0.3 pp | **Passed:** 91.78 % vs 91.66 % (Δ +0.12 pp, p = 0.44); bit-exact in hardware |
-| **H3** (CPU-light) | Per-hop CPU-active cycles fall ≥ 20× against the CPU-orchestrated CIM baseline, and the real-time clock requirement f_min falls below 1 MHz | < 5×, or f_min ≥ 2 MHz | **Not supported as written** [M]. CPU half **far exceeded**: 13.17 M → 263 CPU-active cycles per hop, about 50,000× (≥ 20× required). f_min half **falsified**: measured 5.12 MHz, against a target below 1 MHz and a failure line of 2 MHz. A hop without the network needs about 7.8k cycles (≈ 0.4 MHz), but a decision hop runs the whole network inside one hop, 97.7k cycles at worst, and the microphone needs an integer multiple of 1.024 MHz. Running the network every k hops does not lower this (`LIVE_AUDIO.md` §9) |
+| **H3** (CPU-light) | Per-hop CPU-active cycles fall ≥ 20× against the CPU-orchestrated CIM baseline, and the real-time clock requirement f_min falls below 1 MHz | < 5×, or f_min ≥ 2 MHz | **Not supported as written** [M]. CPU half **far exceeded**: 13.17 M → 263 CPU-active cycles per hop, about 50,000× (≥ 20× required). f_min half **falsified**: measured 5.12 MHz, against a target below 1 MHz and a failure line of 2 MHz. A hop without the network needs about 7.8k cycles (≈ 0.4 MHz), but a decision hop runs the whole network inside one hop, 97.7k cycles at worst, and the microphone needs an integer multiple of 1.024 MHz. Running the network every k hops does not lower this (`LIVE_AUDIO.md` §9) A faster macro does not lower the clock; requantisation and gathering bind it (`TIMING_SENSITIVITY.md`). |
 | **H4** (cost) | The logic added to run the front-end on the CIM costs no more (LUT + DSP + BRAM) than a dedicated FFT/MFCC block on the same FPGA | It costs more, with no capacity or flexibility gain to offset it | **Not supported.** At matched design style, B3 costs 1,447 LUT, 8 DSP, 2 RAMB18; `cim_fe` costs 1,530 LUT, 7 DSP, 4 RAMB18, plus 6 KiB of CIM. Both pass the accuracy gate. Details: `B3_BASELINE.md` |
 | **H5** (end-to-end) | Front-end + DS-CNN on one CIM gives the same accuracy as the TFLite int8 reference (bit-exact), in real time at 15 MHz | Accuracy differs, or real time is missed | Accuracy: **met** (bit-exact with the reference kernels, 91.80 %). Real time: **met** on the board. The network takes 5.69 ms per inference at 15 MHz with the CPU asleep (`SEQUENCER.md`); CPU-orchestrated it was 11.8–13.0 M cycles. With the window path in hardware (R5b), a streaming decision every 20 ms hop takes 6.5–6.8 ms of hardware time and 600 CPU-active cycles beyond copying the samples (`WINDOW_PATH.md`) |
 | H6 (optional) | A shared CIM-MFCC beats per-model learned CIM front-ends once *k* always-on models share it | — | Optional extension |
@@ -543,10 +550,11 @@ The plan of 2026-10-27, with what has happened since (status 2026-11-07). The th
 | A paper already computes the standard MFCC on a CIM (not yet covered by the Xplore search) | Low–medium | Run the search now (Phase 1a). If one exists, contributions 2 and 3 (§13) and the B3 comparison remain; narrow further |
 | B3 (dedicated block) is cheaper than CIM reuse | **Happened** (H4) | Report it honestly. The question becomes when reuse pays (CIM capacity vs logic, flexibility, sharing across models) — still a publishable trade-off study |
 | Depthwise layers map poorly onto 64 × 16 tiles | **Resolved** | Block-diagonal mapping on a 128-tile CIM |
-| The assumed macro timing or capacity does not match real silicon | Medium–high | Timing sensitivity sweep (§15.2 step 4); tile organisation in `ENERGY_ESTIMATE.md` §6. No public macro can stand in for it on the FPGA |
+| The assumed macro timing or capacity does not match real silicon | Medium, was medium–high | **Swept** (`TIMING_SENSITIVITY.md`): no change for an issue interval of at most 9 cycles; above that the clock rises about linearly, and the sequencer's input hold must scale. Tile organisation in `ENERGY_ESTIMATE.md` §6. The assumptions still need checking against the papers |
+| False alarms in real use | **Happened** | Measured in the room (`SAME_AUDIO.md` §6): 25 per hour in an evening, none in a 7-h night. Firmware rules reduce them at some cost in recall; to be chosen on spoken runs |
 | TFLite rounding details break exactness | Medium | Build and verify the integer reference against TFLite logits first (Phase 2a) |
 | Real time missed with the full network | **Resolved** | Met on the board, down to 5.12 MHz |
-| Live-mic domain shift lowers demo accuracy | Medium | GSC test-set accuracy stays the primary metric. One speaker so far: 48 of 50 keywords; more speakers and false alarms per hour are planned (§15.2 step 6) |
+| Live-mic domain shift lowers demo accuracy | Medium | GSC test-set accuracy stays the primary metric. One speaker so far: 48 of 50 keywords; false alarms measured in one room (above); more speakers are planned (§15.2 step 6) |
 | FPGA resources or timing | Low | Currently 67 % LUT, 61 % DSP, 61 % BRAM, +15.1 ns slack at 15.36 MHz |
 | Schedule | Medium | Phases ordered by research value; Phase 4 and the options can shrink |
 
@@ -587,6 +595,8 @@ hardware" is not a claim this work can make. What the evidence still supports:
   platform, with honest costs. The same question applies to the network: running it every 2 or 4 hops
   saves 50–75 % of the CIM passes for 18 LUT (`LIVE_AUDIO.md` §9), and exact activation reuse across
   windows was evaluated in software against that baseline, and not built (`REUSE_EVALUATION.md`).
+- **The sweep of macro timing agrees too** (`TIMING_SENSITIVITY.md`): a macro 9 times faster changes the network's cycles by 0.14 %. What binds is the requantisation and the gathering of inputs, which is
+  what the sequencer moved off the CPU.
 - **[E] The energy estimate agrees with this repositioning** (`ENERGY_ESTIMATE.md`). The front-end is
   about 1 % of the power either way, and the two front-ends differ by under 4 % of the total. With the
   measured activity, requantisation and the activation memory cost more than the CIM array itself. These
@@ -606,6 +616,8 @@ sequencer, depthwise data movement and requantisation on the CIM.
 - The per-window peak normalisation of the reference pipeline is kept for fidelity; in streaming it is applied per 1 s window.
 - The live audio path runs at exactly 16 kHz (15.36 or 5.12 MHz system clock); the earlier X-HEEP `pdm2pcm` path gave 15.625 kHz at 15 MHz.
 - Live accuracy is for one speaker, microphone and room, and is not comparable with the GSC test-set accuracy.
+- False alarms are measured in one room, with whatever was happening in it; the rules compared on GSC streams are synthetic (`SAME_AUDIO.md`).
+- The macro assumptions come from the tools' files; a macro needing more than 10 cycles per pass needs an RTL change (`TIMING_SENSITIVITY.md` §5).
 
 ---
 
@@ -635,7 +647,11 @@ Every claim here is checked against its evidence by `freeze/freeze.py check` (`f
 | End-to-end evaluation | ✅ Tables A–E (`EVALUATION.md`). The CPU-active time per hop goes from 48.1 M cycles (CPU only) to 263 (E). The lowest real-time clock is 5.12 MHz |
 | A decision every k hops (2026-11-05) | ✅ Bit-exact in RTL and on the board at 20, 40 and 80 ms; 18 LUT; 50–75 % fewer CIM passes. ✅ One speaker: 48, 47 and 42 of 50 keywords at 20, 40 and 80 ms, so 40 ms is the operating point (`LIVE_AUDIO.md` §9) |
 | Exact activation reuse (2026-11-05) | ✅ Evaluated in software, not built: exact on 174,216 decisions, 45.5–51.3 % fewer passes, about +72 KB of memory, the worst case unchanged (`REUSE_EVALUATION.md`) |
-| Energy estimate (2026-11-07) | ✅ **[E]** 28 nm, exact activity with published tools: about 1.39 µJ per inference; 110, 75 and 58 µW at 20, 40 and 80 ms; reuse saves a net 13 µW at 40 ms. ⏳ ZigZag-IMC's equations are transcribed, and the tool itself has not been run; the digital logic is coarse (`ENERGY_ESTIMATE.md`) |
+| Energy estimate (2026-11-07) | ✅ **[E]** 28 nm, exact activity with published tools: about 1.39 µJ per inference; 110, 75 and 58 µW at 20, 40 and 80 ms; reuse saves a net 13 µW at 40 ms. ✅ ZigZag-IMC run: ratio 1.000 on the pointwise layers, 1.029 overall at the measured activity. ⏳ The digital logic is still coarse: the ASIC flow needs permission to install (`ENERGY_ESTIMATE.md` §11) |
+| CIM timing sensitivity (2026-11-07) | ✅ 5.12 MHz for every assumption with D ≤ 9; 8.19, 15.36 and 60.42 MHz at D = 18, 36 and 153, bit-exact, in simulation. ⏳ Assumptions to check against the papers (`TIMING_SENSITIVITY.md`) |
+| Same-audio logger (2026-11-07) | ✅ Audio and logits of every decision streamed at 921,600 baud; 2,850 of 2,850 decisions equal the golden model. ⏳ The spoken runs (`SAME_AUDIO.md`) |
+| False alarms (2026-11-07) | ✅ Ambient room run and GSC streams, over rates and rules. ⏳ Rule to choose on spoken runs (`SAME_AUDIO.md` §5, §6) |
+| Verification polish (2026-11-07) | ✅ 28 benches, 47 assertions, all active with no failure; 16 of 16 mutants caught; extreme input exact; no RTL defect found (`VERIFICATION.md`) |
 
 ### 15.2 Next steps, in order
 
@@ -647,11 +663,11 @@ The project has moved from building to making its claims defensible, so new RTL 
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing" OR "computing-on-memory" OR "processing-in-memory") AND (FFT OR "Fourier" OR MFCC OR "Mel" OR spectrogram) AND ("keyword spotting" OR speech OR audio)
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing") AND ("FFT" OR "fast Fourier transform" OR "DFT")
    ```
-3. **The same-audio experiment at 20, 40 and 80 ms.** One run at 20 ms logs every decision. Since decisions are bit-exact across rates, every rate, phase and confirmation rule can then be scored on identical speech. This decides whether 80 ms is viable (`LIVE_AUDIO.md` §9).
-4. **CIM timing sensitivity.** Parameterise the macro's issue interval and result latency, and report how latency and f_min vary across assumptions taken from published macros. Student: cycle counts, clock and macro size from Chih et al. and Colonnade. This is one of the largest remaining validity risks.
-5. **Energy validation.** Run ZigZag-IMC itself and compare it with the transcribed equations. A scoped open ASIC flow can replace the coarse digital logic; it does not validate a 28-nm macro. Everything keeps its estimate label.
-6. **More live evidence.** If 40 ms stays the operating point: 20 against 40 ms with several speakers, and false alarms per hour.
-7. **Verification polish.** Assertions, Verilator coverage, and a targeted post-synthesis smoke test of the full endpoint.
+3. **The same-audio experiment at 20, 40 and 80 ms.** ✅ Logger, capture and analysis built and verified on the board; GSC streams scored (`SAME_AUDIO.md`). ⏳ Student: one spoken run of about 5 minutes. One run at 20 ms holds the audio and every decision's logits, so every rate, phase and confirmation rule is scored on identical speech. This decides whether 80 ms is viable.
+4. **CIM timing sensitivity.** ✅ Issue interval and result latency swept over 40 timings and 9 macro assumptions, with the real benches (`TIMING_SENSITIVITY.md`). ⏳ Student: check cycle counts, clock and macro size against Chih et al. and Colonnade; public sources do not give them.
+5. **Energy validation.** ✅ ZigZag-IMC itself run and compared with the transcribed equations (`ENERGY_ESTIMATE.md` §11). ⏳ A scoped open ASIC flow can replace the coarse digital logic; it does not validate a 28-nm macro. Its download was refused by the session's permission system, so it needs the student's approval. Everything keeps its estimate label.
+6. **More live evidence.** ✅ False alarms per hour in the room, over rates and rules, and the tools for pooling speakers (`SAME_AUDIO.md` §4, §6). ⏳ Student: several speakers, one spoken run each; every rate comes from the same run.
+7. **Verification polish.** ✅ Assertions, Verilator coverage, mutation and extreme-input tests, and a post-synthesis smoke test of the full endpoint (`VERIFICATION.md`).
 8. **Only then, an optional architecture extension:** activation reuse (`REUSE_EVALUATION.md` §8), a dataflow optimisation, or none. Choose from the evidence, not because the thesis needs more RTL.
 
 Writing (Phase 6) runs alongside steps 4–8.
@@ -731,7 +747,7 @@ Writing (Phase 6) runs alongside steps 4–8.
 | `hopcim/syn/` | Out-of-context Vivado script (`ooc.tcl`) and reports |
 | `hopcim/model/` | Golden models (`mfcc_int.py`, `cim_map.py`), table and vector generators, accuracy re-gate (`gate2_int.py`) |
 | `hopcim/sw/` | Driver `cim.h`, generated `mfcc_tables.h` |
-| `hopcim/docs/` | This proposal and the specifications |
+| `hopcim/docs/` | This proposal and the specifications; `SAME_AUDIO.md`, `TIMING_SENSITIVITY.md`, `VERIFICATION.md` for the checks of the claims |
 | `hopcim/freeze/` | Frozen results: claims and evidence (`RESULTS.md`), hashes (`MANIFEST.json`), `freeze.py`; snapshots of the X-HEEP changes, board scripts and logs, the accuracy gate, novelty documents, tool versions |
 | `kws_gate/` | Gate scripts, pretrained MLPerf Tiny models, GSC test set, novelty searches |
 | `planenest/hw/x-heep/` | X-HEEP with the HopCIM integration (flag `use_cim`, symlink `hw/ip/hopcim`); apps `cim_smoke`, `hopcim_mfcc`, `hopcim_fe`; local BSCANE2 fix |
@@ -744,9 +760,10 @@ cd ~/APlus_Project
 # accuracy re-gate and mapping self-test
 ~/venvs/kwsgate/bin/python hopcim/model/gate2_int.py
 ~/venvs/planenest/bin/python -c "import sys; sys.path.insert(0,'hopcim/model'); import cim_map; cim_map.self_test(4890)"
-# all frozen claims against their evidence, then the RTL regression (Verilator, about 8 min)
+# all frozen claims against their evidence, then the RTL regression (Verilator, about 10 min)
 python3 hopcim/freeze/freeze.py check
 hopcim/sim/run_all.sh
+# assertions and coverage (about 20 min), mutants (about 8 min), timing sweeps, ZigZag-IMC: see VERIFICATION.md, TIMING_SENSITIVITY.md, ENERGY_ESTIMATE.md
 # SoC simulation
 cd planenest/hw/x-heep && source .venv/bin/activate && make verilator-build FUSESOC_FLAGS=--flag=use_cim
 ~/APlus_Project/hopcim/sim/run_soc.sh hopcim_fe          # also: cim_smoke, hopcim_mfcc

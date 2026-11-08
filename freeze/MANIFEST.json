@@ -1,5 +1,5 @@
 {
- "tag": "freeze-2026-11-07",
+ "tag": "freeze-2026-11-07b",
  "note": "Hashes of everything the frozen results depend on that is not in this repository.",
  "tools": [
   "Verilator: Verilator 5.040 2025-08-30 rev v5.040",
@@ -12,8 +12,8 @@
   "xheep_base_commit": "b3eb3c8d626d3debe8e5cf99ecff32a5a31549fd",
   "xheep_patch_sha256": "398117808b018a25fd35eb30adb9fbac300dec643f15462d96caacb86d53cbbf",
   "xheep_overlay": {
-   "files": 31,
-   "tree_sha256": "a9c8dbac1dc0b81ff798bfd008060bcb49b5d564df5f2d14b6b9000692cd12ae"
+   "files": 32,
+   "tree_sha256": "4348df2d4b015317624d8555789d74d5cd0745875159401a1124dff340efe51d"
   },
   "xheep_generated_system_sha256": "ceffa165d848c845ee9e203709ab2d8bcbb5fe03dfbeab1d7eb70897ae411d7b"
  },
@@ -107,6 +107,9 @@
   "hopcim_fe_irq_ded_nexys.elf": "b850e324d4429528d44b18ae98a08cbffd1f4a8924cb41bef1b24fadca957dd9",
   "hopcim_fe_irq_nexys.elf": "93915fee91d9e7fcb970da66fe2c2bf19e3ee1cd3fdd8bf4699c0ec3e4c5358f",
   "hopcim_fe_nexys.elf": "c658f93c60bffbe94c51f88ffc85817422da4f8c5f031573333bc6d0dcd47af1",
+  "hopcim_kwlog_nexys.elf": "3c309ee67098eda567bd2a56306758e9eff218267c51f22287472ace71cca577",
+  "hopcim_kwlog_noaudio_nexys.elf": "6836447015a4c8b14757adddd0cda0c0248b85b1b5c064bb372dbc51b9283bab",
+  "hopcim_kwlog_r1_nexys.elf": "98e02c11683597a3354bd6d7076d3ed86bf31323d6ba2e3a810d2cc874cb0201",
   "hopcim_kwtest_k2_nexys.elf": "46ba9357351e98a3290944e02036adb89776d9984dceda475cc6a08bea326a2a",
   "hopcim_kwtest_k4_nexys.elf": "c6a5ca3651eee79a7b63b0deda20ff962fc1095e2a15e750a4a1c8cbe879634f",
   "hopcim_kwtest_nexys.elf": "3ac55429a4c4c070df8bfb4ebdecc79d41f6b5b5cc5cd385610075d41d20c141",

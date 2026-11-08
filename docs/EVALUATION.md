@@ -152,3 +152,10 @@ FPGA power.
 | Baseline with simple activation reuse | 84 µW | 62 µW | 54 µW |
 
 One inference is about 1.39 µJ (1.09–3.01 µJ). The microphone and the X-HEEP host are not included.
+
+## 10. Checks of these results (2026-11-07)
+
+- `TIMING_SENSITIVITY.md`: how the cycle counts and the lowest clock depend on the assumed macro. They hold for an issue interval of at most 9 cycles.
+- `SAME_AUDIO.md`: rate, phase and confirmation rule on identical audio, and false alarms per hour. The current rule reported falsely in a room while someone was in it, and not once in the 7-hour night after.
+- `VERIFICATION.md`: assertions, coverage, mutation tests, extreme input and a post-synthesis smoke test of the endpoint.
+- `ENERGY_ESTIMATE.md` §11: ZigZag-IMC itself against the transcribed equations.

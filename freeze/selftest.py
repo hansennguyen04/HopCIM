@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PROJECT = ROOT.parent
+PROJECT = Path(os.environ.get("HOPCIM_PROJECT", ROOT.parent))
 B = "freeze/board/logs/"
 
 
@@ -35,8 +35,18 @@ BREAKS = [
     ("a stale statement returns", replace("docs/HOPCIM_PROPOSAL.md", "### 15.1 Status", "The full pipeline and f_min are open\n### 15.1 Status"), r"FAIL\s+docs/HOPCIM_PROPOSAL.md"),
     ("a bitstream hash differs", replace("freeze/MANIFEST.json", '"sha256": "', '"sha256": "0', 1), r"FAIL\s+(bitstreams|models)"),
     ("the X-HEEP patch is damaged", replace("freeze/xheep/tracked_changes.patch", "+", "-", 40), r"FAIL\s+X-HEEP snapshot hashes"),
-    ("a firmware file differs from the live one", replace("freeze/xheep/overlay/sw/applications/hopcim_live/main.c", "#define", "#undef ", 1), r"FAIL\s+31 overlay"),
+    ("a firmware file differs from the live one", replace("freeze/xheep/overlay/sw/applications/hopcim_live/main.c", "#define", "#undef ", 1), r"FAIL\s+\d+ overlay"),
     ("a board script differs from the live one", replace("freeze/board/board_run.sh", "#!/", "# !/", 1), r"FAIL\s+board scripts"),
+    ("a bench fails in the regression", replace("freeze/regression_main.log", "PASS  run_engine_tb.sh", "FAIL  run_engine_tb.sh"), r"FAIL\s+D4"),
+    ("an assertion fails", replace("model/verif_results.json", '"fail": 0', '"fail": 1', 1), r"FAIL\s+D5"),
+    ("a mutant is missed", replace("model/verif_mutants.json", '"caught": true', '"caught": false', 1), r"FAIL\s+D6"),
+    ("the endpoint's netlist has an error", replace("sim/xsim_endpoint_nl/run.log", "RESULT (medium): 0 errors", "RESULT (medium): 1 errors"), r"FAIL\s+D7"),
+    ("a decision differs from the golden model", replace("model/kwlog_checks/engineering_r1.log", "recorded audio, 0 differ", "recorded audio, 1 differ"), r"FAIL\s+G1"),
+    ("the GSC recall changes", replace("model/rule_sweep_results.json", '"recall": 0.8', '"recall": 0.7'), r"FAIL\s+G2"),
+    ("the false-alarm rate changes", replace("model/kwlog_checks/far_ambient.log", "34.5,     4.1 per hour", "34.5,     4.2 per hour"), r"FAIL\s+G3"),
+    ("the lowest clock changes", replace("model/timing_results.json", '"nmin": 5', '"nmin": 4', 1), r"FAIL\s+H1"),
+    ("a network cycle count changes", replace("model/timing_results.json", '"cycles": 85352', '"cycles": 85353'), r"FAIL\s+H2"),
+    ("ZigZag-IMC disagrees", replace("model/zigzag_results.json", '"ratio": 1.0', '"ratio": 1.1'), r"FAIL\s+F3"),
 ]
 
 

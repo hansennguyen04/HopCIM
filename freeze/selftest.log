@@ -12,5 +12,15 @@ caught  a bitstream hash differs
 caught  the X-HEEP patch is damaged
 caught  a firmware file differs from the live one
 caught  a board script differs from the live one
+caught  a bench fails in the regression
+caught  an assertion fails
+caught  a mutant is missed
+caught  the endpoint's netlist has an error
+caught  a decision differs from the golden model
+caught  the GSC recall changes
+caught  the false-alarm rate changes
+caught  the lowest clock changes
+caught  a network cycle count changes
+caught  ZigZag-IMC disagrees
 
-13 breaks, 0 problems
+23 breaks, 0 problems

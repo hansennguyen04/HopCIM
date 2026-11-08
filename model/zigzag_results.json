@@ -1,0 +1,572 @@
+{
+ "group16_macros1": {
+  "rows": {
+   "conv1": {
+    "tool": {
+     "precharging": 12337.92,
+     "mults": 5806.08,
+     "adders": 78055.48799999998,
+     "accumulators": 7185.0239999999985
+    },
+    "tool_pJ": 103384.51199999999,
+    "transcribed": {
+     "array": 138620.16,
+     "select": 12337.92
+    },
+    "ratio": 0.6848557692307691,
+    "tool_cycles": 4000.0,
+    "util": [
+     {
+      "ideal": 0.626,
+      "stalls": 0.6019230769230769,
+      "stalls_onloading": 0.5796296296296296,
+      "stalls_onloading_offloading": 0.5794954871557509
+     }
+    ],
+    "mem_pJ": 88189.05614999999
+   },
+   "dw": {
+    "tool": {
+     "precharging": 17.7666048,
+     "mults": 39016.8576,
+     "adders": 84478.46399999998,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 152253.18420479997,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 77728.896
+    },
+    "ratio": 0.2408270921822982,
+    "tool_cycles": 51200.0,
+    "util": [
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.04013566986998304,
+      "stalls_onloading_offloading": 0.04013283402812125
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.04013566986998304,
+      "stalls_onloading_offloading": 0.04013283402812125
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.04013566986998304,
+      "stalls_onloading_offloading": 0.04013283402812125
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.04013566986998304,
+      "stalls_onloading_offloading": 0.04013283402812125
+     }
+    ],
+    "mem_pJ": 228321.25056000001
+   },
+   "pw": {
+    "tool": {
+     "precharging": 78962.688,
+     "mults": 37158.912000000004,
+     "adders": 488581.6319999999,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 633443.328,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 78962.688
+    },
+    "ratio": 1.0,
+    "tool_cycles": 16000.0,
+    "util": [
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.8865248226950354,
+      "stalls_onloading_offloading": 0.886328384666519
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.8865248226950354,
+      "stalls_onloading_offloading": 0.886328384666519
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.8865248226950354,
+      "stalls_onloading_offloading": 0.886328384666519
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.8865248226950354,
+      "stalls_onloading_offloading": 0.886328384666519
+     }
+    ],
+    "mem_pJ": 550651.2216
+   },
+   "fc": {
+    "tool": {
+     "precharging": 29.611007999999998,
+     "mults": 18.579456,
+     "adders": 183.21811199999996,
+     "accumulators": 10.777535999999998
+    },
+    "tool_pJ": 242.18611199999995,
+    "transcribed": {
+     "array": 207.93024,
+     "select": 29.611007999999998
+    },
+    "ratio": 1.0195539260617168,
+    "tool_cycles": 8.0,
+    "util": [
+     {
+      "ideal": 1.0,
+      "stalls": 0.1111111111111111,
+      "stalls_onloading": 0.06666666666666667,
+      "stalls_onloading_offloading": 0.06611570247933884
+     }
+    ],
+    "mem_pJ": 23103.3536271
+   }
+  },
+  "total_tool": 889323.2103167999,
+  "total_transcribed": 1416848.485248,
+  "ratio": 0.6276770025703462,
+  "mem_pJ": 890264.8819371002,
+  "mac_cycles": 71208.0,
+  "clock": {
+   "tclk (ns)": 3.52764,
+   "tclk_breakdown (ns)": {
+    "mults": 0.0478,
+    "adders": 2.50472,
+    "adders_pv": 0,
+    "accumulators": 0.97512
+   }
+  },
+  "area": {
+   "total_area": 0.8334857296,
+   "total_area_breakdown:": {
+    "imc_area": 0.09906041360000001,
+    "mem_area": 0.7344253159999999
+   },
+   "total_area_breakdown_further": {
+    "imc_area_breakdown": {
+     "cells": 0.0480601,
+     "mults": 0.005029888,
+     "adders": 0.0429878592,
+     "adders_pv": 0.0,
+     "accumulators": 0.0029825664
+    },
+    "mem_area_breakdown": {
+     "cell_group": 0,
+     "rf_I1": 2.9472000000000002e-05,
+     "rf_O1": 5.8944000000000003e-05,
+     "sram_256KB": 0.7343369,
+     "dram_1GB": 0
+    }
+   }
+  }
+ },
+ "group1_macros1": {
+  "rows": {
+   "conv1": {
+    "tool": {
+     "precharging": 0,
+     "mults": 5806.08,
+     "adders": 78055.48799999998,
+     "accumulators": 7185.0239999999985
+    },
+    "tool_pJ": 91046.59199999999,
+    "transcribed": {
+     "array": 138620.16,
+     "select": 0.0
+    },
+    "ratio": 0.656806282722513,
+    "tool_cycles": 4000.0,
+    "util": [
+     {
+      "ideal": 0.626,
+      "stalls": 0.6019230769230769,
+      "stalls_onloading": 0.5961904761904762,
+      "stalls_onloading_offloading": 0.5960485598666984
+     }
+    ],
+    "mem_pJ": 104661.1624
+   },
+   "dw": {
+    "tool": {
+     "precharging": 0,
+     "mults": 39016.8576,
+     "adders": 84478.46399999998,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 152235.4176,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 0.0
+    },
+    "ratio": 0.2745549738219895,
+    "tool_cycles": 51200.0,
+    "util": [
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.040144179800692625,
+      "stalls_onloading_offloading": 0.040141342756183744
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.040144179800692625,
+      "stalls_onloading_offloading": 0.040141342756183744
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.040144179800692625,
+      "stalls_onloading_offloading": 0.040141342756183744
+     },
+     {
+      "ideal": 0.044375,
+      "stalls": 0.040158371040723985,
+      "stalls_onloading": 0.040144179800692625,
+      "stalls_onloading_offloading": 0.040141342756183744
+     }
+    ],
+    "mem_pJ": 225256.93056
+   },
+   "pw": {
+    "tool": {
+     "precharging": 0,
+     "mults": 37158.912000000004,
+     "adders": 488581.6319999999,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 554480.6399999999,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 0.0
+    },
+    "ratio": 0.9999999999999998,
+    "tool_cycles": 16000.0,
+    "util": [
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.9259259259259259,
+      "stalls_onloading_offloading": 0.9257116408238834
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.9259259259259259,
+      "stalls_onloading_offloading": 0.9257116408238834
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.9259259259259259,
+      "stalls_onloading_offloading": 0.9257116408238834
+     },
+     {
+      "ideal": 1.0,
+      "stalls": 0.9398496240601504,
+      "stalls_onloading": 0.9259259259259259,
+      "stalls_onloading_offloading": 0.9257116408238834
+     }
+    ],
+    "mem_pJ": 656072.7016
+   },
+   "fc": {
+    "tool": {
+     "precharging": 0,
+     "mults": 18.579456,
+     "adders": 183.21811199999996,
+     "accumulators": 10.777535999999998
+    },
+    "tool_pJ": 212.57510399999995,
+    "transcribed": {
+     "array": 207.93024,
+     "select": 0.0
+    },
+    "ratio": 1.0223385689354274,
+    "tool_cycles": 8.0,
+    "util": [
+     {
+      "ideal": 1.0,
+      "stalls": 0.1111111111111111,
+      "stalls_onloading": 0.06666666666666667,
+      "stalls_onloading_offloading": 0.06611570247933884
+     }
+    ],
+    "mem_pJ": 22899.0656271
+   }
+  },
+  "total_tool": 797975.2247039999,
+  "total_transcribed": 1247789.3702399998,
+  "ratio": 0.639511157680817,
+  "mem_pJ": 1008889.8601871002,
+  "mac_cycles": 71208.0,
+  "clock": {
+   "tclk (ns)": 3.52764,
+   "tclk_breakdown (ns)": {
+    "mults": 0.0478,
+    "adders": 2.50472,
+    "adders_pv": 0,
+    "accumulators": 0.97512
+   }
+  },
+  "area": {
+   "total_area": 0.7893092295999999,
+   "total_area_breakdown:": {
+    "imc_area": 0.0548839136,
+    "mem_area": 0.7344253159999999
+   },
+   "total_area_breakdown_further": {
+    "imc_area_breakdown": {
+     "cells": 0.0038836,
+     "mults": 0.005029888,
+     "adders": 0.0429878592,
+     "adders_pv": 0.0,
+     "accumulators": 0.0029825664
+    },
+    "mem_area_breakdown": {
+     "cell_group": 0,
+     "rf_I1": 2.9472000000000002e-05,
+     "rf_O1": 5.8944000000000003e-05,
+     "sram_256KB": 0.7343369,
+     "dram_1GB": 0
+    }
+   }
+  }
+ },
+ "group16_macros8": {
+  "rows": {
+   "conv1": {
+    "tool": {
+     "precharging": 30.8448,
+     "mults": 5806.08,
+     "adders": 78055.48799999998,
+     "accumulators": 7185.0239999999985
+    },
+    "tool_pJ": 91077.43679999998,
+    "transcribed": {
+     "array": 138620.16,
+     "select": 12337.92
+    },
+    "ratio": 0.6033293269230767,
+    "tool_cycles": 640.0,
+    "util": [
+     {
+      "ideal": 0.5,
+      "stalls": 0.4,
+      "stalls_onloading": 0.3902439024390244,
+      "stalls_onloading_offloading": 0.38976857490864797
+     }
+    ],
+    "mem_pJ": 87658.248096
+   },
+   "dw": {
+    "tool": {
+     "precharging": 17.7666048,
+     "mults": 39016.8576,
+     "adders": 84478.46399999998,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 152253.18420479997,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 77728.896
+    },
+    "ratio": 0.2408270921822982,
+    "tool_cycles": 6400.0,
+    "util": [
+     {
+      "ideal": 0.045,
+      "stalls": 0.04072398190045249,
+      "stalls_onloading": 0.04054054054054054,
+      "stalls_onloading_offloading": 0.04051772650534609
+     },
+     {
+      "ideal": 0.045,
+      "stalls": 0.04072398190045249,
+      "stalls_onloading": 0.04054054054054054,
+      "stalls_onloading_offloading": 0.04051772650534609
+     },
+     {
+      "ideal": 0.045,
+      "stalls": 0.04072398190045249,
+      "stalls_onloading": 0.04054054054054054,
+      "stalls_onloading_offloading": 0.04051772650534609
+     },
+     {
+      "ideal": 0.045,
+      "stalls": 0.04072398190045249,
+      "stalls_onloading": 0.04054054054054054,
+      "stalls_onloading_offloading": 0.04051772650534609
+     }
+    ],
+    "mem_pJ": 114954.42816000001
+   },
+   "pw": {
+    "tool": {
+     "precharging": 197.40672,
+     "mults": 37158.912000000004,
+     "adders": 488581.6319999999,
+     "accumulators": 28740.095999999994
+    },
+    "tool_pJ": 554678.04672,
+    "transcribed": {
+     "array": 554480.64,
+     "select": 78962.688
+    },
+    "ratio": 0.8756553620531622,
+    "tool_cycles": 2560.0,
+    "util": [
+     {
+      "ideal": 0.7875,
+      "stalls": 0.5625,
+      "stalls_onloading": 0.5431034482758621,
+      "stalls_onloading_offloading": 0.542518837459634
+     },
+     {
+      "ideal": 0.7875,
+      "stalls": 0.5625,
+      "stalls_onloading": 0.5431034482758621,
+      "stalls_onloading_offloading": 0.542518837459634
+     },
+     {
+      "ideal": 0.7875,
+      "stalls": 0.5625,
+      "stalls_onloading": 0.5431034482758621,
+      "stalls_onloading_offloading": 0.542518837459634
+     },
+     {
+      "ideal": 0.7875,
+      "stalls": 0.5625,
+      "stalls_onloading": 0.5431034482758621,
+      "stalls_onloading_offloading": 0.542518837459634
+     }
+    ],
+    "mem_pJ": 564522.440832
+   },
+   "fc": {
+    "tool": {
+     "precharging": 29.611007999999998,
+     "mults": 18.579456,
+     "adders": 183.21811199999996,
+     "accumulators": 10.777535999999998
+    },
+    "tool_pJ": 242.18611199999995,
+    "transcribed": {
+     "array": 207.93024,
+     "select": 29.611007999999998
+    },
+    "ratio": 1.0195539260617168,
+    "tool_cycles": 8.0,
+    "util": [
+     {
+      "ideal": 1.0,
+      "stalls": 0.1111111111111111,
+      "stalls_onloading": 0.10256410256410256,
+      "stalls_onloading_offloading": 0.10126582278481013
+     }
+    ],
+    "mem_pJ": 23046.2870616
+   }
+  },
+  "total_tool": 798250.8538368,
+  "total_transcribed": 1416848.485248,
+  "ratio": 0.5633988829067189,
+  "mem_pJ": 790181.4041496001,
+  "mac_cycles": 9608.0,
+  "clock": {
+   "tclk (ns)": 3.52764,
+   "tclk_breakdown (ns)": {
+    "mults": 0.0478,
+    "adders": 2.50472,
+    "adders_pv": 0,
+    "accumulators": 0.97512
+   }
+  },
+  "area": {
+   "total_area": 1.6358882248,
+   "total_area_breakdown:": {
+    "imc_area": 0.7924833088000001,
+    "mem_area": 0.843404916
+   },
+   "total_area_breakdown_further": {
+    "imc_area_breakdown": {
+     "cells": 0.3844808,
+     "mults": 0.040239104,
+     "adders": 0.3439028736,
+     "adders_pv": 0.0,
+     "accumulators": 0.0238605312
+    },
+    "mem_area_breakdown": {
+     "cell_group": 0,
+     "rf_I1": 2.9472000000000002e-05,
+     "rf_O1": 5.8944000000000003e-05,
+     "sram_256KB": 0.8433165,
+     "dram_1GB": 0
+    }
+   }
+  }
+ },
+ "like_for_like": {
+  "groups": {
+   "conv1": {
+    "alpha": 0.047094498697916785,
+    "alpha_mapped": 0.07535119791666686,
+    "tool_pJ": 13504.093607970015,
+    "transcribed_pJ": 13374.895841212514,
+    "ratio": 1.0096597213384944
+   },
+   "dw": {
+    "alpha": 0.009299267113095302,
+    "alpha_mapped": 0.06612812169312215,
+    "tool_pJ": 36906.60965529605,
+    "transcribed_pJ": 33629.09775084003,
+    "ratio": 1.0974605958429007
+   },
+   "pw": {
+    "alpha": 0.07716268480088949,
+    "alpha_mapped": 0.07716268480088949,
+    "tool_pJ": 69307.64788372016,
+    "transcribed_pJ": 69307.64788372017,
+    "ratio": 0.9999999999999998
+   },
+   "fc": {
+    "alpha": 0.1471453631365741,
+    "alpha_mapped": 0.1471453631365741,
+    "tool_pJ": 40.47111242343749,
+    "transcribed_pJ": 39.78764222343751,
+    "ratio": 1.0171779517912065
+   }
+  },
+  "total_tool_pJ": 119758.82225940966,
+  "total_transcribed_pJ": 116351.42911799616,
+  "ratio": 1.02928535701919,
+  "network_baseline_pJ": 1389277.6430669506,
+  "network_with_tool_pJ": 1975339.0854940047,
+  "power": {
+   "1": {
+    "baseline_uW": 110.26279851478462,
+    "with_tool_uW": 139.56587063613733
+   },
+   "2": {
+    "baseline_uW": 75.34675743811086,
+    "with_tool_uW": 89.9982934987872
+   },
+   "4": {
+    "baseline_uW": 57.888736899773974,
+    "with_tool_uW": 65.21450493011216
+   }
+  }
+ }
+}

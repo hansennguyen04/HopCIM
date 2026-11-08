@@ -155,6 +155,17 @@ module tb_cim_endpoint;
       if (!irq) begin $display("irq not raised"); errors++; end
       check_results("irq");
     end
+    // 5) CYCLES counts every clock (wall time, the CPU's mcycle can stop)
+    begin
+      logic [31:0] c1, c2;
+      longint unsigned t1, t2;
+      logic [31:0] dummy;
+      obi(1'b0, 32'hC000_0018, 32'd0, c1, t1);
+      repeat (100) tick();
+      obi(1'b0, 32'hC000_0018, 32'd0, c2, t2);
+      checks++;
+      if (longint'(c2 - c1) != longint'(t2 - t1)) begin $display("CYCLES advanced %0d in %0d edges", c2 - c1, t2 - t1); errors++; end
+    end
     $display("RESULT: %0d checks, %0d errors, %0d passes", checks, errors, passes);
     if (errors == 0) $display("PASS"); else $display("FAIL");
     $finish;

@@ -59,7 +59,50 @@ def streamvec_h(x, golden):
     print(f"streamvec.h: {FW_HOPS} hops, {nd} decisions, {sum(hops[3 * h + 1] for h in range(si.NROW, FW_HOPS))} after a maximum change")
 
 
+def edge_stream():
+    """3 s of extreme input for tb_cim_stream: digital zeros, single full-scale clicks, full-scale square waves
+    (+32767, -32768), and a last second that never rises above zero, so its windows have a maximum <= 0."""
+    n = 48000
+    x = np.zeros(n, np.int64)
+    x[11200] = 32767                                 # a click in digital silence
+    x[16000] = 1                                     # the smallest positive peak
+    t = np.arange(25600, 32000)
+    x[t] = np.where((t // 8) % 2 == 0, 32767, -32768)  # full-scale square at 1 kHz
+    t = np.arange(32000, n)
+    x[t] = np.where((t // 40) % 2 == 0, -1, -32768)  # never above zero
+    return x
+
+
+def edge_main():
+    x = edge_stream()
+    for ded in (False, True):
+        out = os.path.join(HERE, "..", "tb", "stream_vec_edge_" + ("ded" if ded else "cim"))
+        os.makedirs(out, exist_ok=True)
+        sm = si.StreamModel(ded)
+        hops, feats, logits, classes = [], [], [], []
+        for h in range(len(x) // si.HOP):
+            n_all = sm.n_all
+            f = sm.hop(x, h)
+            hops += [sm.lmx, int(sm.n_all > n_all), int(sm.bmax.max())]
+            if f is not None:
+                y = d.forward(f)
+                feats.append(f.copy())
+                logits.append(y)
+                classes.append(int(np.argmax(y)))
+        write(os.path.join(out, "samples.hex"), x, 4)
+        write(os.path.join(out, "hops.hex"), hops, 8)
+        write(os.path.join(out, "feat.hex"), np.stack(feats).reshape(-1), 2)
+        write(os.path.join(out, "logits.hex"), np.stack(logits).reshape(-1), 2)
+        write(os.path.join(out, "meta.hex"), [len(x) // si.HOP, len(feats)] + classes, 8)
+        fa = np.stack(feats)
+        print(f"[{'B3' if ded else 'cim_fe'}] edge stream: {len(feats)} decisions; features {fa.min()}..{fa.max()}, "
+              f"at -128 {int((fa == -128).sum())}, at 127 {int((fa == 127).sum())}; classes {sorted(set(classes))} -> {os.path.relpath(out)}")
+
+
 def main():
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "edge":
+        return edge_main()
     write(os.path.join(HERE, "..", "tb", "stream_vec_cim", "log2.hex"),
           [mi.log2fix16(max(v, 1)) for v in range(32768)], 8)
     x = stream()

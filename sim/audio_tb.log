@@ -1,0 +1,6 @@
+RESULT: 117538 checks, 0 errors; 30 decisions; starts stalled 208 cycles (front-end), 454 cycles (sequencer)
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_audio_dir.sv:238: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 361ms; walltime 28.447 s; speed 12.817 ms/s
+- Verilator: cpu 28.189 s on 1 threads; alloced 126 MB

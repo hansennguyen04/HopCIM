@@ -1,0 +1,460 @@
+{
+ "benches": {
+  "audio_dir": true,
+  "endpoint": true,
+  "engine": true,
+  "fe_cim": true,
+  "fe_ded": true,
+  "log2": true,
+  "mic_cim_div15_k1": true,
+  "mic_cim_div15_k16": true,
+  "mic_cim_div15_k2": true,
+  "mic_cim_div15_k3": true,
+  "mic_cim_div15_k4": true,
+  "mic_cim_div15_k5": true,
+  "mic_cim_div5_k1": true,
+  "mic_cim_div5_k2": true,
+  "mic_cim_div5_k4": true,
+  "mic_ded_div15_k1": true,
+  "mic_ded_div15_k2": true,
+  "mic_ded_div15_k4": true,
+  "mic_ded_div5_k1": true,
+  "mic_ded_div5_k4": true,
+  "pdm": true,
+  "pdm_sat": true,
+  "seq_cim": true,
+  "seq_ded": true,
+  "stream_cim": true,
+  "stream_cim_edge": true,
+  "stream_ded": true,
+  "stream_ded_edge": true
+ },
+ "assertions": {
+  "audio.decision_count_steps": {
+   "active": 763,
+   "fail": 0
+  },
+  "audio.decision_only_on_network_hop": {
+   "active": 763,
+   "fail": 0
+  },
+  "audio.fe_go_when_allowed": {
+   "active": 2921,
+   "fail": 0
+  },
+  "audio.hop_count_steps": {
+   "active": 2951,
+   "fail": 0
+  },
+  "audio.hop_is_320_samples": {
+   "active": 2952,
+   "fail": 0
+  },
+  "audio.pending_after_decision": {
+   "active": 763,
+   "fail": 0
+  },
+  "audio.row_in_range": {
+   "active": 652505568,
+   "fail": 0
+  },
+  "audio.sample_period": {
+   "active": 948339,
+   "fail": 0
+  },
+  "audio.seq_go_when_allowed": {
+   "active": 2951,
+   "fail": 0
+  },
+  "audio.stride_counter_bounded": {
+   "active": 652505568,
+   "fail": 0
+  },
+  "audio.wptr_follows_samples": {
+   "active": 948399,
+   "fail": 0
+  },
+  "endpoint.cpu_go_not_on_owned_engine": {
+   "active": 26,
+   "fail": 0
+  },
+  "endpoint.irq_only_when_enabled": {
+   "active": 23460,
+   "fail": 0
+  },
+  "endpoint.irq_when_enabled_and_pending": {
+   "active": 23460,
+   "fail": 0
+  },
+  "endpoint.no_gnt_without_req": {
+   "active": 5555953,
+   "fail": 0
+  },
+  "endpoint.one_engine_master_seq_fe": {
+   "active": 9267289,
+   "fail": 0
+  },
+  "endpoint.rvalid_follows_gnt": {
+   "active": 5555953,
+   "fail": 0
+  },
+  "endpoint.seq_fe_not_with_cim_fe": {
+   "active": 107119002,
+   "fail": 0
+  },
+  "engine.busy_covers_pass": {
+   "active": 100496546,
+   "fail": 0
+  },
+  "engine.done_at_d_plus_5": {
+   "active": 9270316,
+   "fail": 0
+  },
+  "engine.done_is_a_pulse": {
+   "active": 18540632,
+   "fail": 0
+  },
+  "engine.input_bank_stable_port1": {
+   "active": 3250629,
+   "fail": 0
+  },
+  "engine.input_bank_stable_port2": {
+   "active": 63624191,
+   "fail": 0
+  },
+  "engine.no_done_without_pass": {
+   "active": 9270316,
+   "fail": 0
+  },
+  "engine.ready_low_d_minus_1": {
+   "active": 669904416,
+   "fail": 0
+  },
+  "engine.start_only_when_ready": {
+   "active": 9270316,
+   "fail": 0
+  },
+  "engine.tile_not_written_in_pass": {
+   "active": 387584,
+   "fail": 0
+  },
+  "frontend.base_stable_while_busy": {
+   "active": 25876868,
+   "fail": 0
+  },
+  "frontend.done_ends_busy": {
+   "active": 3816,
+   "fail": 0
+  },
+  "frontend.frame_time_bounded": {
+   "active": 25880684,
+   "fail": 0
+  },
+  "frontend.reads_inside_its_frame": {
+   "active": 25880684,
+   "fail": 0
+  },
+  "pdm.pdm_clock_duty_40_60": {
+   "active": 62746356,
+   "fail": 0
+  },
+  "pdm.pdm_clock_period": {
+   "active": 62746339,
+   "fail": 0
+  },
+  "pdm.valid_is_a_pulse": {
+   "active": 1960812,
+   "fail": 0
+  },
+  "seq.block_slot_in_range": {
+   "active": 3591412,
+   "fail": 0
+  },
+  "seq.done_ends_busy": {
+   "active": 3480,
+   "fail": 0
+  },
+  "seq.gather_starts_on_free_bank": {
+   "active": 6824318,
+   "fail": 0
+  },
+  "seq.go_only_when_ready": {
+   "active": 9167293,
+   "fail": 0
+  },
+  "seq.layer_in_range": {
+   "active": 107119002,
+   "fail": 0
+  },
+  "seq.no_error_flag": {
+   "active": 107119002,
+   "fail": 0
+  },
+  "seq.one_phase_at_a_time": {
+   "active": 107119002,
+   "fail": 0
+  },
+  "seq.pop_has_a_tag": {
+   "active": 9098693,
+   "fail": 0
+  },
+  "seq.position_in_range": {
+   "active": 87350316,
+   "fail": 0
+  },
+  "seq.requant_keeps_count": {
+   "active": 3480,
+   "fail": 0
+  },
+  "seq.results_drained_before_pop": {
+   "active": 9098693,
+   "fail": 0
+  },
+  "seq.row_in_range": {
+   "active": 3591412,
+   "fail": 0
+  },
+  "seq.tag_queue_bounded": {
+   "active": 107119002,
+   "fail": 0
+  }
+ },
+ "cover": {
+  "seq.requant_clamp_high": 164672,
+  "seq.requant_clamp_low": 41923834,
+  "seq.feature_clamp_high": 2621,
+  "seq.feature_clamp_low": 0
+ },
+ "coverage": {
+  "cim_audio": {
+   "v_branch": [
+    38,
+    38
+   ],
+   "v_expr": [
+    22,
+    22
+   ],
+   "v_line": [
+    7,
+    7
+   ],
+   "v_toggle": [
+    390,
+    524
+   ]
+  },
+  "pdm_dec": {
+   "v_branch": [
+    26,
+    26
+   ],
+   "v_line": [
+    14,
+    14
+   ],
+   "v_expr": [
+    22,
+    22
+   ],
+   "v_toggle": [
+    2556,
+    2568
+   ]
+  },
+  "cim_endpoint": {
+   "v_toggle": [
+    1709,
+    2112
+   ],
+   "v_line": [
+    36,
+    36
+   ],
+   "v_expr": [
+    86,
+    96
+   ],
+   "v_branch": [
+    51,
+    52
+   ]
+  },
+  "cim_engine": {
+   "v_branch": [
+    36,
+    38
+   ],
+   "v_expr": [
+    77,
+    78
+   ],
+   "v_toggle": [
+    2817,
+    2854
+   ],
+   "v_line": [
+    22,
+    22
+   ]
+  },
+  "cim_fe": {
+   "v_branch": [
+    95,
+    98
+   ],
+   "v_line": [
+    64,
+    65
+   ],
+   "v_expr": [
+    76,
+    76
+   ],
+   "v_toggle": [
+    1697,
+    1904
+   ]
+  },
+  "cim_log2fix16": {
+   "v_toggle": [
+    318,
+    322
+   ],
+   "v_line": [
+    4,
+    4
+   ],
+   "v_branch": [
+    10,
+    10
+   ],
+   "v_expr": [
+    4,
+    4
+   ]
+  },
+  "cim_seq": {
+   "v_line": [
+    85,
+    85
+   ],
+   "v_expr": [
+    156,
+    158
+   ],
+   "v_branch": [
+    195,
+    200
+   ],
+   "v_toggle": [
+    5023,
+    5340
+   ]
+  },
+  "mfcc_ded": {
+   "v_toggle": [
+    2074,
+    2288
+   ],
+   "v_line": [
+    41,
+    42
+   ],
+   "v_expr": [
+    49,
+    49
+   ],
+   "v_branch": [
+    60,
+    60
+   ]
+  }
+ },
+ "totals": {
+  "v_branch": [
+   511,
+   522
+  ],
+  "v_expr": [
+   492,
+   505
+  ],
+  "v_line": [
+   273,
+   275
+  ],
+  "v_toggle": [
+   16584,
+   17912
+  ]
+ },
+ "uncovered": [
+  {
+   "module": "cim_endpoint",
+   "line": 442,
+   "text": "else if (seq_bmax_take) blk_max <= samp_wr ? obi_req_i.wdata[15:0] : 16'h8000;"
+  },
+  {
+   "module": "cim_engine",
+   "line": 71,
+   "text": "if (b == 5'd0) return 5'd1;"
+  },
+  {
+   "module": "cim_engine",
+   "line": 72,
+   "text": "if (b > 5'(XB)) return 5'(XB);"
+  },
+  {
+   "module": "cim_fe",
+   "line": 349,
+   "text": "S_P1: if (eng_ready_i) state <= S_W1;"
+  },
+  {
+   "module": "cim_fe",
+   "line": 366,
+   "text": "S_P3: if (eng_ready_i) state <= S_W3;"
+  },
+  {
+   "module": "cim_fe",
+   "line": 417,
+   "text": "S_PM: if (eng_ready_i) state <= S_WM;"
+  },
+  {
+   "module": "cim_fe",
+   "line": 444,
+   "text": "default: state <= S_IDLE;"
+  },
+  {
+   "module": "cim_seq",
+   "line": 143,
+   "text": "if (t > 27'sd127) return 8'h7F;"
+  },
+  {
+   "module": "cim_seq",
+   "line": 144,
+   "text": "if (t < -27'sd128) return 8'h80;"
+  },
+  {
+   "module": "cim_seq",
+   "line": 408,
+   "text": "end else if (wp_frame_q) begin"
+  },
+  {
+   "module": "cim_seq",
+   "line": 482,
+   "text": "if (rb_v) fb[rb_k] <= ($signed(rq_t) > 13'sd127) ? 8'h7F : ($signed(rq_t) < -13'sd128) ? 8'h80 : rq_t[7:0];"
+  },
+  {
+   "module": "cim_seq",
+   "line": 828,
+   "text": "else if (pop && ((tq_cnt == 3'd0) || (d_rem > 5'd1))) err_q <= 1'b1;"
+  },
+  {
+   "module": "mfcc_ded",
+   "line": 362,
+   "text": "default: state <= S_IDLE;"
+  }
+ ],
+ "failures": []
+}
