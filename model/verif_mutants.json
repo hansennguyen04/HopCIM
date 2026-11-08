@@ -218,12 +218,146 @@
    "first": [
     "rvalid_follows_gnt tb_cim_endpoint.dut.u_sva rvalid is not the cycle after gnt at 55000"
    ]
+  },
+  {
+   "name": "S: sign gate too wide (x < 64)",
+   "want": "seq.sign_gate_exact",
+   "caught": true,
+   "fails": [
+    "sign_gate_exact"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "sign_gate_exact tb_cim_seq.dut.i_seq.u_sva_s lane 0 gated a result that is not -128 at 358625000"
+   ]
+  },
+  {
+   "name": "S: sign gate ignores the zero point",
+   "want": "seq.sign_gate_exact",
+   "caught": true,
+   "fails": [
+    "sign_gate_exact"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "sign_gate_exact tb_cim_seq.dut.i_seq.u_sva_s lane 0 gated a result that is not -128 at 23778635000",
+    "sign_gate_exact tb_cim_seq.dut.i_seq.u_sva_s lane 1 gated a result that is not -128 at 23778635000"
+   ]
+  },
+  {
+   "name": "S: sign gate also in the FC layer",
+   "want": "seq.sign_gate_exact",
+   "caught": true,
+   "fails": [
+    "sign_gate_exact"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "sign_gate_exact tb_cim_seq.dut.i_seq.u_sva_s lane 1 gated a result that is not -128 at 5862905000"
+   ]
+  },
+  {
+   "name": "S: a gated result is not -128",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "S: lane 1 reads the even parameter bank",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "S: lanes take the wrong parity",
+   "want": "seq.lane_channel_parity",
+   "caught": true,
+   "fails": [
+    "lane_channel_parity"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "lane_channel_parity tb_cim_seq.dut.i_seq.u_sva_s lane 0 holds an odd channel at 354095000",
+    "lane_channel_parity tb_cim_seq.dut.i_seq.u_sva_s lane 1 holds an even channel at 354095000"
+   ]
+  },
+  {
+   "name": "S: the second result of a pair goes to the first one's byte lane",
+   "want": "seq.pair_writes_distinct_lanes",
+   "caught": true,
+   "fails": [
+    "pair_writes_distinct_lanes"
+   ],
+   "bench_pass": false,
+   "finished": true,
+   "first": [
+    "pair_writes_distinct_lanes tb_cim_seq.dut.i_seq.u_sva_s the two lanes write one ACT byte lane at 354095000"
+   ]
+  },
+  {
+   "name": "S: lane 1's ACT write dropped at one position",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "S: L8 written to ACT in full runs",
+   "want": "seq.l8_act_only_when_stopped_after_l8",
+   "caught": true,
+   "fails": [
+    "l8_act_only_when_stopped_after_l8"
+   ],
+   "bench_pass": true,
+   "finished": true,
+   "first": [
+    "l8_act_only_when_stopped_after_l8 tb_cim_seq.dut.i_seq.u_sva_s L8 written to ACT in a full run at 5817085000"
+   ]
+  },
+  {
+   "name": "S: L8 not written even when the run stops after it",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "S: two results drained, three counted",
+   "want": "bench",
+   "caught": true,
+   "fails": [],
+   "bench_pass": false,
+   "finished": true,
+   "first": []
   }
  ],
  "equivalent": [
   {
    "name": "sequencer issue ignores ready",
    "want": "engine.start_only_when_ready",
+   "caught": false,
+   "fails": [],
+   "bench_pass": true,
+   "finished": true,
+   "first": []
+  },
+  {
+   "name": "S: no drain pacing with two lanes",
+   "want": "seq.results_drained_before_pop",
    "caught": false,
    "fails": [],
    "bench_pass": true,

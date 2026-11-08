@@ -1,5 +1,5 @@
 diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
-index f645e94..c9f0521 100644
+index f645e94..f445378 100644
 --- a/core-v-mini-mcu.core
 +++ b/core-v-mini-mcu.core
 @@ -93,6 +93,7 @@ filesets:
@@ -10,7 +10,7 @@ index f645e94..c9f0521 100644
      files:
      - hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
      file_type: systemVerilogSource
-@@ -270,6 +271,37 @@ parameters:
+@@ -270,6 +271,53 @@ parameters:
        HLS) and pulls in epfl:ip:dot_product -- so without the flag,
        building/simulating X-HEEP never requires Vitis HLS to be installed.
      default: false
@@ -45,19 +45,36 @@ index f645e94..c9f0521 100644
 +      the lowest clock with a 1.024 MHz PDM clock at which every hop is still processed in time.
 +      Enable with `--flag use_cim_mic5` in addition to `--flag use_cim_mic`.
 +    default: false
++  CIM_SEQ_S:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM: the baseline S in the HopCIM sequencer (cim_endpoint SEQ_S): sign-gated
++      requantisation, a second requantisation lane, no L8 write to ACT. Enable with `--flag use_cim_s`.
++    default: false
++  CIM_MIC_4M096:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM_MIC and CIM_SEQ_S: a 4.096 MHz system clock and PDM clock divider 4 (1.024 MHz PDM
++      clock, 16 kHz audio exactly). The MMCM makes 8.192 MHz (no MMCM output divider gives 4.096 MHz
++      from 100 MHz) and a BUFGCE passes every second edge. Enable with `--flag use_cim_mic4` in addition
++      to `--flag use_cim_mic` and `--flag use_cim_s`.
++    default: false
  
  scripts:
    # Build utils
-@@ -361,6 +393,8 @@ targets:
+@@ -361,6 +409,9 @@ targets:
      - COMMON_CELLS_ASSERTS_OFF
      - ASSERTS_OFF
      - use_hls_example ? (USE_HLS_EXAMPLE=true)
 +    - use_cim ? (USE_CIM=true)
 +    - use_cim_ded ? (CIM_FE_DED=true)
++    - use_cim_s ? (CIM_SEQ_S=true)
      tools:
        modelsim:
          vlog_options:
-@@ -481,6 +515,10 @@ targets:
+@@ -481,6 +532,12 @@ targets:
      - FPGA_SYNTHESIS=true
      - FPGA_NEXYS=true
      - NO_DDR_CLK_PORTS=true
@@ -65,6 +82,8 @@ index f645e94..c9f0521 100644
 +    - use_cim_ded ? (CIM_FE_DED=true)
 +    - use_cim_mic ? (USE_CIM_MIC=true)
 +    - use_cim_mic5 ? (CIM_MIC_5M12=true)
++    - use_cim_s ? (CIM_SEQ_S=true)
++    - use_cim_mic4 ? (CIM_MIC_4M096=true)
      tools:
        vivado:
          part: xc7a100tcsg324-1
@@ -1108,10 +1127,10 @@ index 15d3577..b0442c1 100644
  set_property -dict { PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports { i2s_ws_io }];
  set_property -dict { PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports { i2s_sd_rx_io }];
 diff --git a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
-index 0636329..33b1b35 100644
+index 0636329..0b4ca4d 100644
 --- a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
 +++ b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
-@@ -40,9 +40,23 @@ filesets:
+@@ -40,9 +40,28 @@ filesets:
    ip-fpga-nexys:
      files:
      - scripts/nexys/generate_sram.tcl
@@ -1132,10 +1151,15 @@ index 0636329..33b1b35 100644
 +    - scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
 +    file_type: tclSource
 +
++  ip-fpga-nexys-clk8m192:                            # HopCIM live audio at 4.096 MHz (use_cim_mic4): 8.192 MHz, halved by a BUFGCE
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
++    file_type: tclSource
++
    ip-fpga-zcu104:
      files:
      - scripts/zcu104/generate_sram.tcl
-@@ -81,6 +95,11 @@ filesets:
+@@ -81,6 +100,11 @@ filesets:
      - constraints/common/sync.xdc
      file_type: xdc
  
@@ -1147,23 +1171,52 @@ index 0636329..33b1b35 100644
    xdc-fpga-pynq-z2:
      files:
      - constraints/pynq-z2/pin_assign.xdc
-@@ -154,7 +173,11 @@ targets:
+@@ -154,7 +178,12 @@ targets:
      - target_pynq-z2 ? (xdc-fpga-pynq-z2)
      - target_pynq-z2 ? (tcl-fpga-ps-utils)
      - target_nexys-a7-100t ? (ip-fpga-nexys)
 +    - target_nexys-a7-100t ? (!use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15)))
-+    - target_nexys-a7-100t ? (use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15m36)))
++    - target_nexys-a7-100t ? (use_cim_mic ? (!use_cim_mic5 ? (!use_cim_mic4 ? (ip-fpga-nexys-clk15m36))))
 +    - target_nexys-a7-100t ? (use_cim_mic5 ? (ip-fpga-nexys-clk5m12))
++    - target_nexys-a7-100t ? (use_cim_mic4 ? (ip-fpga-nexys-clk8m192))
      - target_nexys-a7-100t ? (xdc-fpga-nexys)
 +    - use_bscane_xilinx ? (xdc-fpga-bscan)
      - target_zcu104 ? (ip-fpga-zcu104)
      - target_zcu104 ? (xdc-fpga-zcu104)
      - target_zcu102 ? (ip-fpga-zcu102)
 diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
-index ca0dbcd..8c335ac 100644
+index ca0dbcd..e6371b5 100644
 --- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
 +++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
-@@ -595,6 +595,26 @@ module xilinx_core_v_mini_mcu_wrapper
+@@ -329,10 +329,27 @@ module xilinx_core_v_mini_mcu_wrapper
+       .clk_out1_0(clk_gen)
+   );
+ `elsif FPGA_NEXYS
++`ifdef CIM_MIC_4M096
++  // 4.096 MHz: no MMCM output divider reaches it from 100 MHz (only CLKOUT0 divides fractionally, and
++  // 4.096 MHz needs 156.25 > 128), so the MMCM makes 8.192 MHz without an output buffer, a BUFGCE passes
++  // every second rising edge, and a parallel BUFG clocks the enable's toggle. The MMCM output must not go
++  // through a BUFG first: X-HEEP's own BUFGMUX cascades on the system clock would then be one level too
++  // deep to place. Timing is analysed at 8.192 MHz, which is stricter.
++  wire clk_8m192_raw, clk_8m192;
++  logic clk_half_ce = 1'b0;
++  xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
++      .clk_100MHz(clk_i),
++      .clk_out1_0(clk_8m192_raw)
++  );
++  BUFG bufg_8m192_i (.I(clk_8m192_raw), .O(clk_8m192));
++  always_ff @(posedge clk_8m192) clk_half_ce <= !clk_half_ce;
++  BUFGCE bufgce_4m096_i (.I(clk_8m192_raw), .CE(clk_half_ce), .O(clk_gen));
++`else
+   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
+       .clk_100MHz(clk_i),
+       .clk_out1_0(clk_gen)
+   );
++`endif
+ `else  // FPGA PYNQ-Z2
+   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
+       .clk_125MHz(clk_i),
+@@ -595,6 +612,26 @@ module xilinx_core_v_mini_mcu_wrapper
    xheep_obi_rsp_t [1:0] dotprod_gmem_obi_rsp;
  `endif
  
@@ -1190,7 +1243,7 @@ index ca0dbcd..8c335ac 100644
    x_heep_system #(
  `ifdef USE_HLS_EXAMPLE
        .EXT_XBAR_NMASTER(2)
-@@ -602,7 +622,11 @@ module xilinx_core_v_mini_mcu_wrapper
+@@ -602,7 +639,11 @@ module xilinx_core_v_mini_mcu_wrapper
    ) x_heep_system_i (
        .hart_id_i('0),
        .xheep_instance_id_i('0),
@@ -1202,7 +1255,7 @@ index ca0dbcd..8c335ac 100644
        .xif_compressed_if(ext_if),
        .xif_issue_if(ext_if),
        .xif_commit_if(ext_if),
-@@ -667,6 +691,21 @@ module xilinx_core_v_mini_mcu_wrapper
+@@ -667,6 +708,21 @@ module xilinx_core_v_mini_mcu_wrapper
        .ext_dma_write_resp_i('0),
        .ext_dma_addr_req_o(),
        .ext_dma_addr_resp_i('0),
@@ -1224,7 +1277,7 @@ index ca0dbcd..8c335ac 100644
  `else
        .ext_xbar_master_req_i('0),
        .ext_xbar_master_resp_o(),
-@@ -772,6 +811,10 @@ module xilinx_core_v_mini_mcu_wrapper
+@@ -772,6 +828,10 @@ module xilinx_core_v_mini_mcu_wrapper
        .spi2_sck_io(spi2_sck_o),
        .pdm2pcm_clk_io,
        .pdm2pcm_pdm_io,
@@ -1235,7 +1288,7 @@ index ca0dbcd..8c335ac 100644
        .i2s_sck_io(i2s_sck_io),
        .i2s_ws_io(i2s_ws_io),
        .i2s_sd_rx_io(i2s_sd_rx_io),
-@@ -808,6 +851,36 @@ module xilinx_core_v_mini_mcu_wrapper
+@@ -808,6 +868,50 @@ module xilinx_core_v_mini_mcu_wrapper
        .gmem_b_obi_rsp_i(dotprod_gmem_obi_rsp[1])
    );
  `endif
@@ -1247,10 +1300,24 @@ index ca0dbcd..8c335ac 100644
 +  $error("CIM_MIC_5M12 (--flag use_cim_mic5) needs USE_CIM_MIC (--flag use_cim_mic)");
 +`endif
 +`endif
++`ifdef CIM_MIC_4M096
++`ifndef USE_CIM_MIC
++  $error("CIM_MIC_4M096 (--flag use_cim_mic4) needs USE_CIM_MIC (--flag use_cim_mic)");
++`endif
++`ifndef CIM_SEQ_S
++  $error("CIM_MIC_4M096 (--flag use_cim_mic4) needs CIM_SEQ_S (--flag use_cim_s): R6b overruns at 4.096 MHz");
++`endif
++`endif
 +  cim_endpoint #(
 +      .TILES (128),
 +`ifdef CIM_MIC_5M12
 +      .PDM_CLKDIV(5),                                 // 5.12 MHz system clock: PDM clock 1.024 MHz
++`endif
++`ifdef CIM_MIC_4M096
++      .PDM_CLKDIV(4),                                 // 4.096 MHz system clock: PDM clock 1.024 MHz
++`endif
++`ifdef CIM_SEQ_S
++      .SEQ_S(1'b1),                                   // baseline S in the sequencer
 +`endif
 +`ifdef CIM_FE_DED
 +      .FE_DED(1'b1)                                   // baseline B3: dedicated front-end

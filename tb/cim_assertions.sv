@@ -69,13 +69,14 @@ module sva_engine #(parameter int unsigned TW = 7) (
 endmodule
 
 // ---------------------------------------------------------------------- the sequencer
-module sva_seq (
+module sva_seq #(parameter bit RQ_2L = 1'b0) (
     input logic clk_i, input logic rst_ni, input logic busy_o, input logic done_o, input logic err_o, input logic [3:0] lay,
     input logic pop, input logic [2:0] tq_cnt, input logic [4:0] d_rem, input logic issue, input logic g2_v, input logic g2_b,
     input logic [1:0] bbusy, input logic [2:0] bcnt0, input logic [2:0] bcnt1, input logic g_req, input logic g_b, input logic [5:0] g_k,
     input logic act_we, input logic [11:0] act_wa, input logic [6:0] d_p, input logic [5:0] d_c, input logic d_rem_nz,
     input logic [5:0] w_row, input logic [5:0] w_new, input logic [5:0] hptr, input logic [3:0] ws, input logic wp_on,
-    input logic net_on, input logic go_o, input logic eng_ready_i, input logic [6:0] g_p, input logic q0_v, input logic q4_v
+    input logic net_on, input logic go_o, input logic eng_ready_i, input logic [6:0] g_p, input logic q0_v, input logic q4_v,
+    input logic r0_v, input logic r4_v
 );
   localparam int N = 13;
   longint unsigned active[N] = '{default: 0}, fail[N] = '{default: 0};
@@ -92,7 +93,7 @@ module sva_seq (
       if (busy_o) `CHK(0, !err_o, "the sequencer's error flag is set")
       if (busy_o) `CHK(1, lay <= 4'd9, "layer out of range")
       if (pop) `CHK(2, tq_cnt != 3'd0, "a result without a tag")
-      if (pop) `CHK(3, d_rem <= 5'd1, "new results before the previous ones drained")
+      if (pop) `CHK(3, d_rem <= (RQ_2L ? 5'd2 : 5'd1), "new results before the previous ones drained")
       if (busy_o) `CHK(4, tq_cnt <= 3'd4, "tag queue overflow")
       if (g_req && g_k == 6'd0) `CHK(5, !bbusy[g_b] && ((g_b ? bcnt1 : bcnt0) == 3'd0), "gather into a bank still in use")
       if (go_o) `CHK(6, eng_ready_i, "go while the engine is not ready")
@@ -102,8 +103,43 @@ module sva_seq (
       if (busy_o) `CHK(10, !(wp_on && net_on), "window path and network at once")
       if (done_o) `CHK(11, busy_q && !busy_o, "done without the end of a run")
       if (busy_o && !busy_q) rq_in <= 0;
-      else rq_in <= rq_in + longint'(q0_v) - longint'(q4_v);
+      else rq_in <= rq_in + longint'(q0_v) + longint'(r0_v) - longint'(q4_v) - longint'(r4_v);
       if (done_o) `CHK(12, rq_in == 0, "a requantisation lost or duplicated")
+    end
+  end
+  final for (int i = 0; i < N; i++) $display("ASSERT seq.%s active %0d fail %0d", NAME[i], active[i], fail[i]);
+endmodule
+
+// ---------------------------------------------------------------------- the sequencer's baseline-S options
+// sign_gate_exact recomputes the full requantisation of every gated result and must get -128, so it
+// checks the claim the gate rests on, not the gate's own condition.
+module sva_seq_s #(parameter bit RQ_2L = 1'b0, parameter bit NO_L8A = 1'b0) (
+    input logic clk_i, input logic rst_ni, input logic [3:0] lay, input logic [3:0] stop_q, input logic [7:0] zact_q,
+    input logic q1_v, input logic q1_g, input logic signed [24:0] q1_x, input logic [30:0] qm_q, input logic [3:0] q1_e,
+    input logic r1_v, input logic r1_g, input logic signed [24:0] r1_x, input logic [30:0] qm1_q, input logic [3:0] r1_e,
+    input logic q4_v, input logic r4_v, input logic [5:0] q4_c, input logic [5:0] r4_c, input logic [2:0] q4_cl, input logic [2:0] r4_cl,
+    input logic [6:0] q4_p, input logic [6:0] r4_p, input logic act_we, input logic act_we1
+);
+  localparam int N = 4;
+  longint unsigned active[N] = '{default: 0}, fail[N] = '{default: 0};
+  localparam string NAME[N] = '{"sign_gate_exact", "pair_writes_distinct_lanes", "lane_channel_parity", "l8_act_only_when_stopped_after_l8"};
+
+  // TFLite: clamp(rdbp(srdhm(x, qm), e) + zout), with 64-bit integers
+  function automatic logic [7:0] rq_ref(input logic signed [24:0] x, input logic [30:0] qm, input logic [3:0] e, input logic [7:0] zo);
+    longint r = (longint'(x) * longint'({1'b0, qm}) + (64'sd1 <<< 30)) >>> 31;
+    if (e != 4'd0) r = (r + (64'sd1 <<< (e - 1)) - ((r < 0) ? 64'sd1 : 64'sd0)) >>> e;
+    r = r + longint'(signed'(zo));
+    return (r > 127) ? 8'h7F : (r < -128) ? 8'h80 : 8'(r);
+  endfunction
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (rst_ni) begin
+      if (q1_v && q1_g) `CHK(0, lay != 4'd9 && rq_ref(q1_x, qm_q, q1_e, zact_q) == 8'h80, "lane 0 gated a result that is not -128")
+      if (r1_v && r1_g) `CHK(0, lay != 4'd9 && rq_ref(r1_x, qm1_q, r1_e, zact_q) == 8'h80, "lane 1 gated a result that is not -128")
+      if (act_we && act_we1) `CHK(1, q4_cl != r4_cl && q4_p == r4_p, "the two lanes write one ACT byte lane")
+      if (RQ_2L && q4_v) `CHK(2, !q4_c[0], "lane 0 holds an odd channel")
+      if (RQ_2L && r4_v) `CHK(2, r4_c[0], "lane 1 holds an even channel")
+      if (NO_L8A && (act_we || act_we1) && lay == 4'd8) `CHK(3, stop_q == 4'd9, "L8 written to ACT in a full run")
     end
   end
   final for (int i = 0; i < N; i++) $display("ASSERT seq.%s active %0d fail %0d", NAME[i], active[i], fail[i]);
@@ -289,9 +325,12 @@ bind cim_engine sva_engine #(.TW(TW)) u_sva (.clk_i, .rst_ni, .start_i, .ready_o
     .x_we_i, .xw_we_i, .xw_bank_i, .xw_mask_i, .w_we_i, .w_tile_i);
 `endif
 `ifdef SVA_SOC
-bind cim_seq sva_seq u_sva (.clk_i, .rst_ni, .busy_o, .done_o, .err_o, .lay, .pop, .tq_cnt, .d_rem, .issue, .g2_v, .g2_b, .bbusy,
+bind cim_seq sva_seq #(.RQ_2L(RQ_2L)) u_sva (.clk_i, .rst_ni, .busy_o, .done_o, .err_o, .lay, .pop, .tq_cnt, .d_rem, .issue, .g2_v, .g2_b, .bbusy,
     .bcnt0(bcnt[0]), .bcnt1(bcnt[1]), .g_req, .g_b, .g_k, .act_we, .act_wa, .d_p, .d_c, .d_rem_nz(d_rem != 5'd0), .w_row, .w_new, .hptr,
-    .ws(4'(ws)), .wp_on, .net_on, .go_o, .eng_ready_i, .g_p, .q0_v, .q4_v);
+    .ws(4'(ws)), .wp_on, .net_on, .go_o, .eng_ready_i, .g_p, .q0_v, .q4_v, .r0_v, .r4_v);
+bind cim_seq sva_seq_s #(.RQ_2L(RQ_2L), .NO_L8A(NO_L8A)) u_sva_s (.clk_i, .rst_ni, .lay, .stop_q, .zact_q, .q1_v, .q1_g, .q1_x, .qm_q, .q1_e,
+    .r1_v, .r1_g, .r1_x, .qm1_q, .r1_e, .q4_v, .r4_v, .q4_c(q4_d.c), .r4_c(r4_d.c), .q4_cl(q4_d.cl), .r4_cl(r4_d.cl), .q4_p(q4_d.p),
+    .r4_p(r4_d.p), .act_we, .act_we1);
 `endif
 `ifdef SVA_AUDIO
 bind cim_audio sva_audio #(.CLKDIV(CLKDIV)) u_sva (.clk_i, .rst_ni, .en_i, .sv, .hop_end, .hs, .hc(3'(hc)), .kcnt, .net_km1_i, .ndec_o, .nhop_o,

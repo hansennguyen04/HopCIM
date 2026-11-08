@@ -1,0 +1,11 @@
+HopCIM live: listening at 16 kHz (system clock 15360000 Hz)
+LEDs: LD10-LD13 keyword 1 (down) .. 10 (yes), LD14 not silence, LD0 blinks at 1 Hz
+microphone: 1024 samples, min -127 max 123 mean 1 rms 43
+[10 s] 500 decisions (0 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+    classes: _unknown_ 500
+[20 s] 1000 decisions (6 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+    classes: _unknown_ 500
+[30 s] 1500 decisions (12 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+    classes: _unknown_ 500
+[40 s] 2000 decisions (18 missed while printing), 0 keywords, overrun 0; CPU-active per decision 263 cycles (max 289)
+    classes: _unknown_ 500

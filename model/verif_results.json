@@ -8,221 +8,248 @@
   "log2": true,
   "mic_cim_div15_k1": true,
   "mic_cim_div15_k16": true,
+  "mic_cim_div15_k1_s": true,
   "mic_cim_div15_k2": true,
   "mic_cim_div15_k3": true,
   "mic_cim_div15_k4": true,
   "mic_cim_div15_k5": true,
+  "mic_cim_div4_k1_s": true,
+  "mic_cim_div4_k2_s": true,
+  "mic_cim_div4_k4_s": true,
   "mic_cim_div5_k1": true,
+  "mic_cim_div5_k1_s": true,
   "mic_cim_div5_k2": true,
   "mic_cim_div5_k4": true,
   "mic_ded_div15_k1": true,
   "mic_ded_div15_k2": true,
   "mic_ded_div15_k4": true,
+  "mic_ded_div4_k1_s": true,
   "mic_ded_div5_k1": true,
   "mic_ded_div5_k4": true,
   "pdm": true,
   "pdm_sat": true,
   "seq_cim": true,
+  "seq_cim_s": true,
   "seq_ded": true,
+  "seq_ded_s": true,
   "stream_cim": true,
   "stream_cim_edge": true,
+  "stream_cim_s": true,
+  "stream_cim_s_edge": true,
   "stream_ded": true,
-  "stream_ded_edge": true
+  "stream_ded_edge": true,
+  "stream_ded_s": true
  },
  "assertions": {
   "audio.decision_count_steps": {
-   "active": 763,
+   "active": 1246,
    "fail": 0
   },
   "audio.decision_only_on_network_hop": {
-   "active": 763,
+   "active": 1246,
    "fail": 0
   },
   "audio.fe_go_when_allowed": {
-   "active": 2921,
+   "active": 3913,
    "fail": 0
   },
   "audio.hop_count_steps": {
-   "active": 2951,
+   "active": 3951,
    "fail": 0
   },
   "audio.hop_is_320_samples": {
-   "active": 2952,
+   "active": 3952,
    "fail": 0
   },
   "audio.pending_after_decision": {
-   "active": 763,
+   "active": 1246,
    "fail": 0
   },
   "audio.row_in_range": {
-   "active": 652505568,
+   "active": 771881333,
    "fail": 0
   },
   "audio.sample_period": {
-   "active": 948339,
+   "active": 1270355,
    "fail": 0
   },
   "audio.seq_go_when_allowed": {
-   "active": 2951,
+   "active": 3951,
    "fail": 0
   },
   "audio.stride_counter_bounded": {
-   "active": 652505568,
+   "active": 771881333,
    "fail": 0
   },
   "audio.wptr_follows_samples": {
-   "active": 948399,
+   "active": 1270431,
    "fail": 0
   },
   "endpoint.cpu_go_not_on_owned_engine": {
-   "active": 26,
+   "active": 34,
    "fail": 0
   },
   "endpoint.irq_only_when_enabled": {
-   "active": 23460,
+   "active": 39313,
    "fail": 0
   },
   "endpoint.irq_when_enabled_and_pending": {
-   "active": 23460,
+   "active": 39313,
    "fail": 0
   },
   "endpoint.no_gnt_without_req": {
-   "active": 5555953,
+   "active": 8068406,
    "fail": 0
   },
   "endpoint.one_engine_master_seq_fe": {
-   "active": 9267289,
+   "active": 16003005,
    "fail": 0
   },
   "endpoint.rvalid_follows_gnt": {
-   "active": 5555953,
+   "active": 8068406,
    "fail": 0
   },
   "endpoint.seq_fe_not_with_cim_fe": {
-   "active": 107119002,
+   "active": 169420111,
    "fail": 0
   },
   "engine.busy_covers_pass": {
-   "active": 100496546,
+   "active": 162287031,
    "fail": 0
   },
   "engine.done_at_d_plus_5": {
-   "active": 9270316,
+   "active": 16006040,
    "fail": 0
   },
   "engine.done_is_a_pulse": {
-   "active": 18540632,
+   "active": 32012080,
    "fail": 0
   },
   "engine.input_bank_stable_port1": {
-   "active": 3250629,
+   "active": 4888391,
    "fail": 0
   },
   "engine.input_bank_stable_port2": {
-   "active": 63624191,
+   "active": 109859875,
    "fail": 0
   },
   "engine.no_done_without_pass": {
-   "active": 9270316,
+   "active": 16006040,
    "fail": 0
   },
   "engine.ready_low_d_minus_1": {
-   "active": 669904416,
+   "active": 822888354,
    "fail": 0
   },
   "engine.start_only_when_ready": {
-   "active": 9270316,
+   "active": 16006040,
    "fail": 0
   },
   "engine.tile_not_written_in_pass": {
-   "active": 387584,
+   "active": 577792,
    "fail": 0
   },
   "frontend.base_stable_while_busy": {
-   "active": 25876868,
+   "active": 35933192,
    "fail": 0
   },
   "frontend.done_ends_busy": {
-   "active": 3816,
+   "active": 5259,
    "fail": 0
   },
   "frontend.frame_time_bounded": {
-   "active": 25880684,
+   "active": 35938451,
    "fail": 0
   },
   "frontend.reads_inside_its_frame": {
-   "active": 25880684,
+   "active": 35938451,
    "fail": 0
   },
   "pdm.pdm_clock_duty_40_60": {
-   "active": 62746356,
+   "active": 83356649,
    "fail": 0
   },
   "pdm.pdm_clock_period": {
-   "active": 62746339,
+   "active": 83356630,
    "fail": 0
   },
   "pdm.valid_is_a_pulse": {
-   "active": 1960812,
+   "active": 2604876,
    "fail": 0
   },
   "seq.block_slot_in_range": {
-   "active": 3591412,
+   "active": 5580775,
    "fail": 0
   },
   "seq.done_ends_busy": {
-   "active": 3480,
+   "active": 5203,
    "fail": 0
   },
   "seq.gather_starts_on_free_bank": {
-   "active": 6824318,
+   "active": 11808914,
    "fail": 0
   },
   "seq.go_only_when_ready": {
-   "active": 9167293,
+   "active": 15851841,
+   "fail": 0
+  },
+  "seq.l8_act_only_when_stopped_after_l8": {
+   "active": 24000,
+   "fail": 0
+  },
+  "seq.lane_channel_parity": {
+   "active": 33654064,
    "fail": 0
   },
   "seq.layer_in_range": {
-   "active": 107119002,
+   "active": 169420111,
    "fail": 0
   },
   "seq.no_error_flag": {
-   "active": 107119002,
+   "active": 169420111,
    "fail": 0
   },
   "seq.one_phase_at_a_time": {
-   "active": 107119002,
+   "active": 169420111,
+   "fail": 0
+  },
+  "seq.pair_writes_distinct_lanes": {
+   "active": 25903000,
    "fail": 0
   },
   "seq.pop_has_a_tag": {
-   "active": 9098693,
+   "active": 15744539,
    "fail": 0
   },
   "seq.position_in_range": {
-   "active": 87350316,
+   "active": 121868404,
    "fail": 0
   },
   "seq.requant_keeps_count": {
-   "active": 3480,
+   "active": 5203,
    "fail": 0
   },
   "seq.results_drained_before_pop": {
-   "active": 9098693,
+   "active": 15744539,
    "fail": 0
   },
   "seq.row_in_range": {
-   "active": 3591412,
+   "active": 5580775,
+   "fail": 0
+  },
+  "seq.sign_gate_exact": {
+   "active": 23865844,
    "fail": 0
   },
   "seq.tag_queue_bounded": {
-   "active": 107119002,
+   "active": 169420111,
    "fail": 0
   }
  },
  "cover": {
-  "seq.requant_clamp_high": 164672,
-  "seq.requant_clamp_low": 41923834,
-  "seq.feature_clamp_high": 2621,
+  "seq.requant_clamp_high": 450669,
+  "seq.requant_clamp_low": 42363294,
+  "seq.feature_clamp_high": 4133,
   "seq.feature_clamp_low": 0
  },
  "coverage": {
@@ -254,8 +281,8 @@
     14
    ],
    "v_expr": [
-    22,
-    22
+    26,
+    26
    ],
    "v_toggle": [
     2556,
@@ -264,7 +291,7 @@
   },
   "cim_endpoint": {
    "v_toggle": [
-    1709,
+    1711,
     2112
    ],
    "v_line": [
@@ -335,21 +362,21 @@
    ]
   },
   "cim_seq": {
-   "v_line": [
-    85,
-    85
-   ],
-   "v_expr": [
-    156,
-    158
+   "v_toggle": [
+    6030,
+    6348
    ],
    "v_branch": [
-    195,
-    200
+    241,
+    246
    ],
-   "v_toggle": [
-    5023,
-    5340
+   "v_line": [
+    91,
+    91
+   ],
+   "v_expr": [
+    202,
+    205
    ]
   },
   "mfcc_ded": {
@@ -373,26 +400,26 @@
  },
  "totals": {
   "v_branch": [
-   511,
-   522
+   557,
+   568
   ],
   "v_expr": [
-   492,
-   505
+   542,
+   556
   ],
   "v_line": [
-   273,
-   275
+   279,
+   281
   ],
   "v_toggle": [
-   16584,
-   17912
+   17593,
+   18920
   ]
  },
  "uncovered": [
   {
    "module": "cim_endpoint",
-   "line": 442,
+   "line": 444,
    "text": "else if (seq_bmax_take) blk_max <= samp_wr ? obi_req_i.wdata[15:0] : 16'h8000;"
   },
   {
@@ -427,28 +454,28 @@
   },
   {
    "module": "cim_seq",
-   "line": 143,
+   "line": 156,
    "text": "if (t > 27'sd127) return 8'h7F;"
   },
   {
    "module": "cim_seq",
-   "line": 144,
+   "line": 157,
    "text": "if (t < -27'sd128) return 8'h80;"
   },
   {
    "module": "cim_seq",
-   "line": 408,
+   "line": 421,
    "text": "end else if (wp_frame_q) begin"
   },
   {
    "module": "cim_seq",
-   "line": 482,
+   "line": 495,
    "text": "if (rb_v) fb[rb_k] <= ($signed(rq_t) > 13'sd127) ? 8'h7F : ($signed(rq_t) < -13'sd128) ? 8'h80 : rq_t[7:0];"
   },
   {
    "module": "cim_seq",
-   "line": 828,
-   "text": "else if (pop && ((tq_cnt == 3'd0) || (d_rem > 5'd1))) err_q <= 1'b1;"
+   "line": 853,
+   "text": "else if (pop && ((tq_cnt == 3'd0) || (d_rem > (RQ_2L ? 5'd2 : 5'd1)))) err_q <= 1'b1;"
   },
   {
    "module": "mfcc_ded",

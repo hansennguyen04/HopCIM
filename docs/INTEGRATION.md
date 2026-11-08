@@ -92,6 +92,9 @@ make app PROJECT=hopcim_live TARGET=nexys-a7-100t COMPILER_FLAGS=-DREFERENCE_CLO
 FOLLOW=1 ../board_run.sh sw/build/main.elf ../bitstreams/xheep_nexys_bscan_cim128mic.bit 60   # FOLLOW=1 prints the UART live
 # The same at the lowest real-time clock, 5.12 MHz (PDM divider 5): add --flag=use_cim_mic5 (build root build_mic5/core)
 # and build the firmware with -DREFERENCE_CLOCK_Hz=5120000 (bitstream xheep_nexys_bscan_cim128mic5.bit)
+# The baseline S (BASELINE_S.md): add --flag=use_cim_s (build root build_micks/core, bitstream xheep_nexys_bscan_cim128ks.bit);
+# its lowest real-time clock, 4.096 MHz: --flag=use_cim_s --flag=use_cim_mic4 (build root build_mic4s/core, bitstream
+# xheep_nexys_bscan_cim128mic4s.bit) and firmware with -DREFERENCE_CLOCK_Hz=4096000
 # Record 1.5 s of the microphone with the decisions made on it, and check them against the golden model:
 make app PROJECT=hopcim_micrec TARGET=nexys-a7-100t COMPILER_FLAGS=-DREFERENCE_CLOCK_Hz=15360000
 ../board_run.sh sw/build/main.elf ../bitstreams/xheep_nexys_bscan_cim128mic.bit 150
@@ -116,6 +119,8 @@ python3 hopcim/model/score_kwtest.py <the run's .uart.log>
 | `sw/device/target/nexys-a7-100t/x-heep.h` | `REFERENCE_CLOCK_Hz` can be overridden from the command line |
 | `tb/testharness.sv` | ties the endpoint's microphone input low |
 | `core-v-mini-mcu.core`, `core-v-mini-mcu-fpga.core`, the wrapper, `xilinx_generate_clk_wizard_5m12.tcl` | `use_cim_mic5`: 5.12 MHz (VCO = 100 MHz × 32 / 5, divided by 125) and the endpoint's `PDM_CLKDIV = 5` |
+| `core-v-mini-mcu.core`, the wrapper, `tb/testharness.sv` | `use_cim_s` (`CIM_SEQ_S`): the baseline S in the sequencer, the endpoint's `SEQ_S = 1` (`BASELINE_S.md`); on the FPGA and in the Verilator SoC |
+| `core-v-mini-mcu.core`, `core-v-mini-mcu-fpga.core`, the wrapper, `xilinx_generate_clk_wizard_8m192.tcl` | `use_cim_mic4` (`CIM_MIC_4M096`, needs `use_cim_mic` and `use_cim_s`): 4.096 MHz and `PDM_CLKDIV = 4`. No MMCM output divider reaches 4.096 MHz from 100 MHz (the fractional one, CLKOUT0, would need 156.25 > 128), so the MMCM makes 8.192 MHz (VCO 640 MHz, divided by 78.125) without an output buffer, and a BUFGCE in the wrapper passes every second rising edge; timing is analysed at 8.192 MHz |
 
 `hw/fpga/xheep_fpga_support/` is vendored in X-HEEP (`xheep_fpga_support.vendor.hjson`): the
 fileset change and the two clock scripts are edits in place. They need to go upstream, or into a

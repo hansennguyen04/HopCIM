@@ -30,11 +30,15 @@ module ec_seq (
     input logic clk_i, input logic run_i, input logic g_req_i, input logic [1:0] lt_i,
     input logic g_tv_i, input logic q0_v_i, input logic q4_v_i, input logic act_we_i,
     input logic [3:0] lay_i, input logic cp_v_i, input logic feat_we_i, input logic la_v_i,
-    input logic [3:0] ws_i, input logic ra_v_i, input logic prm_we_i, input logic go_i, input logic eng_ready_i
+    input logic [3:0] ws_i, input logic ra_v_i, input logic prm_we_i, input logic go_i, input logic eng_ready_i,
+    // the baseline S: lane 1 of the requantisation, the sign gate (both 0 in R6b)
+    input logic r0_v_i, input logic r4_v_i, input logic act_we1_i, input logic q1_v_i, input logic q1_g_i,
+    input logic r1_v_i, input logic r1_g_i
 );
   longint unsigned ws_cyc[16];
   longint unsigned g_lt[4], g_lt_tv[4];
   longint unsigned run_cyc = 0, q0 = 0, q4 = 0, act_w = 0, pool_up = 0, cp = 0, feat_w = 0, la = 0, ra = 0, prm = 0, passes = 0;
+  longint unsigned r0 = 0, mults = 0, gated = 0;
   always_ff @(posedge clk_i) begin
     ws_cyc[ws_i] <= ws_cyc[ws_i] + 1;
     if (run_i) run_cyc <= run_cyc + 1;
@@ -42,10 +46,13 @@ module ec_seq (
       g_lt[lt_i] <= g_lt[lt_i] + 1;
       if (g_tv_i) g_lt_tv[lt_i] <= g_lt_tv[lt_i] + 1;
     end
-    if (q0_v_i) q0 <= q0 + 1;
-    if (q4_v_i) q4 <= q4 + 1;
-    if (act_we_i) act_w <= act_w + 1;
-    if (q4_v_i && lay_i == 4'd8) pool_up <= pool_up + 1;
+    q0 <= q0 + longint'(q0_v_i) + longint'(r0_v_i);                    // requantisations, both lanes
+    q4 <= q4 + longint'(q4_v_i) + longint'(r4_v_i);
+    act_w <= act_w + longint'(act_we_i) + longint'(act_we1_i);
+    if (lay_i == 4'd8) pool_up <= pool_up + longint'(q4_v_i) + longint'(r4_v_i);
+    if (r0_v_i) r0 <= r0 + 1;
+    mults <= mults + longint'(q1_v_i && !q1_g_i) + longint'(r1_v_i && !r1_g_i);   // multiplies executed
+    gated <= gated + longint'(q1_v_i && q1_g_i) + longint'(r1_v_i && r1_g_i);
     if (cp_v_i) cp <= cp + 1;
     if (feat_we_i) feat_w <= feat_w + 1;
     if (la_v_i) la <= la + 1;
@@ -69,6 +76,11 @@ module ec_seq (
     $display("EC seq lraw_ring_reads %0d", la);
     $display("EC seq lmq_dct_requant %0d", ra);
     $display("EC seq passes %0d", passes);
+    if (r0 != 0 || gated != 0) begin                                   // only with the baseline S options
+      $display("EC seq requant_lane1 %0d", r0);
+      $display("EC seq requant_mults %0d", mults);
+      $display("EC seq requant_gated %0d", gated);
+    end
   end
 endmodule
 
@@ -143,7 +155,8 @@ bind cim_engine ec_engine #(.TW(TW)) u_ec (.clk_i(clk_i), .start_i(start_i), .re
     .xbits_i(xbits_i), .xw_we_i(xw_we_i), .xw_mask_i(xw_mask_i), .x_we_i(x_we_i), .w_we_i(w_we_i));
 bind cim_seq ec_seq u_ec (.clk_i(clk_i), .run_i(run), .g_req_i(g_req), .lt_i(2'(lt)), .g_tv_i(g_tv), .q0_v_i(q0_v),
     .q4_v_i(q4_v), .act_we_i(act_we), .lay_i(lay), .cp_v_i(cp_v), .feat_we_i(feat_we), .la_v_i(la_v), .ws_i(4'(ws)),
-    .ra_v_i(ra_v), .prm_we_i(prm_we_i), .go_i(go_o), .eng_ready_i(eng_ready_i));
+    .ra_v_i(ra_v), .prm_we_i(prm_we_i), .go_i(go_o), .eng_ready_i(eng_ready_i), .r0_v_i(r0_v), .r4_v_i(r4_v),
+    .act_we1_i(act_we1), .q1_v_i(q1_v), .q1_g_i(q1_g), .r1_v_i(r1_v), .r1_g_i(r1_g));
 bind cim_fe ec_fe u_ec (.clk_i(clk_i), .state_i(5'(state)), .sh_issue_i(sh_issue), .sh_zero_i(sh_zero),
     .s1_issue_i(s1_issue), .t2_v_i(t2_v), .g_v_i(g_v), .mph_i(mph), .start_i(start_i));
 bind mfcc_ded ec_ded u_ec (.clk_i(clk_i), .state_i(3'(state)), .we_i(we), .rd_v_i(rd_v), .sh_issue_i(sh_issue),

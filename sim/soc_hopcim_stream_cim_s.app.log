@@ -1,0 +1,134 @@
+$You are executing from: /home/hansen0411/APlus_Project/planenest/hw/x-heep
+USING VENV
+rm -f -r sw/build
+make[1]: Entering directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw'
+[1;32mINFO: Using RISCV_XHEEP from environment or command line: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14[0m
+Re-run cmake no build system arguments
+-- The ASM compiler identification is GNU
+-- Found assembler: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-gcc
+-- The C compiler identification is GNU 10.1.0
+-- The CXX compiler identification is GNU 10.1.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+[35mInternal application[m
+[33mCompiler flags:     -march=rv32imc     -w -O2 -g     -nostartfiles     -ffunction-sections     -DHOST_BUILD     -DON_CHIP     -DINTERNAL_CRTO     -DportasmHANDLE_INTERRUPT=vSystemIrqHandler       -mabi=ilp32[m
+[35mLinker file: /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/linker/link.ld[m
+-- [35mCLANG_LINKER_USE_LD = '0'
+-- [35mUsing GCC specific linker flags[m
+[32mRISCV_XHEEP env variable: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14
+[35mLib Folder RISCV-GCC: /home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14/riscv64-unknown-elf/lib[m
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build
+Build
+make -s -C build
+make[2]: Entering directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+make[3]: Entering directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+make[4]: Entering directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+Dependee "/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build/CMakeFiles/main.elf.dir/DependInfo.cmake" is newer than depender "/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build/CMakeFiles/main.elf.dir/depend.internal".
+Dependee "/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build/CMakeFiles/main.elf.dir/depend.internal".
+Scanning dependencies of target main.elf
+make[4]: Leaving directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+make[4]: Entering directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+[  2%] Building C object CMakeFiles/main.elf.dir/applications/hopcim_stream/main.c.obj
+[  5%] Building ASM object CMakeFiles/main.elf.dir/device/lib/crt/crt0.S.obj
+[  8%] Building ASM object CMakeFiles/main.elf.dir/device/lib/crt/vectors.S.obj
+[ 10%] Building C object CMakeFiles/main.elf.dir/device/bsp/w25q/w25q.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/bsp/w25q/w25q.c:58:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 13%] Building C object CMakeFiles/main.elf.dir/device/lib/base/memory.c.obj
+[ 16%] Building C object CMakeFiles/main.elf.dir/device/lib/base/mmio.c.obj
+[ 18%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/dma/dma.c.obj
+[ 21%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/fast_intr_ctrl/fast_intr_ctrl.c.obj
+[ 24%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/gpio/gpio.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/gpio/gpio.c:40:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 27%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/i2c/i2c.c.obj
+[ 29%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/i2s/i2s.c.obj
+[ 32%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/i2s_tx_sink/i2s_tx_sink.c.obj
+[ 35%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/im2col_spc/im2col.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/im2col_spc/im2col.h:22,
+                 from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/im2col_spc/im2col.c:12:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 37%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/pad_control/pad_control.c.obj
+[ 40%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/power_manager/power_manager.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/power_manager/power_manager.c:11:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 43%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/rv_plic/rv_plic.c.obj
+[ 45%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/rv_timer/rv_timer.c.obj
+[ 48%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/serial_link/serial_link.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/serial_link/serial_link.h:12,
+                 from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/drivers/serial_link/serial_link.c:3:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 51%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/serial_link/serial_link_xheep_wrapper_driver.c.obj
+[ 54%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/soc_ctrl/soc_ctrl.c.obj
+[ 56%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/spi_host/spi_host.c.obj
+[ 59%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/uart/uart.c.obj
+[ 62%] Building C object CMakeFiles/main.elf.dir/device/lib/drivers/w25q128jw_controller/w25q128jw_controller.c.obj
+[ 64%] Building C object CMakeFiles/main.elf.dir/device/lib/runtime/core_v_mini_mcu.c.obj
+[ 67%] Building C object CMakeFiles/main.elf.dir/device/lib/runtime/handler.c.obj
+[ 70%] Building C object CMakeFiles/main.elf.dir/device/lib/runtime/init.c.obj
+[ 72%] Building C object CMakeFiles/main.elf.dir/device/lib/runtime/syscalls.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/runtime/syscalls.c:37:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 75%] Building C object CMakeFiles/main.elf.dir/device/lib/sdk/dma/dma_sdk.c.obj
+[ 78%] Building C object CMakeFiles/main.elf.dir/device/lib/sdk/i2c/i2c_sdk.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/sdk/i2c/i2c_sdk.h:18,
+                 from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/sdk/i2c/i2c_sdk.c:10:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 81%] Building C object CMakeFiles/main.elf.dir/device/lib/sdk/spi/spi_sdk.c.obj
+[ 83%] Building C object CMakeFiles/main.elf.dir/device/lib/sdk/spi_slave/spi_slave_sdk.c.obj
+[ 86%] Building C object CMakeFiles/main.elf.dir/device/lib/sdk/timer/timer_sdk.c.obj
+In file included from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/sdk/timer/timer_sdk.h:21,
+                 from /home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/lib/sdk/timer/timer_sdk.c:12:
+/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/device/target/sim/x-heep.h:8:9: note: '#pragma message: the x-heep.h for SIMULATION is used'
+    8 | #pragma message ( "the x-heep.h for SIMULATION is used" )
+      |         ^~~~~~~
+[ 89%] Building ASM object CMakeFiles/main.elf.dir/device/lib/drivers/power_manager/power_manager_cpu_restore.S.obj
+[ 91%] Building ASM object CMakeFiles/main.elf.dir/device/lib/drivers/power_manager/power_manager_cpu_store.S.obj
+[ 94%] Building CXX object CMakeFiles/main.elf.dir/device/lib/runtime/heap.cpp.obj
+[ 97%] Building CXX object CMakeFiles/main.elf.dir/device/lib/runtime/syscalls_cpp.cpp.obj
+[100%] Linking CXX executable main.elf
+Invoking: C Disassemble ( CMakeFiles/main.dir/main.c.obj)
+Invoking: Disassemble (/home/hansen0411/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-objdump)
+Invoking: Hexdump
+Invoking: SREC Hexdump
+Invoking: Binary dump
+Invoking: Linker script copy
+make[4]: Leaving directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+[100%] Built target main.elf
+make[3]: Leaving directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+make[2]: Leaving directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw/build'
+make[1]: Leaving directory '/home/hansen0411/APlus_Project/planenest/hw/x-heep/sw'
+Total space: 128.0 kB = Continuous: [32, 32, 32, 32] kB + Interleaved: [0] kB
+Bank        Start      End   Sz(kB)  Usd(kB)  Req(kB)  Utilz(%)    Contents
+ram0:         0.0     58.0     58.0     51.6     51.6      88.9    Code (C), ROData (R)
+ram1:        58.0    128.0     70.0     68.7     68.7      98.1    Data (d)
+Code placement: execute from RAM.
+
+Cont 0 CCCCCCCCCCCCCCRRRRRRRRRRRRRRRRRR 	 99.2%
+Cont 1 RRRRRRRRRRRRRRRRRRRR------dddddd 	 80.7%
+Cont 2 dddddddddddddddddddddddddddddddd 	100.0%
+Cont 3 ddddddddddddddddddddddddddddddd- 	 95.8%

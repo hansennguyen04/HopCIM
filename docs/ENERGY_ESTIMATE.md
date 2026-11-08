@@ -284,6 +284,33 @@ These stay inside the ranges of §1 (94–192, 60–117, 42–84 µW), so the st
 
 Reproduce: `~/venvs/zigzag/bin/python model/zigzag_run/run_zigzag.py`, after `python3 -m venv ~/venvs/zigzag` and `pip install -r requirements.txt` in the tool's folder.
 
+## 12. The baseline S from its RTL counters (2026-11-08)
+
+S (sign-gated requantisation, a second requantisation lane, no L8 write; `BASELINE_S.md`) is now built. Its activity
+comes from the counters of `tb/energy_counters.sv` in the live-path bench (`sim/run_energy_counts.sh cim 5 1 s`,
+101 decisions), which now also count the second lane, the gated results and the multiplies executed:
+72,012 requantisations per inference, 36,176 gated (50.24 %), 35,836 multiplies, 64,000 ACT byte writes,
+and 17,511 fewer sequencer cycles (85,352 → 67,841, equal to the sequencer bench). `python3 model/energy_est.py s_rtl`
+prices them with the StreamFuse study's rules (`model/energy_s_rtl.log`, `energy_s_rtl.json`):
+
+| [E] | R6b | S (RTL counts) |
+|---|---:|---:|
+| Network energy per inference | 1,389.3 nJ | **1,120.8 nJ** (−19.3 %) |
+| of which requantisation arithmetic | 435.9 nJ | 220.0 nJ |
+| of which sequencer logic | 195.6 nJ | 155.5 nJ |
+| of which ACT memory | 298.2 nJ | 285.8 nJ |
+| Total power at 20 / 40 / 80 ms | 110.3 / 75.3 / 57.9 µW | **97.0 / 68.8 / 54.7 µW** |
+| Across the 18 variants of §8, saving per inference | | 8.9–22.0 % |
+
+- **The RTL agrees with the model** of the study (1,119.8 nJ): ratio 1.0009, only because the bench's stream has
+  fewer gated results (50.24 %) than the test-set mean (50.46 %).
+- **Measured size:** S adds 403 LUT and 158 FF to `cim_seq` (out of context). The study charged the second lane as
+  3,000 gate equivalents of leakage plus its operations. Charging the measured extra logic every cycle as well, which
+  double-counts the lane's datapath, gives an upper bound of 1,138.0 nJ (−18.1 %) and 69.2 µW at 40 ms.
+- **At S's lowest real-time clock, 4.096 MHz**, the always-clocked part of the audio path costs a little less:
+  67.6 µW at 40 ms.
+- `python3 model/energy_est.py` without arguments still reproduces `energy_run.log` byte for byte.
+
 ## References
 
 - P. Houshmand, J. Sun, M. Verhelst, "Benchmarking and modeling of analog and digital SRAM in-memory computing architectures," arXiv 2305.18335; ZigZag-IMC: github.com/KULeuven-MICAS/zigzag-imc

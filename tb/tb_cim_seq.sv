@@ -10,17 +10,22 @@
 //      held (cim_fe) or runs concurrently (B3, DED = 1); a SEQ go waits for the front-end
 //      (cim_fe) and for a CPU pass in flight; CPU passes work after a run;
 //   5. synthetic requantisation parameters and zero points (shifts 0..15, power-of-two
-//      multipliers, no ReLU clamp): every layer and the logits of clip 0.
+//      multipliers, no ReLU clamp): every layer and the logits of clip 0;
+//   6. the same with zero point -128 (the baseline S's sign gate is active) and acc + bias = -1, 0,
+//      +1 at one position of every channel: every layer and the logits of clip 0.
 // A monitor checks the engine contract throughout: no wide-port write to an X bank in the 8
 // edges after a pass on that bank started (its reads run until 9 edges after the start).
 // +define+NETLIST simulates a Vivado functional netlist of the endpoint instead of the RTL (no
 // monitor); +define+QUICK loads only the conv1 and depthwise-0 tiles and checks only L0 and L1;
-// +define+MEDIUM checks every layer and one full inference (for slow gate-level simulation).
+// +define+MEDIUM checks every layer and one full inference (for slow gate-level simulation);
+// +define+ALLCLIPS runs every GSC test clip (tb/seq_vec_all, model/gen_seq_allclips.py) and checks only
+// the logits and the class of each (sim/run_seq_allclips.sh).
 // Vectors: python model/gen_seq_vectors.py.
 `timescale 1ns / 1ps
 
 module tb_cim_seq #(
-    parameter bit DED = 1'b0
+    parameter bit DED = 1'b0,
+    parameter bit S   = 1'b0                            // the baseline S in the sequencer (SEQ_S)
 );
   import xheep_obi_pkg::*;
   localparam logic [31:0] BASE = 32'hC004_0000;
@@ -38,7 +43,7 @@ module tb_cim_seq #(
       .\obi_rsp_o[gnt] (rsp.gnt), .\obi_rsp_o[rvalid] (rsp.rvalid), .\obi_rsp_o[rdata] (rsp.rdata), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `else
-  cim_endpoint #(.TILES(128), .FE_DED(DED)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
+  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `endif
 `ifdef QUICK
@@ -49,16 +54,25 @@ module tb_cim_seq #(
   localparam int NT_LOAD = NT, NSTOP = 9;
 `endif
 
+`ifdef ALLCLIPS
+  localparam int NCMAX = 4890;
+`else
+  localparam int NCMAX = 20;
+`endif
   logic [31:0] tiles [NT * 256];
   logic [31:0] params [640 * 3];
-  logic [31:0] feat [20 * 147];
-  logic [7:0]  logits_exp [20 * 12];
+  logic [31:0] feat [NCMAX * 147];
+  logic [7:0]  logits_exp [NCMAX * 12];
   logic [7:0]  acts_exp [9 * 8000];
-  logic [31:0] meta [22];
+  logic [31:0] meta [2 + NCMAX];
   logic [31:0] s_params [640 * 3];
   logic [7:0]  s_acts [9 * 8000];
   logic [7:0]  s_logits [12];
   logic [31:0] s_meta [2];
+  logic [31:0] s2_params [640 * 3];
+  logic [7:0]  s2_acts [9 * 8000];
+  logic [7:0]  s2_logits [12];
+  logic [31:0] s2_meta [2];
   int          nclips, errors = 0, contract_err = 0;
   longint unsigned edge_cnt = 0;
   longint unsigned cyc_min = '1, cyc_max = 0;
@@ -188,14 +202,24 @@ module tb_cim_seq #(
     req = '0;
     $readmemh("tb/seq_vec/tiles.hex", tiles);
     $readmemh("tb/seq_vec/params.hex", params);
+`ifdef ALLCLIPS
+    $readmemh("tb/seq_vec_all/feat.hex", feat);
+    $readmemh("tb/seq_vec_all/logits.hex", logits_exp);
+    $readmemh("tb/seq_vec_all/meta.hex", meta);
+`else
     $readmemh("tb/seq_vec/feat.hex", feat);
     $readmemh("tb/seq_vec/logits.hex", logits_exp);
-    $readmemh("tb/seq_vec/acts.hex", acts_exp);
     $readmemh("tb/seq_vec/meta.hex", meta);
+`endif
+    $readmemh("tb/seq_vec/acts.hex", acts_exp);
     $readmemh("tb/seq_vec/synth_params.hex", s_params);
     $readmemh("tb/seq_vec/synth_acts.hex", s_acts);
     $readmemh("tb/seq_vec/synth_logits.hex", s_logits);
     $readmemh("tb/seq_vec/synth_meta.hex", s_meta);
+    $readmemh("tb/seq_vec/synth2_params.hex", s2_params);
+    $readmemh("tb/seq_vec/synth2_acts.hex", s2_acts);
+    $readmemh("tb/seq_vec/synth2_logits.hex", s2_logits);
+    $readmemh("tb/seq_vec/synth2_meta.hex", s2_meta);
     nclips = int'(meta[0]);
 `ifdef NETLIST
     #200;                                             // after the netlist's 100-ns global set/reset
@@ -214,7 +238,30 @@ module tb_cim_seq #(
     wr(BASE + 32'h08, 32'h4);                         // IRQ_EN: sequencer done
     rd(BASE + 32'h28, d);
     if (d !== meta[1]) begin $display("ERROR: SEQ_ZP reads 0x%08h", d); errors++; end
-    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d)", NT, DED);
+    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d, SEQ_S = %0d)", NT, DED, S);
+`ifdef ALLCLIPS
+    begin
+      int bad_clips = 0, e0;
+      for (int k = 0; k < nclips; k++) begin
+        logic [31:0] st2; longint unsigned tg, cy;
+        e0 = errors;
+        load_feat(k, 0);
+        obi(1'b1, BASE + 32'h20, seq_word(0, 0), d, tg);
+        seq_finish(tg, cy, st2);
+        check_logits(k, st2, "all");
+        if (errors != e0) bad_clips++;
+        if (cy < cyc_min) cyc_min = cy;
+        if (cy > cyc_max) cyc_max = cy;
+        if ((k + 1) % 500 == 0) $display("  %0d clips, %0d with a logit or class error", k + 1, bad_clips);
+      end
+      $display("engine contract: %0d violations", contract_err);
+      errors += contract_err;
+      $display("RESULT (all clips): %0d clips, %0d with a logit or class error, %0d errors; %0d..%0d cycles go -> interrupt",
+               nclips, bad_clips, errors, cyc_min, cyc_max);
+      if (errors == 0) $display("PASS"); else $display("FAIL");
+      $finish;
+    end
+`endif
 
     // 1. every layer of clip 0
     load_feat(0, 0);
@@ -304,31 +351,36 @@ module tb_cim_seq #(
     do rd(BASE + 32'h14, d); while (!d[1]);
     $display("interplay checks done");
 
-    // 5. synthetic requantisation parameters and zero points
-    for (int e = 0; e < 640; e++)
-      for (int f = 0; f < 3; f++) wr(BASE + 32'h8000 + (32'(e) << 4) + (32'(f) << 2), s_params[e * 3 + f]);
-    wr(BASE + 32'h28, s_meta[0]);
-    load_feat(0, 0);
-    for (int s = 1; s <= 10; s++) begin
-      int L = s - 1, bad = 0;
-      obi(1'b1, BASE + 32'h20, seq_word(s == 10 ? 0 : s, 0), d, t_go);
-      seq_finish(t_go, cyc, st);
-      if (s == 10) begin
-        for (int n = 0; n < 12; n++) begin
-          rd(BASE + 32'h5000 + 32'(4 * n), d);
-          if (d !== {{24{s_logits[n][7]}}, s_logits[n]}) bad++;
-        end
-        if (st[7:4] != s_meta[1][3:0]) bad++;
-        $display("synthetic parameters, logits and class: %0d errors", bad);
-      end else begin
-        for (int p = 0; p < 125; p++)
-          for (int c = 0; c < 64; c++) begin
-            rd(BASE + 32'h1_0000 + (32'(L % 2) << 15) + (32'(p) << 8) + (32'(c) << 2), d);
-            if (d !== {{24{s_acts[L * 8000 + p * 64 + c][7]}}, s_acts[L * 8000 + p * 64 + c]}) bad++;
+    // 5. synthetic requantisation parameters and zero points; 6. the same with zero point -128
+    for (int set = 0; set < 2; set++) begin
+      string tag = set ? "synthetic parameters 2 (zero point -128)" : "synthetic parameters";
+      for (int e = 0; e < 640; e++)
+        for (int f = 0; f < 3; f++) wr(BASE + 32'h8000 + (32'(e) << 4) + (32'(f) << 2), set ? s2_params[e * 3 + f] : s_params[e * 3 + f]);
+      wr(BASE + 32'h28, set ? s2_meta[0] : s_meta[0]);
+      load_feat(0, 0);
+      for (int s = 1; s <= 10; s++) begin
+        int L = s - 1, bad = 0;
+        obi(1'b1, BASE + 32'h20, seq_word(s == 10 ? 0 : s, 0), d, t_go);
+        seq_finish(t_go, cyc, st);
+        if (s == 10) begin
+          for (int n = 0; n < 12; n++) begin
+            logic [7:0] y = set ? s2_logits[n] : s_logits[n];
+            rd(BASE + 32'h5000 + 32'(4 * n), d);
+            if (d !== {{24{y[7]}}, y}) bad++;
           end
-        $display("synthetic parameters, layer L%0d: %0d / 8000 mismatches", L, bad);
+          if (st[7:4] != (set ? s2_meta[1][3:0] : s_meta[1][3:0])) bad++;
+          $display("%s, logits and class: %0d errors", tag, bad);
+        end else begin
+          for (int p = 0; p < 125; p++)
+            for (int c = 0; c < 64; c++) begin
+              logic [7:0] a = set ? s2_acts[L * 8000 + p * 64 + c] : s_acts[L * 8000 + p * 64 + c];
+              rd(BASE + 32'h1_0000 + (32'(L % 2) << 15) + (32'(p) << 8) + (32'(c) << 2), d);
+              if (d !== {{24{a[7]}}, a}) bad++;
+            end
+          $display("%s, layer L%0d: %0d / 8000 mismatches", tag, L, bad);
+        end
+        errors += bad;
       end
-      errors += bad;
     end
     $display("engine contract: %0d violations", contract_err);
     errors += contract_err;
@@ -340,6 +392,10 @@ module tb_cim_seq #(
   end
 
   initial begin                                       // watchdog
+`ifdef ALLCLIPS
+    #20s $display("TIMEOUT"); $display("FAIL"); $finish;
+`else
     #400ms $display("TIMEOUT"); $display("FAIL"); $finish;
+`endif
   end
 endmodule

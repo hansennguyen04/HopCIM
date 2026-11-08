@@ -10,6 +10,9 @@
               0..15, multipliers with exact powers of two, activation zero point 5 so that no ReLU
               clamp hides negative rounding): params, SEQ_ZP + class, every layer and the logits
               of clip 0. The real model only uses shifts 5..9 and zero point -128.
+  synth2_*.hex the same with activation zero point -128 (the sign gate of the baseline S is active),
+              shifts 0..15 and power-of-two multipliers, and biases chosen so that acc + bias is
+              exactly -1, 0 or +1 at one position of every channel of L0..L8 (the gate's boundary)
 Also writes the board debug app's header (sw/applications/hopcim_seq_dbg/dbgvec.h: golden conv1
 and depthwise-0 outputs of clip 0; external linkage, so that it lives in ram1)."""
 import os
@@ -61,7 +64,7 @@ def zp_word():
     return (int(P["L0_zin"]) & 0xFF) | (int(P["L1_zin"]) & 0xFF) << 8 | (int(P["L9_zout"]) & 0xFF) << 16
 
 
-def synth_params(seed=7):
+def synth_params(seed=7, zact=5):
     """Requantisation parameters and zero points that cover the sequencer's whole arithmetic."""
     P, rng = d.P, np.random.default_rng(seed)
     S = {"L0_zin": np.int64(-37)}
@@ -79,9 +82,45 @@ def synth_params(seed=7):
         S[f"L{L}_q"], S[f"L{L}_sh"] = q.astype(np.int64), -e
         S[f"L{L}_b"] = P[f"L{L}_b"].astype(np.int64) + rng.integers(-(1 << 12), 1 << 12, n)
         if L >= 1:
-            S[f"L{L}_zin"] = np.int64(5)
-        S[f"L{L}_zout"] = np.int64(5 if L < 9 else -3)
+            S[f"L{L}_zin"] = np.int64(zact)
+        S[f"L{L}_zout"] = np.int64(zact if L < 9 else -3)
     return S
+
+
+def layer_acc(feat, L):
+    """acc + bias of every output of layer L (L0..L8) for the current d.P: the argument of mbqm."""
+    got, real, n = [], d.mbqm, [0]
+
+    def spy(a, q, sh):
+        if n[0] == L:
+            got.append(np.array(a))
+        n[0] += 1
+        return real(a, q, sh)
+    d.mbqm = spy
+    try:
+        d.forward(feat)
+    finally:
+        d.mbqm = real
+    return got[0]                                                    # [25, 5, 64]
+
+
+def synth2_params(feat, seed=11):
+    """synth_params with zero point -128, then biases that put acc + bias at -1, 0, +1 (by channel) at one position
+    of each channel, layer by layer (a layer's accumulators depend on the biases before it)."""
+    S = synth_params(seed, zact=-128)
+    rng = np.random.default_rng(seed + 1)
+    d.P.update(S)
+    hits = []
+    for L in range(9):
+        x = layer_acc(feat, L).reshape(125, 64)
+        acc = x - d.P[f"L{L}_b"]
+        pos = rng.integers(0, 125, 64)
+        tgt = np.array([(-1, 0, 1)[c % 3] for c in range(64)])
+        d.P[f"L{L}_b"] = (tgt - acc[pos, np.arange(64)]).astype(np.int64)
+        x = layer_acc(feat, L).reshape(125, 64)
+        assert (x[pos, np.arange(64)] == tgt).all()
+        hits.append((int((x == 0).sum()), int((x == 1).sum()), int((x == -1).sum()), float((x <= 0).mean())))
+    return {k: d.P[k] for k in S}, hits
 
 
 def write(name, vals, width=8):
@@ -130,6 +169,21 @@ def main(n=20):
         e = np.concatenate([-d.P[f"L{L}_sh"] for L in range(10)])
         print(f"synthetic: shifts {e.min()}..{e.max()}, SEQ_ZP 0x{zp_word():06x}; share of outputs clamped "
               f"{np.mean((A == 127) | (A == -128)):.2f}, distinct values per layer {[len(np.unique(a)) for a in A]}")
+    finally:
+        d.P.clear()
+        d.P.update(saved)
+
+    try:
+        S2, hits = synth2_params(cl[0][0])
+        d.P.update(S2)
+        y, acts = d.forward(cl[0][0], keep=True)
+        assert np.array_equal(y, cnm.forward_mapped(cl[0][0]))
+        write("synth2_params.hex", param_words().reshape(-1))
+        write("synth2_acts.hex", [int(v) for a in acts[:9] for v in np.asarray(a).reshape(-1)], 2)
+        write("synth2_logits.hex", [int(v) for v in y], 2)
+        write("synth2_meta.hex", [zp_word(), int(np.argmax(y))])
+        e = np.concatenate([-d.P[f"L{L}_sh"] for L in range(10)])
+        print(f"synthetic 2: shifts {e.min()}..{e.max()}, SEQ_ZP 0x{zp_word():06x}; per layer (acc + bias = 0, +1, -1, share <= 0): {hits}")
     finally:
         d.P.clear()
         d.P.update(saved)

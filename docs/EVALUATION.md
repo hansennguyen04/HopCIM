@@ -159,3 +159,23 @@ One inference is about 1.39 µJ (1.09–3.01 µJ). The microphone and the X-HEEP
 - `SAME_AUDIO.md`: rate, phase and confirmation rule on identical audio, and false alarms per hour. The current rule reported falsely in a room while someone was in it, and not once in the 7-hour night after.
 - `VERIFICATION.md`: assertions, coverage, mutation tests, extreme input and a post-synthesis smoke test of the endpoint.
 - `ENERGY_ESTIMATE.md` §11: ZigZag-IMC itself against the transcribed equations.
+
+## 11. The baseline S (2026-11-08)
+
+The StreamFuse study (`STREAMFUSE_STUDY.md`) found that once the CPU is gone, requantisation, not the activation
+memory, is the largest cost, and that half of all requantisations need no multiply. S builds that finding:
+sign-gated requantisation, a second requantisation lane and no L8 write to ACT (`BASELINE_S.md`). It is now the
+baseline that any later optimisation must beat.
+
+| | R6b | S |
+|---|---:|---:|
+| Network, go → interrupt (board) | 85,420 | **67,909** |
+| Worst hop (RTL, hop monitor) | 97,583 | **80,072** |
+| Lowest real-time clock (RTL and board) | 5.12 MHz | **4.096 MHz** |
+| Network energy per inference [E] | 1,389 nJ | **1,121 nJ** |
+| Total power at 40 ms [E] | 75.3 µW | **68.8 µW** |
+| CPU-active per decision (board) | 263 | 263 |
+| Endpoint, LUT / FF / DSP (out of context) | 7,635 / 5,819 / 145 | 8,116 / 5,977 / 147 |
+
+The bottleneck moves again: with S, the depthwise layers (engine-bound, 45,092 of 67,841 cycles) and leakage
+(36 of 69 µW at 40 ms [E]) dominate.

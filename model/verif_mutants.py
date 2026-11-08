@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Mutation test of the assertions (docs/VERIFICATION.md): each mutant breaks the RTL in one place, in a scratch
-copy, and the bench named must then trip the assertion named. A check that cannot fail proves nothing.
+copy, and the bench named must then trip the assertion named (or, for "bench", fail its own comparison with the golden
+model). A check that cannot fail proves nothing.
 Usage: verif_mutants.py [jobs]       writes model/verif_mutants.json. Standard library only.
 """
 import concurrent.futures as cf
@@ -21,7 +22,7 @@ M = [
     ("input bank released too early", "cim_seq", "bcnt[i_b]  <= 3'd7;", "bcnt[i_b]  <= 3'd3;", ["seq", "cim"], "engine.input_bank_stable_port2"),
     ("CPU go granted while the engine is busy", "cim_endpoint", "if (go)           gnt = obi_req_i.req && eng_ready && !fe_owns && !seq_busy;",
      "if (go)           gnt = obi_req_i.req && !fe_owns && !seq_busy;", ["endpoint"], "engine.start_only_when_ready"),
-    ("passes too close for requantisation", "cim_seq", "if (issue) pace <= i_tag.n - 5'd1;", "if (issue) pace <= i_tag.n - 5'd8;", ["seq", "cim"], "seq.results_drained_before_pop"),
+    ("passes too close for requantisation", "cim_seq", ": i_tag.n - 5'd1;", ": i_tag.n - 5'd8;", ["seq", "cim"], "seq.results_drained_before_pop"),
     ("a requantised result lost", "cim_seq", "q1_v <= q0_v; q2_v <= q1_v; q3_v <= q2_v; q4_v <= q3_v;",
      "q1_v <= q0_v; q2_v <= q1_v; q3_v <= q2_v; q4_v <= q3_v && !(q3_d.p == 7'd60 && q3_d.c == 6'd5);", ["seq", "cim"], "seq.requant_keeps_count"),
     ("hop one sample short", "cim_audio", "assign hop_end     = sv && (hs == 9'd319);", "assign hop_end     = sv && (hs == 9'd318);", ["mic", "cim", "5", "1"], "audio.hop_is_320_samples"),
@@ -35,13 +36,36 @@ M = [
     ("front-end reads past its frame", "cim_fe", "assign samp_addr_o = base_q + 10'(sh_idx);", "assign samp_addr_o = base_q + 10'(sh_idx) + 10'd700;", ["fe", "cim"], "frontend.reads_inside_its_frame"),
     ("B3 reads past its frame", "mfcc_ded", "assign samp_addr_o = base_q + 10'(sh_idx);", "assign samp_addr_o = base_q + 10'(sh_idx) + 10'd700;", ["fe", "ded"], "frontend.reads_inside_its_frame"),
     ("response one cycle late on a read path", "cim_endpoint", "rvalid_q  <= gnt;", "rvalid_q  <= gnt_d;", ["endpoint"], "endpoint.rvalid_follows_gnt"),
+    # the baseline S (SEQ_S = 1). "bench" means the bench's own comparison with the golden model must fail.
+    ("S: sign gate too wide (x < 64)", "cim_seq", "assign q1_g = sg_on && (q1_x[24] || (q1_x == 25'sd0));", "assign q1_g = sg_on && (q1_x < 25'sd64);",
+     ["seq", "cim", "s"], "seq.sign_gate_exact"),
+    ("S: sign gate ignores the zero point", "cim_seq", "assign sg_on = RQ_SG && (lay != 4'd9) && (zact_q == 8'h80);", "assign sg_on = RQ_SG && (lay != 4'd9);",
+     ["seq", "cim", "s"], "seq.sign_gate_exact"),
+    ("S: sign gate also in the FC layer", "cim_seq", "assign sg_on = RQ_SG && (lay != 4'd9) && (zact_q == 8'h80);", "assign sg_on = RQ_SG && (zact_q == 8'h80);",
+     ["seq", "cim", "s"], "seq.sign_gate_exact"),
+    ("S: a gated result is not -128", "cim_seq", "q4_y   <= q3_g ? 8'h80 :", "q4_y   <= q3_g ? 8'h81 :", ["seq", "cim", "s"], "bench"),
+    ("S: lane 1 reads the even parameter bank", "cim_seq", "assign prm_ra = {lay, (k == 0) ? d_ix0 : d_ix1};", "assign prm_ra = {lay, d_ix0};",
+     ["seq", "cim", "s"], "bench"),
+    ("S: lanes take the wrong parity", "cim_seq", "assign d_sw  = RQ_2L && d_c[0];", "assign d_sw  = RQ_2L && !d_c[0];", ["seq", "cim", "s"], "seq.lane_channel_parity"),
+    ("S: the second result of a pair goes to the first one's byte lane", "cim_seq", "cl: (d_cl == 3'd6) ? 3'd0 : d_cl + 3'd1};", "cl: d_cl};",
+     ["seq", "cim", "s"], "seq.pair_writes_distinct_lanes"),
+    ("S: lane 1's ACT write dropped at one position", "cim_seq", "assign act_we1 = r4_v && (lay != 4'd9) && l8_act;",
+     "assign act_we1 = r4_v && (lay != 4'd9) && l8_act && (r4_d.p != 7'd60);", ["seq", "cim", "s"], "bench"),
+    ("S: L8 written to ACT in full runs", "cim_seq", "assign l8_act  = !NO_L8A || (lay != 4'd8) || (stop_q == 4'd9);", "assign l8_act  = 1'b1;",
+     ["seq", "cim", "s"], "seq.l8_act_only_when_stopped_after_l8"),
+    ("S: L8 not written even when the run stops after it", "cim_seq", "assign l8_act  = !NO_L8A || (lay != 4'd8) || (stop_q == 4'd9);",
+     "assign l8_act  = !NO_L8A || (lay != 4'd8);", ["seq", "cim", "s"], "bench"),
+    ("S: two results drained, three counted", "cim_seq", "d_rem <= d_rem - 5'd2;", "d_rem <= (d_rem > 5'd2) ? d_rem - 5'd3 : 5'd0;", ["seq", "cim", "s"], "bench"),
 ]
 
 
 # Not a defect at today's timing: gathering and requantisation already space the network's passes at least 9 cycles apart, so the sequencer
 # never reaches the engine while it is not ready. This mutant must change nothing; the check becomes necessary at D > 9 (TIMING_SENSITIVITY.md).
 EQUIVALENT = [("sequencer issue ignores ready", "cim_seq", "assign issue   = i_on && i_full && eng_ready_i && (pace == 5'd0) && (tq_cnt != 3'd4);",
-               "assign issue   = i_on && i_full && (pace == 5'd0) && (tq_cnt != 3'd4);", ["seq", "cim"], "engine.start_only_when_ready")]
+               "assign issue   = i_on && i_full && (pace == 5'd0) && (tq_cnt != 3'd4);", ["seq", "cim"], "engine.start_only_when_ready"),
+              # S: with two lanes a pass drains in at most 8 cycles, and the engine spaces passes 9 apart, so the drain pacing never binds
+              ("S: no drain pacing with two lanes", "cim_seq", "if (issue) pace <= RQ_2L ? 5'((6'(i_tag.n) + 6'd1) >> 1) - 5'd1 :",
+               "if (issue) pace <= RQ_2L ? 5'd0 :", ["seq", "cim", "s"], "seq.results_drained_before_pop")]
 
 
 def run(item):
@@ -72,7 +96,9 @@ def run(item):
         fails = sorted(set(re.findall(r"^ASSERT \S+\.(\S+) active \d+ fail [1-9]", txt, re.M)) |
                        set(re.findall(r"^ASSERTION FAILED (\S+) ", txt, re.M)))
         first = re.findall(r"^ASSERTION FAILED (.*)$", txt, re.M)[:2]
-        res = dict(name=name, want=want, caught=(want.split(".")[1] in fails), fails=fails, bench_pass=bool(re.search(r"^PASS", txt, re.M)),
+        bench_pass = bool(re.search(r"^PASS", txt, re.M))
+        caught = (not bench_pass) if want == "bench" else (want.split(".")[1] in fails)
+        res = dict(name=name, want=want, caught=caught, fails=fails, bench_pass=bench_pass,
                    finished=bool(re.search(r"^(PASS|FAIL)", txt, re.M)), first=first)
     finally:
         shutil.rmtree(wd, ignore_errors=True)

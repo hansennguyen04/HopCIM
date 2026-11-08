@@ -508,6 +508,78 @@ def streamfuse(out=print):
     return res
 
 
+S_OOC_ADD = dict(lut=2938 - 2535, ff=2140 - 1982)   # cim_seq out of context, S against R6b (syn/ooc_cim_seq_RQ_SG{1,0}_*)
+
+
+def s_rtl(out=print):
+    """The baseline S priced from the RTL's own counters (sim/run_energy_counts.sh cim 5 1 s), with the costing rules
+    of the StreamFuse study, against S as modelled and against R6b from its counters. Writes energy_s_rtl.json."""
+    tools = json.load(open(os.path.join(HERE, "energy_components.json")))
+    act = json.load(open(os.path.join(HERE, "energy_activity.json")))
+    reuse = json.load(open(os.path.join(HERE, "reuse_results.json")))
+    sf = json.load(open(os.path.join(HERE, "streamfuse_results.json")))
+    cc, cs = load_counts("cim"), load_counts("cim_s")
+    check_counts(cc, "cim")
+    nd = 101
+    wp_cyc = lambda c: sum(c.get(f"seq.ws{i}", 0) for i in range(1, 11))
+    # the RTL's counters: every requantisation either multiplies or is gated; L8 no longer reaches ACT
+    assert cs["seq.requant"] == 72012 * nd and cs["seq.requant_mults"] + cs["seq.requant_gated"] == cs["seq.requant"]
+    assert cs["seq.act_writes"] == 64000 * nd and cs["seq.pool_updates"] == 8000 * nd
+    assert all(cs[k] == cc[k] for k in cc if k.startswith("engine.pass_") or k.startswith("seq.gather")), "same passes and gathers"
+    assert wp_cyc(cs) == wp_cyc(cc), "the window path is unchanged"
+    saved = (cc["seq.run_cycles"] - cs["seq.run_cycles"]) / nd
+    seq_log = open(os.path.join(HERE, "..", "sim", "seq_tb_cim_s.log")).read()
+    cyc = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", seq_log)[1])
+    assert saved == 85352 - cyc, f"counters save {saved} cycles per inference, the sequencer bench {85352 - cyc}"
+    gated = cs["seq.requant_gated"] / nd
+    acc_r = (cs["seq.gather_tv_lt1"] + cs["seq.gather_tv_lt2"]) / nd
+    rows_net = (cs["engine.xw_rows"] - cs["seq.lraw_ring_reads"]) / nd
+    d_rtl = dict(total=cyc, words={"act": 2500},
+                 counts=dict(reads={"act": acc_r}, byte_writes={"act": cs["seq.act_writes"] / nd}, word_writes={},
+                             feat_reads=cs["seq.gather_tv_lt0"] / nd, requant=cs["seq.requant"] / nd, x_rows=rows_net))
+    d_mod = sf["cycles"]["S"]
+    sk_mod = sf["exact"]["S"]["sg_skipped_per_inference"]
+    res = dict(cycles=cyc, gated_per_inference=gated, mults_per_inference=cs["seq.requant_mults"] / nd,
+               act_byte_writes=cs["seq.act_writes"] / nd, model_gated=sk_mod, variants={})
+    out(f"S from its RTL counters (tb_cim_mic, 101 decisions, PDM divider 5): {cyc} cycles per inference "
+        f"({saved:.0f} fewer than R6b, from the counters and the sequencer bench alike); {gated:.1f} of 72,012 requantisations "
+        f"gated ({100 * gated / 72012:.2f} %; the model's test-set mean {sk_mod:.1f}, {100 * sk_mod / 72012:.2f} %); "
+        f"{cs['seq.act_writes'] / nd:.0f} ACT byte writes")
+    rows = []
+    for vname, o in VARIANTS + [("4.096 MHz clock", dict(f_sys_hz=4.096e6))]:
+        m = Model(tools, act, cc, reuse, **o)
+        b0 = sum(m.network().values())
+        net_r = sf_network(m, d_rtl, gated, 0.0)
+        net_m = sf_network(m, d_mod, sk_mod, 0.0)
+        lk = sf_leak(m, d_mod, 0.0, True)
+        pw_r, pw_b0 = sf_power(m, sum(net_r.values()), lk), sf_power(m, b0, m.leak("cim")[0])
+        e_r, e_m = sum(net_r.values()), sum(net_m.values())
+        res["variants"][vname] = dict(B0_nJ=b0 / 1000, S_rtl_nJ=e_r / 1000, S_model_nJ=e_m / 1000, power_S_rtl_uW=pw_r, power_B0_uW=pw_b0,
+                                      parts_S_rtl_pJ=net_r if vname == "baseline" else None)
+        rows.append([vname, f"{b0 / 1000:.1f}", f"{e_r / 1000:.1f}", f"{e_m / 1000:.1f}", f"{e_r / e_m:.4f}", f"{100 * (1 - e_r / b0):.1f} %",
+                     " / ".join(f"{pw_r[k]:.1f}" for k in (1, 2, 4)), " / ".join(f"{pw_b0[k]:.1f}" for k in (1, 2, 4))])
+    out("\nOne inference, nJ [E], and total power, uW [E]:")
+    tab(rows, ["variant", "R6b", "S, RTL counts", "S, model", "RTL / model", "S saves", "S at 20 / 40 / 80 ms", "R6b at 20 / 40 / 80 ms"])
+    b = res["variants"]["baseline"]
+    out("\nS by part, baseline variant, nJ: " + ", ".join(f"{k} {v / 1000:.1f}" for k, v in b["parts_S_rtl_pJ"].items()))
+    # The study priced the second lane as 3,000 gate equivalents of leakage and its operations per requantisation. The
+    # measured S adds 403 LUT and 158 FF to cim_seq (syn/ooc_cim_seq_RQ_SG*); charging all of it every cycle as well,
+    # like the sequencer's control, double-counts the lane's datapath and is an upper bound.
+    m = Model(tools, act, cc, reuse)
+    extra = S_OOC_ADD["lut"] * m.e_lut / 1000 + S_OOC_ADD["ff"] * m.e_ff / 1000
+    lk = sf_leak(m, d_mod, 0.0, True)
+    lk["digital logic"] += (S_OOC_ADD["lut"] * m.a["ge_per_lut"] + S_OOC_ADD["ff"] * m.a["ge_per_ff"] - SF_R2_GE) * m.a["leak_pw_per_ge"] * 1e-6
+    e_ub = b["S_rtl_nJ"] * 1000 + cyc * extra
+    pw_ub = sf_power(m, e_ub, lk)
+    res["upper_bound_measured_size"] = dict(S_nJ=e_ub / 1000, saves=1 - e_ub / (b["B0_nJ"] * 1000), power_uW=pw_ub, add=S_OOC_ADD)
+    out(f"Upper bound with the measured size (+{S_OOC_ADD['lut']} LUT, +{S_OOC_ADD['ff']} FF, every cycle, and their leakage): "
+        f"{e_ub / 1000:.1f} nJ ({100 * (1 - e_ub / (b['B0_nJ'] * 1000)):.1f} % below R6b), "
+        + " / ".join(f"{pw_ub[k]:.1f}" for k in (1, 2, 4)) + " uW at 20 / 40 / 80 ms")
+    with open(os.path.join(HERE, "energy_s_rtl.json"), "w") as f:
+        json.dump(res, f, indent=1, default=float)
+    return res
+
+
 def tab(rows, head):
     w = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
     print("  " + "  ".join(str(h).ljust(w[i]) for i, h in enumerate(head)))
@@ -656,5 +728,8 @@ def main():
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "streamfuse":
         streamfuse()
+        sys.exit(0)
+    if len(sys.argv) > 1 and sys.argv[1] == "s_rtl":
+        s_rtl()
         sys.exit(0)
     sys.exit(main())

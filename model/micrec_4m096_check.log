@@ -1,0 +1,12 @@
+recording: hops 100 .. 174 (24000 samples, 1.50 s) at 4096000 Hz, overrun 0
+  min -162 max 163 mean 0.6 rms 46.5
+      0 -  100 Hz:  37.3 % of the power
+    100 -  300 Hz:  56.7 % of the power
+    300 - 1000 Hz:   5.6 % of the power
+   1000 - 2000 Hz:   0.2 % of the power
+   2000 - 4000 Hz:   0.2 % of the power
+   4000 - 6000 Hz:   0.0 % of the power
+   6000 - 8000 Hz:   0.0 % of the power
+  strongest bins: 31 Hz, 62 Hz, 94 Hz, 125 Hz, 156 Hz
+decisions: 74 recorded, one every 1 hops (0 with hop != 49 + (count - 1) k); 25 with the window inside the recording: 0 differ from the golden model
+  classes: _unknown_ 74

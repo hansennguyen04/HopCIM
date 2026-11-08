@@ -1,4 +1,4 @@
-loaded 61 network tiles and 640 parameter entries (FE_DED = 1)
+loaded 61 network tiles and 640 parameter entries (FE_DED = 1, SEQ_S = 0)
 layer L0 (stop after it): 0 / 8000 mismatches, 8034 cycles from go
 layer L1 (stop after it): 0 / 8000 mismatches, 19307 cycles from go
 layer L2 (stop after it): 0 / 8000 mismatches, 27339 cycles from go
@@ -40,10 +40,20 @@ synthetic parameters, layer L6: 0 / 8000 mismatches
 synthetic parameters, layer L7: 0 / 8000 mismatches
 synthetic parameters, layer L8: 0 / 8000 mismatches
 synthetic parameters, logits and class: 0 errors
+synthetic parameters 2 (zero point -128), layer L0: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L1: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L2: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L3: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L4: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L5: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L6: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L7: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L8: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), logits and class: 0 errors
 engine contract: 0 violations
 RESULT: 0 errors; full inference 85352..85352 cycles (go -> interrupt) = 5.69..5.69 ms at 15 MHz
 PASS
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv:339: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv:391: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 36ms; walltime 9.924 s; speed 3.609 ms/s
-- Verilator: cpu 9.916 s on 1 threads; alloced 129 MB
+- Verilator: $finish at 42ms; walltime 10.848 s; speed 3.944 ms/s
+- Verilator: cpu 10.746 s on 1 threads; alloced 129 MB

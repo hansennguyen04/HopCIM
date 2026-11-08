@@ -113,6 +113,10 @@ cycle, chunks gathered G times faster, D = 1 and the measured 9.8k cycles of fro
 | 4, 4 | 21.6k | 31.4k | 2.05 MHz |
 | 8, 9 | 10.4k | 20.2k | 2.05 MHz (1.02 MHz leaves about 300 cycles, and see below) |
 
+**Built since (2026-11-08):** R = 2, with sign-gated requantisation, is the baseline S (`BASELINE_S.md`): network
+67,841 cycles, worst hop 80,072 (measured with the hop monitor), lowest real-time clock 4.096 MHz in RTL. The one-line
+estimate of the second row was 3.6 % and 6.1 % low on these two counts; the clock is the same.
+
 - **H3's target (below 1 MHz) looks structurally out of reach** in this architecture, whatever the macro: the microphone's PDM clock is 1.024 MHz and is derived
   from the system clock by a divider of at least 2 (a design with one clock).
 - A network spread over several hops at k > 1 would lower the requirement further: on average 2.6 and 1.5 dividers at k = 2 and 4. The hop controller

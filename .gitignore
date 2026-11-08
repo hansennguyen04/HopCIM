@@ -29,3 +29,4 @@ sim/regression.log
 /sim/cov/
 /sim/endpoint_nl.out
 /model/defines_run/pickles/
+/tb/seq_vec_all/

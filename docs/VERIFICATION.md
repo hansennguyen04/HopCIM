@@ -128,9 +128,26 @@ It does not run the audio path through the netlist, because reaching the first d
 
 ```
 cd hopcim
-sim/run_all.sh                       # 28 benches, about 10 min
-sim/run_cov.sh 5                     # assertions and coverage, about 20 min: sim/cov/
+sim/run_all.sh                       # 40 benches (28 R6b, 11 S, 1 that must fail), about 15 min
+sim/run_cov.sh 6                     # assertions and coverage, about 30 min: sim/cov/
 python3 model/verif_report.py        # model/verif_results.json
 python3 model/verif_mutants.py 4     # about 8 min: model/verif_mutants.json
 sim/run_endpoint_nl.sh               # the endpoint's netlist under xsim, about 80 min
 ```
+
+## 8. The baseline S (2026-11-08)
+
+S changed `cim_seq` (`BASELINE_S.md`), behind a parameter that is off by default, so the frozen benches still test R6b
+unchanged. All of the checks above were re-run with S added:
+
+| Check | Result |
+|---|---|
+| Regression, `sim/run_all.sh` | **40 of 40 pass**: the 28 benches above (R6b, unchanged), 11 with S (sequencer, stream, edge vectors, live path at 15.36, 5.12 and 4.096 MHz, k = 1, 2, 4, both front-ends), and one that must fail: R6b at 4.096 MHz overruns |
+| Assertions, `sim/run_cov.sh 6` | **51, all exercised, none failing**, over 39 benches (34 regression benches built with the assertions, and the 5 directed runs). The 4 new ones for S (`sign_gate_exact`, `pair_writes_distinct_lanes`, `lane_channel_parity`, `l8_act_only_when_stopped_after_l8`) fired 24,000 to 33.7 million times |
+| Mutation test, `model/verif_mutants.py 4` | **27 of 27 caught**: the 16 above and 11 for S; 2 changes equivalent at today's timing, as predicted |
+| Coverage, all benches merged | unchanged: 99 % of lines, 98 % of branches, 97 % of expressions, 93 % of toggle points; the same 13 explained lines |
+| All 4,890 test clips through the RTL (`sim/run_seq_allclips.sh`) | **0 errors with R6b and with S** (logits and class; 91.80 %) |
+| Synthetic set 2 (zero point −128, the sign gate's boundary) | 0 mismatches with R6b and with S |
+
+`sign_gate_exact` recomputes TFLite's whole requantisation for every gated result and requires −128; over the
+benches it checked 23.9 million gated results.

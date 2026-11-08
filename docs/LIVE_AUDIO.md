@@ -393,3 +393,11 @@ keywords missed, nothing reported in the 3 other trials, and 0 false alarms.
 
 Bitstream `xheep_nexys_bscan_cim128k.bit` (FuseSoC build root `build_mick/core`, flags as in §6): 42,306
 LUT, 40,221 FF, 82 block RAM tiles, 146 DSP; system clock setup +15.10 ns, hold +0.229 ns.
+
+## 10. The baseline S at 4.096 MHz (2026-11-08)
+
+With the baseline S in the sequencer (`BASELINE_S.md`), the worst hop falls from 97,583 to 80,072 cycles, under the
+81,920 cycles of a hop at 4.096 MHz (PDM divider 4). Measured on the board (`xheep_nexys_bscan_cim128mic4s.bit`,
+`--flag use_cim_s --flag use_cim_mic4`): 6,000 decisions in 120 s with no overrun, 263 CPU-active cycles per
+decision, and 25 of 25 decisions on real microphone audio equal to the golden model. The PDM clock is high for 2 of
+4 cycles (50 %, inside the ADMP421's 40–60 %). R6b at divider 4 overruns from its first decision (RTL).

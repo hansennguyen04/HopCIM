@@ -30,7 +30,7 @@ XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
 DISCOVERY = PROJECT / "research_discovery" / "20261026_application_driven"
 PILOT = PROJECT / "recim-rv" / "accelforge_pilot"
-TAG = "freeze-2026-11-08"
+TAG = "freeze-2026-11-08s"
 
 BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "board_kwlog.sh", "xheep_env.sh"]
 GATE_FILES = ["GATE_RESULTS.md", "GATE2_MANIFEST.md", "gate2_eval.py", "gate2_frozen.sha256", "gate2_results.json", "gate2_run.log"]
@@ -51,6 +51,8 @@ BITSTREAM_USE = {
     "xheep_nexys_bscan_pdm_cim128w_ded.bit": "window path (R5b), B3",
     "xheep_nexys_bscan_pdm_cim128s_cim.bit": "layer sequencer (R6b), cim_fe",
     "xheep_nexys_bscan_pdm_cim128s_ded.bit": "layer sequencer (R6b), B3",
+    "xheep_nexys_bscan_cim128ks.bit": "the baseline S, live design with k hops (15.36 MHz)",
+    "xheep_nexys_bscan_cim128mic4s.bit": "the baseline S at its lowest real-time clock (4.096 MHz)",
 }
 STALE = [  # statements that were true once and must not come back
     ("docs/HOPCIM_PROPOSAL.md", "The full pipeline and f_min are open"),
@@ -267,6 +269,13 @@ LIVE_LOG = B + "hopcim_live_nexys_board_20261105_231010.uart.log"
 LIVE5_LOG = B + "hopcim_live_nexys_5m12_board_20261030_080317.uart.log"
 KHOP_LOG = B + "khop_board_20261105_231009.log"
 UTIL = "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15/utilization_hier.rpt"
+UTIL_S = "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1/utilization_hier.rpt"
+TIME_S = "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1/timing.rpt"
+SEQ_S_LOG = B + "hopcim_seq_nexys_15m36_board_20261108_151228.uart.log"
+STREAM_S_LOG = B + "hopcim_stream_nexys_15m36_board_20261108_151826.uart.log"
+KHOP_S_LOG = B + "khop_board_20261108_152825.log"
+LIVE4_LOG = B + "hopcim_live_nexys_4m096_board_20261108_162809.uart.log"
+MICREC4_CHECK = "model/micrec_4m096_check.log"
 
 
 def timing_check():
@@ -350,18 +359,20 @@ def claims():
         dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository: 28 of 28 benches pass",
              evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"28 of 28 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
              docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 10 min"),
-        dict(id="D4", label="[M]", text="RTL regression in the main tree, with the directed benches of extreme input, stalls and overrun: 28 of 28 benches pass",
-             evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"28 of 28 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL"),
-             docs=[("docs/VERIFICATION.md", "28 of 28 benches pass")], how="`sim/run_all.sh`, about 10 min"),
-        dict(id="D5", label="[M]", text="Assertions: 47, all exercised, none failing over the 28 benches; every uncovered line explained",
+        dict(id="D4", label="[M]", text="RTL regression in the main tree, R6b and the baseline S, with the directed benches of extreme input, stalls and overrun: 40 of 40 benches pass (one of them: R6b must overrun at 4.096 MHz)",
+             evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"40 of 40 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL")
+             and has("freeze/regression_main.log", r"PASS  !run_mic_tb\.sh cim 4 1 "),
+             docs=[("docs/VERIFICATION.md", "40 of 40 pass")], how="`sim/run_all.sh`, about 15 min"),
+        dict(id="D5", label="[M]", text="Assertions: 51, all exercised, none failing over 39 benches (R6b and S); every uncovered line explained",
              evidence="model/verif_results.json",
-             check=lambda: len(jget("model/verif_results.json", "assertions")) == 47 and all(v["active"] > 0 and v["fail"] == 0 for v in jget("model/verif_results.json", "assertions").values())
-             and len(jget("model/verif_results.json", "benches")) == 28 and all(jget("model/verif_results.json", "benches").values()),
-             docs=[("docs/VERIFICATION.md", "47, all exercised, none failing")], how="`sim/run_cov.sh 5`, then `python3 model/verif_report.py`"),
-        dict(id="D6", label="[M]", text="Mutation test: 16 of 16 broken designs caught by the assertion named for each",
+             check=lambda: len(jget("model/verif_results.json", "assertions")) == 51 and all(v["active"] > 0 and v["fail"] == 0 for v in jget("model/verif_results.json", "assertions").values())
+             and len(jget("model/verif_results.json", "benches")) == 39 and all(jget("model/verif_results.json", "benches").values()),
+             docs=[("docs/VERIFICATION.md", "51, all exercised, none failing")], how="`sim/run_cov.sh 6`, then `python3 model/verif_report.py`"),
+        dict(id="D6", label="[M]", text="Mutation test: 27 of 27 broken designs caught (16 of R6b, 11 of S), by the assertion named or the bench; the 2 equivalent changes change nothing",
              evidence="model/verif_mutants.json",
-             check=lambda: len(jget("model/verif_mutants.json", "mutants")) == 16 and all(m["caught"] for m in jget("model/verif_mutants.json", "mutants")),
-             docs=[("docs/VERIFICATION.md", "16 of 16 broken designs caught")], how="`python3 model/verif_mutants.py 4`, about 8 min"),
+             check=lambda: len(jget("model/verif_mutants.json", "mutants")) == 27 and all(m["caught"] for m in jget("model/verif_mutants.json", "mutants"))
+             and all(m["bench_pass"] and not m["fails"] for m in jget("model/verif_mutants.json", "equivalent")),
+             docs=[("docs/VERIFICATION.md", "27 of 27 caught")], how="`python3 model/verif_mutants.py 4`, about 15 min"),
         dict(id="D7", label="[M]", text="Post-synthesis, whole endpoint with cim_fe: every layer of a clip and one full inference exact on the Vivado netlist",
              evidence="sim/xsim_endpoint_nl/run.log",
              check=lambda: has("sim/xsim_endpoint_nl/run.log", r"RESULT \(medium\): 0 errors") and has("sim/xsim_endpoint_nl/run.log", r"(?m)^PASS"),
@@ -406,6 +417,39 @@ def claims():
              evidence="model/streamfuse_energy.json", check=sf_energy_check,
              docs=[("docs/STREAMFUSE_STUDY.md", "**1,119.8**"), ("docs/STREAMFUSE_STUDY.md", "80,544 (0.575)")],
              how="`python3 model/energy_est.py streamfuse` (after streamfuse_sched.py all)"),
+        dict(id="S3", label="[M]", text="Baseline S in RTL: 67,841 cycles per inference, every layer as the schedule model predicted; all 4,890 test clips bit-exact (logits and class, 91.80 %), as is R6b",
+             evidence="sim/seq_allclips_s.log",
+             check=lambda: has("sim/seq_allclips_s.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 67841\.\.67841 cycles")
+             and has("sim/seq_allclips.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 85352\.\.85352 cycles")
+             and has("sim/seq_tb_cim_s.log", r"RESULT: 0 errors; full inference 67841\.\.67841") and has("sim/seq_tb_cim_s.log", r"synthetic parameters 2 \(zero point -128\), logits and class: 0 errors"),
+             docs=[("docs/BASELINE_S.md", "**67,841**"), ("docs/BASELINE_S.md", "**91.80 %**")], how="`sim/run_seq_allclips.sh s`, about 15 min"),
+        dict(id="S4", label="[M]", text="Worst hop with S: 80,072 cycles (R6b 97,583); the live path at 4.096 MHz is bit-exact with no overrun in RTL, where R6b overruns",
+             evidence="sim/mic_tb_cim_div4_s_hm.log",
+             check=lambda: has("sim/mic_tb_cim_div4_s_hm.log", r"HOPMON 150 hops: worst 80072 cycles") and has("sim/mic_tb_cim_div4_s_hm.log", r"(?m)^PASS")
+             and has("sim/mic_tb_cim_div5_hm.log", r"HOPMON 150 hops: worst 97583 cycles") and has("sim/mic_tb_cim_div4.log", r"ERROR: overrun at decision 0"),
+             docs=[("docs/BASELINE_S.md", "**80,072 cycles**")], how="`HOPMON=1 sim/run_mic_tb.sh cim 4 1 s`; `sim/run_mic_tb.sh cim 4 1`"),
+        dict(id="S5", label="[E]", text="Estimate: S priced from its RTL counters, 1,120.8 nJ per inference (19.3 % below R6b), 68.8 µW at 40 ms; the model said 1,119.8 nJ",
+             evidence="model/energy_s_rtl.json",
+             check=lambda: round(jget("model/energy_s_rtl.json", "variants", "baseline", "S_rtl_nJ"), 1) == 1120.8 and round(jget("model/energy_s_rtl.json", "variants", "baseline", "S_model_nJ"), 1) == 1119.8
+             and round(jget("model/energy_s_rtl.json", "variants", "baseline", "power_S_rtl_uW", "2"), 1) == 68.8 and jget("model/energy_s_rtl.json", "cycles") == 67841,
+             docs=[("docs/BASELINE_S.md", "**1,120.8 nJ**"), ("docs/ENERGY_ESTIMATE.md", "**1,120.8 nJ**")], how="`sim/run_energy_counts.sh cim 5 1 s`; `python3 model/energy_est.py s_rtl`"),
+        dict(id="S6", label="[M]", text="Endpoint with S, out of context: 8,116 LUT, 5,977 FF, 147 DSP (R6b 7,635, 5,819, 145); setup slack +45.8 ns at 15 MHz",
+             evidence=UTIL_S, check=lambda: has(UTIL_S, r"\| cim_endpoint\s+\|\s+\(top\) \|\s+8116 \|.*\|\s+5977 \|.*\|\s+147 \|") and has(TIME_S, r"(?m)^\s+45\.773\s+0\.000"),
+             docs=[("docs/BASELINE_S.md", "8,116 LUT, 5,977 FF, 147 DSP")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15 SEQ_S=1`"),
+        dict(id="S7", label="[M]", text="S on the board at 15.36 MHz: 67,909 cycles go to interrupt, 60 runs bit-exact; streaming 100 hops exact; 500, 250, 125 decisions per 10 s with no overrun; real-microphone logits exact at 25, 13, 7 of 25, 13, 7 decisions",
+             evidence=KHOP_S_LOG,
+             check=lambda: has(SEQ_S_LOG, r"sequencer per inference \(go -> interrupt\): 67909\.\.67909 cycles") and has(SEQ_S_LOG, r"60 runs bit-exact -> PASS")
+             and has(STREAM_S_LOG, r"100 hops, 51 decisions, 0 hop and 0 decision mismatches -> PASS")
+             and all(has(KHOP_S_LOG, p) for p in (r"\[40 s\] 2000 decisions .*overrun 0", r"\[40 s\] 1000 decisions .*overrun 0", r"\[40 s\] 500 decisions .*overrun 0",
+                                                   r"25 with the window inside the recording: 0 differ", r"13 with the window inside the recording: 0 differ",
+                                                   r"7 with the window inside the recording: 0 differ", r"recordings all exact")),
+             docs=[("docs/BASELINE_S.md", "67,909")], how="`board_run.sh hopcim_seq_nexys_15m36.elf bitstreams/xheep_nexys_bscan_cim128ks.bit`; `board/board_khop.sh 42 bitstreams/xheep_nexys_bscan_cim128ks.bit`"),
+        dict(id="S8", label="[M]", text="Lowest real-time clock with S, 4.096 MHz, on the board: 6,000 decisions in 120 s with no overrun, 263 CPU-active cycles per decision; real-microphone logits exact at 25 of 25 decisions",
+             evidence=LIVE4_LOG,
+             check=lambda: has(LIVE4_LOG, r"system clock 4096000 Hz") and has(LIVE4_LOG, r"\[120 s\] 6000 decisions .*overrun 0; CPU-active per decision 263 cycles")
+             and has(MICREC4_CHECK, r"at 4096000 Hz, overrun 0") and has(MICREC4_CHECK, r"25 with the window inside the recording: 0 differ from the golden model"),
+             docs=[("docs/BASELINE_S.md", "**6,000 decisions in 120 s, 500 per 10 s, overrun 0**"), ("docs/LIVE_AUDIO.md", "6,000 decisions in 120 s")],
+             how="`board_run.sh hopcim_live_nexys_4m096.elf bitstreams/xheep_nexys_bscan_cim128mic4s.bit 130`; hopcim_micrec_nexys_4m096.elf, then `model/check_micrec.py --k 1 <log>`"),
     ]
 
 
@@ -440,13 +484,14 @@ THESIS_TABLES = [
     ("Energy estimate [E]", ["F1", "F2", "F3"]),
     ("Activation reuse against a lower cadence", ["E1", "F2"]),
     ("Dataflow options (StreamFuse model study)", ["S1", "S2"]),
+    ("The baseline S: RTL, lowest clock, energy, cost, board", ["S3", "S4", "S5", "S6", "S7", "S8"]),
 ]
 FINAL_TABLE = [  # the baseline table of docs/HopCIM_Specific_Next_Steps_and_Professor_Advice.md section 18
     ("CPU only", "B1", "measured on the board"),
     ("CPU-driven CIM", "B2", "measured on the board"),
     ("R6b sequencer (today)", "B3, F1, D2", "measured; energy [E]"),
-    ("S (sign gating, second lane, no L8 write)", "S2", "model only; RTL not built at this freeze"),
-    ("40-ms S", "-", "not built at this freeze"),
+    ("S (sign gating, second lane, no L8 write)", "S3, S4, S5, S6, S7, S8", "built: RTL and board measured, lowest clock 4.096 MHz; energy [E] from the RTL's counters"),
+    ("40-ms S", "S7, S5", "board: 250 decisions per 10 s, no overrun, real-audio logits exact; energy [E]"),
     ("StreamFuse-B (optional)", "S2", "model only"),
     ("B3 dedicated MFCC", "A3", "measured; resources in docs/B3_BASELINE.md"),
 ]
@@ -466,7 +511,7 @@ def results_freeze_md(m):
          "Generated by `freeze/freeze.py manifest`; `freeze/freeze.py check` fails if it is out of date. Every thesis table "
          "is traceable to the commit that tag `" + TAG + "` names, a command, and an output file.", "",
          "## 1. Freeze point", "",
-         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`.",
+         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`, `freeze-2026-11-08` (before S).",
          f"- X-HEEP base commit `{m['sources']['xheep_base_commit']}`, changes as `freeze/xheep/tracked_changes.patch` "
          f"(sha256 `{m['sources']['xheep_patch_sha256'][:16]}…`), overlay {m['sources']['xheep_overlay']['files']} files.", "",
          "## 2. Model and data", "", "| Item | Path | sha256 |", "|---|---|---|"]

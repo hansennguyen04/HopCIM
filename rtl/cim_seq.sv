@@ -32,10 +32,23 @@
 // last 49 frames and the maxima of the last 50 hops, and recomputes all 49 feature rows only when
 // log2fix16(window maximum) changed, otherwise only the new frame's row. Each row is
 // mfcc_int.finish: normalisation into X, the two DCT passes (tiles D1, D2) and requantisation.
+//
+// Options of the baseline S (docs/BASELINE_S.md, found by docs/STREAMFUSE_STUDY.md); all off is R6b:
+//   RQ_SG   sign-gated requantisation: in L0..L8 with output zero point -128, acc + bias <= 0 gives
+//           exactly -128 (srdhm and rdbp of x <= 0 are <= 0), so the multiplier and the shift hold
+//           their registers and the result is -128
+//   RQ_2L   a second requantisation lane: two results per cycle, lane 0 takes the even channel of
+//           each pair and lane 1 the odd one, so the parameter memory is split into an even and an
+//           odd bank (no extra capacity); passes are paced by max(9, ceil(outputs / 2))
+//   NO_L8A  L8 is not written to ACT (the pool sums are its only consumer), except in a run that
+//           stops after L8, so that it can be read back
 
 module cim_seq #(
     parameter int unsigned TW = 7,                   // engine tile index width
-    parameter int unsigned XB = 24                   // engine input width
+    parameter int unsigned XB = 24,                  // engine input width
+    parameter bit          RQ_SG  = 1'b0,
+    parameter bit          RQ_2L  = 1'b0,
+    parameter bit          NO_L8A = 1'b0
 ) (
     input  logic               clk_i,
     input  logic               rst_ni,
@@ -617,7 +630,7 @@ module cim_seq #(
   // memories read in stage R (data in G1)
   logic [7:0] feat_q [4];
   logic [7:0] act_q [7];
-  logic signed [15:0] pool_m [64];
+  logic signed [15:0] pool_rd;                       // pool sum of channel g_k (FC gather; write-back)
 
   // FEAT: written by the CPU, or by the window path while it runs; read by the gather, or by the
   // CPU while the sequencer is idle (data the cycle after, feat_rdata_o)
@@ -657,7 +670,7 @@ module cim_seq #(
       g1_n    <= g_n;
       g1_ixv  <= c_ixv;
       g1_ix0  <= c_ix0;
-      g1_pool <= pool_m[g_k];
+      g1_pool <= pool_rd;
     end
   end
 
@@ -754,7 +767,7 @@ module cim_seq #(
       bcnt[1] <= 3'd0;
       vm_last <= 2'b00;
     end else begin
-      if (issue) pace <= i_tag.n - 5'd1;
+      if (issue) pace <= RQ_2L ? 5'((6'(i_tag.n) + 6'd1) >> 1) - 5'd1 : i_tag.n - 5'd1;   // drain time
       else if (pace != 5'd0) pace <= pace - 5'd1;
       for (int b = 0; b < 2; b++)
         if (bcnt[b] != 3'd0) bcnt[b] <= bcnt[b] - 3'd1;
@@ -792,7 +805,7 @@ module cim_seq #(
 
   // ================================================================== results
   // Tags of the passes in flight (at most 2), in issue order; a done pops the oldest and latches
-  // its results, which drain one per cycle into the requantisation pipeline.
+  // its results, which drain one per cycle (RQ_2L: two) into the requantisation pipeline.
   tag_t        tq [4];
   logic [1:0]  tq_wp, tq_rp;
   logic        pop;
@@ -804,9 +817,21 @@ module cim_seq #(
   logic [5:0]  d_c;
   logic [3:0]  d_cg;
   logic [2:0]  d_cl;
+  logic        d_two;                                // RQ_2L: two results drain this cycle
+  logic        d_sw;                                 // RQ_2L: the first result has an odd channel
+  dst_t        d_d1, d_d2;                           // destinations of the first and the second result
+  /* verilator lint_off UNUSEDSIGNAL */            // used with RQ_2L only
+  logic [4:0]  d_ix0, d_ix1;                         // RQ_2L: parameter index (channel / 2), lanes 0, 1
+  /* verilator lint_on UNUSEDSIGNAL */
 
   assign pop   = run && net_on && eng_done_i;
   assign t_pop = tq[tq_rp];
+  assign d_two = RQ_2L && (d_rem > 5'd1);
+  assign d_sw  = RQ_2L && d_c[0];
+  assign d_d1  = '{p: d_p, c: d_c, cg: d_cg, cl: d_cl};
+  assign d_d2  = '{p: d_p, c: d_c + 6'd1, cg: (d_cl == 3'd6) ? d_cg + 4'd1 : d_cg, cl: (d_cl == 3'd6) ? 3'd0 : d_cl + 3'd1};
+  assign d_ix0 = 5'((7'(d_c) + 7'd1) >> 1);          // the even channel of the pair (d_c or d_c + 1)
+  assign d_ix1 = d_c[5:1];                           // the odd one
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -825,7 +850,7 @@ module cim_seq #(
       if (pop && (tq_cnt != 3'd0)) tq_rp <= tq_rp + 2'd1;
       tq_cnt <= tq_cnt + ((issue) ? 3'd1 : 3'd0) - ((pop && (tq_cnt != 3'd0)) ? 3'd1 : 3'd0);
       if (start_i && !run) err_q <= 1'b0;
-      else if (pop && ((tq_cnt == 3'd0) || (d_rem > 5'd1))) err_q <= 1'b1;
+      else if (pop && ((tq_cnt == 3'd0) || (d_rem > (RQ_2L ? 5'd2 : 5'd1)))) err_q <= 1'b1;
       if (pop) begin
         d_rem <= t_pop.n;
         d_i   <= 4'd0;
@@ -833,6 +858,14 @@ module cim_seq #(
         d_c   <= t_pop.c0;
         d_cg  <= t_pop.cg0;
         d_cl  <= t_pop.cl0;
+      end else if (d_two) begin
+        d_rem <= d_rem - 5'd2;
+        d_i   <= d_i + 4'd2;
+        d_c   <= d_c + 6'd2;
+        if (d_cl >= 3'd5) begin
+          d_cl <= d_cl - 3'd5;
+          d_cg <= d_cg + 4'd1;
+        end else d_cl <= d_cl + 3'd2;
       end else if (d_rem != 5'd0) begin
         d_rem <= d_rem - 5'd1;
         d_i   <= d_i + 4'd1;
@@ -854,26 +887,71 @@ module cim_seq #(
   // one cycle later, so it feeds the multiplier straight from the RAM: with a data register in
   // between, Vivado absorbs that register and the RAM's output stage into the DSP B pipeline and
   // is left with an asynchronous read that only LUTRAM can implement.
-  (* ram_style = "block" *) logic [23:0] bias_m [1024];
-  (* ram_style = "block" *) logic [30:0] qm_m [1024];
-  (* ram_style = "block" *) logic [3:0]  e_m [1024];
-  logic [9:0]  prm_ra, prm_ra_q, prm_ra_q2;
-  logic [23:0] bias_q;
+  logic [23:0] bias_q;                               // lane 0
   logic [30:0] qm_q;
   logic [3:0]  e_q;
+  /* verilator lint_off UNUSEDSIGNAL */            // lane 1: used with RQ_2L only
+  logic [23:0] bias1_q;
+  logic [30:0] qm1_q;
+  logic [3:0]  e1_q;
+  /* verilator lint_on UNUSEDSIGNAL */
 
-  assign prm_ra = {lay, d_c};
-  always_ff @(posedge clk_i) begin
-    if (prm_we_i && (prm_field_i == 2'd0)) bias_m[prm_addr_i] <= prm_data_i[23:0];
-    if (prm_we_i && (prm_field_i == 2'd1)) qm_m[prm_addr_i] <= prm_data_i[30:0];
-    if (prm_we_i && (prm_field_i == 2'd2)) e_m[prm_addr_i] <= prm_data_i[3:0];
-    prm_ra_q  <= prm_ra;
-    prm_ra_q2 <= prm_ra_q;
+  if (!RQ_2L) begin : g_prm1
+    (* ram_style = "block" *) logic [23:0] bias_m [1024];
+    (* ram_style = "block" *) logic [30:0] qm_m [1024];
+    (* ram_style = "block" *) logic [3:0]  e_m [1024];
+    logic [9:0]  prm_ra, prm_ra_q, prm_ra_q2;
+
+    assign prm_ra = {lay, d_c};
+    always_ff @(posedge clk_i) begin
+      if (prm_we_i && (prm_field_i == 2'd0)) bias_m[prm_addr_i] <= prm_data_i[23:0];
+      if (prm_we_i && (prm_field_i == 2'd1)) qm_m[prm_addr_i] <= prm_data_i[30:0];
+      if (prm_we_i && (prm_field_i == 2'd2)) e_m[prm_addr_i] <= prm_data_i[3:0];
+      prm_ra_q  <= prm_ra;
+      prm_ra_q2 <= prm_ra_q;
+    end
+    assign bias_q  = bias_m[prm_ra_q];               // in Q1
+    assign e_q     = e_m[prm_ra_q];
+    assign qm_q    = qm_m[prm_ra_q2];                // in Q2
+    assign bias1_q = '0;
+    assign e1_q    = '0;
+    assign qm1_q   = '0;
+  end else begin : g_prm2
+    // bank k holds the channels c with c mod 2 = k, entry {L, c / 2}; lane k reads bank k
+    for (genvar k = 0; k < 2; k++) begin : g_bank
+      (* ram_style = "block" *) logic [23:0] bias_m [512];
+      (* ram_style = "block" *) logic [30:0] qm_m [512];
+      (* ram_style = "block" *) logic [3:0]  e_m [512];
+      logic [8:0] wa, prm_ra, prm_ra_q, prm_ra_q2;
+      logic       we;
+
+      assign wa     = {prm_addr_i[9:6], prm_addr_i[5:1]};
+      assign we     = prm_we_i && (prm_addr_i[0] == 1'(k));
+      assign prm_ra = {lay, (k == 0) ? d_ix0 : d_ix1};
+      always_ff @(posedge clk_i) begin
+        if (we && (prm_field_i == 2'd0)) bias_m[wa] <= prm_data_i[23:0];
+        if (we && (prm_field_i == 2'd1)) qm_m[wa] <= prm_data_i[30:0];
+        if (we && (prm_field_i == 2'd2)) e_m[wa] <= prm_data_i[3:0];
+        prm_ra_q  <= prm_ra;
+        prm_ra_q2 <= prm_ra_q;
+      end
+      if (k == 0) begin : g_l0
+        assign bias_q = bias_m[prm_ra_q];
+        assign e_q    = e_m[prm_ra_q];
+        assign qm_q   = qm_m[prm_ra_q2];
+      end else begin : g_l1
+        assign bias1_q = bias_m[prm_ra_q];
+        assign e1_q    = e_m[prm_ra_q];
+        assign qm1_q   = qm_m[prm_ra_q2];
+      end
+    end
   end
-  assign bias_q = bias_m[prm_ra_q];                  // in Q1
-  assign e_q    = e_m[prm_ra_q];
-  assign qm_q   = qm_m[prm_ra_q2];                   // in Q2
 
+  // sign gate: exact -128 for acc + bias <= 0 when the output zero point is -128 (L0..L8)
+  logic sg_on;
+  assign sg_on = RQ_SG && (lay != 4'd9) && (zact_q == 8'h80);
+
+  // lane 0 (R6b's only lane; with RQ_2L the even channel of each pair)
   logic                 q0_v, q1_v, q2_v, q3_v, q4_v;
   dst_t                 q0_d, q1_d, q2_d, q3_d, q4_d;
   logic signed [AW-1:0] q0_acc;
@@ -881,74 +959,161 @@ module cim_seq #(
   logic [3:0]           q1_e, q2_e, q3_e;
   logic signed [56:0]   q2_m;
   logic [7:0]           q4_y;
+  logic                 q1_g, q2_g, q3_g;            // sign-gated: x <= 0 (q1_g in Q1, from q1_x)
 
+  assign q1_g = sg_on && (q1_x[24] || (q1_x == 25'sd0));
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       q0_v <= 1'b0; q1_v <= 1'b0; q2_v <= 1'b0; q3_v <= 1'b0; q4_v <= 1'b0;
     end else begin
-      q0_v <= (d_rem != 5'd0);
+      q0_v <= d_sw ? d_two : (d_rem != 5'd0);
       q1_v <= q0_v; q2_v <= q1_v; q3_v <= q2_v; q4_v <= q3_v;
     end
   end
   always_ff @(posedge clk_i) begin
-    q0_acc <= lat[d_i];
-    q0_d   <= '{p: d_p, c: d_c, cg: d_cg, cl: d_cl};
+    q0_acc <= lat[d_sw ? d_i + 4'd1 : d_i];
+    q0_d   <= d_sw ? d_d2 : d_d1;
     q1_x   <= 25'(q0_acc) + 25'(signed'(bias_q));
     q1_e   <= e_q;
     q1_d   <= q0_d;
-    q2_m   <= q1_x * $signed({1'b0, qm_q});
+    if (!q1_g) q2_m <= q1_x * $signed({1'b0, qm_q});        // held when gated
+    q2_g   <= q1_g;
     q2_e   <= q1_e;
     q2_d   <= q1_d;
-    q3_r   <= 25'((q2_m + 57'sd1073741824) >>> 31);
+    if (!q2_g) q3_r <= 25'((q2_m + 57'sd1073741824) >>> 31);
+    q3_g   <= q2_g;
     q3_e   <= q2_e;
     q3_d   <= q2_d;
-    q4_y   <= rq_out(q3_r, q3_e, (lay == 4'd9) ? zfc_q : zact_q);
+    q4_y   <= q3_g ? 8'h80 : rq_out(q3_r, q3_e, (lay == 4'd9) ? zfc_q : zact_q);
     q4_d   <= q3_d;
   end
 
-  assign back_idle  = (tq_cnt == 3'd0) && (d_rem == 5'd0) && !q0_v && !q1_v && !q2_v && !q3_v && !q4_v;
+  // lane 1 (RQ_2L): the odd channel of each pair; constant idle without RQ_2L
+  logic                 r0_v, r1_v, r2_v, r3_v, r4_v;
+  /* verilator lint_off UNUSEDSIGNAL */            // read only inside g_lane1
+  dst_t                 r0_d, r1_d, r2_d, r3_d;
+  logic signed [AW-1:0] r0_acc;
+  logic signed [24:0]   r1_x, r3_r;
+  logic [3:0]           r1_e, r2_e, r3_e;
+  logic signed [56:0]   r2_m;
+  logic                 r1_g, r2_g, r3_g;
+  /* verilator lint_on UNUSEDSIGNAL */
+  dst_t                 r4_d;
+  logic [7:0]           r4_y;
+
+  if (RQ_2L) begin : g_lane1
+    assign r1_g = sg_on && (r1_x[24] || (r1_x == 25'sd0));
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        r0_v <= 1'b0; r1_v <= 1'b0; r2_v <= 1'b0; r3_v <= 1'b0; r4_v <= 1'b0;
+      end else begin
+        r0_v <= d_sw ? (d_rem != 5'd0) : d_two;
+        r1_v <= r0_v; r2_v <= r1_v; r3_v <= r2_v; r4_v <= r3_v;
+      end
+    end
+    always_ff @(posedge clk_i) begin
+      r0_acc <= lat[d_sw ? d_i : d_i + 4'd1];
+      r0_d   <= d_sw ? d_d1 : d_d2;
+      r1_x   <= 25'(r0_acc) + 25'(signed'(bias1_q));
+      r1_e   <= e1_q;
+      r1_d   <= r0_d;
+      if (!r1_g) r2_m <= r1_x * $signed({1'b0, qm1_q});
+      r2_g   <= r1_g;
+      r2_e   <= r1_e;
+      r2_d   <= r1_d;
+      if (!r2_g) r3_r <= 25'((r2_m + 57'sd1073741824) >>> 31);
+      r3_g   <= r2_g;
+      r3_e   <= r2_e;
+      r3_d   <= r2_d;
+      r4_y   <= r3_g ? 8'h80 : rq_out(r3_r, r3_e, (lay == 4'd9) ? zfc_q : zact_q);
+      r4_d   <= r3_d;
+    end
+  end else begin : g_lane1_off
+    assign {r0_v, r1_v, r2_v, r3_v, r4_v} = '0;
+    assign {r0_d, r1_d, r2_d, r3_d, r4_d} = '0;
+    assign {r0_acc, r1_x, r3_r, r1_e, r2_e, r3_e, r2_m, r4_y} = '0;
+    assign {r1_g, r2_g, r3_g} = '0;
+  end
+
+  assign back_idle  = (tq_cnt == 3'd0) && (d_rem == 5'd0) && !q0_v && !q1_v && !q2_v && !q3_v && !q4_v
+                      && !r0_v && !r1_v && !r2_v && !r3_v && !r4_v;
   assign front_done = !g_on && !i_on;
 
   // ================================================================== write-back
-  // ACT (L0..L8), the pool sums (L8; the first position overwrites), the logits and argmax (L9)
-  logic        act_we;
-  logic [11:0] act_wa, act_ra;
+  // ACT (L0..L8; NO_L8A: L8 only in a run that stops after it), the pool sums (L8; the first
+  // position overwrites), the logits and argmax (L9). With RQ_2L both lanes write in one cycle:
+  // consecutive channels, so always different ACT byte lanes and different pool banks.
+  logic        act_we, act_we1, l8_act;
+  logic [11:0] act_wa, act_wa1, act_ra;
   logic [3:0]  cdiv;                                 // CPU read: channel / 7, channel % 7
   logic [2:0]  cmod, act_lane_q;
   logic [7:0]  logit [16];
-  logic [7:0]  best;
-  logic [3:0]  cls;
+  logic [7:0]  best, best0;
+  logic [3:0]  cls, cls0;
 
-  assign act_we = q4_v && (lay != 4'd9);
-  assign act_wa = {wbuf, q4_d.p, q4_d.cg};
-  assign cdiv   = 4'((int'(act_ch_i) * 37) >> 8);
-  assign cmod   = 3'(act_ch_i - 6'(7 * int'(cdiv)));
-  assign act_ra = run ? ga : {act_buf_i, act_pos_i, cdiv};
+  assign l8_act  = !NO_L8A || (lay != 4'd8) || (stop_q == 4'd9);
+  assign act_we  = q4_v && (lay != 4'd9) && l8_act;
+  assign act_we1 = r4_v && (lay != 4'd9) && l8_act;
+  assign act_wa  = {wbuf, q4_d.p, q4_d.cg};
+  assign act_wa1 = {wbuf, r4_d.p, r4_d.cg};
+  assign cdiv    = 4'((int'(act_ch_i) * 37) >> 8);
+  assign cmod    = 3'(act_ch_i - 6'(7 * int'(cdiv)));
+  assign act_ra  = run ? ga : {act_buf_i, act_pos_i, cdiv};
 
   for (genvar l = 0; l < 7; l++) begin : g_act
     (* ram_style = "block" *) logic [7:0] am [4096];
+    logic w0, w1;
+    assign w0 = act_we && (q4_d.cl == 3'(l));
+    assign w1 = act_we1 && (r4_d.cl == 3'(l));
     always_ff @(posedge clk_i) begin
-      if (act_we && (q4_d.cl == 3'(l))) am[act_wa] <= q4_y;
+      if (w0 || w1) am[w0 ? act_wa : act_wa1] <= w0 ? q4_y : r4_y;
       act_q[l] <= am[act_ra];
     end
   end
 
+  if (!RQ_2L) begin : g_pool1
+    logic signed [15:0] pool_m [64];
+    always_ff @(posedge clk_i)
+      if (q4_v && (lay == 4'd8))
+        pool_m[q4_d.c] <= ((q4_d.p == 7'd0) ? 16'sd0 : pool_m[q4_d.c]) + 16'(signed'(q4_y));
+    assign pool_rd = pool_m[g_k];
+  end else begin : g_pool2                           // lane 0: even channels, lane 1: odd channels
+    logic signed [15:0] pool_e [32], pool_o [32];
+    always_ff @(posedge clk_i) begin
+      if (q4_v && (lay == 4'd8))
+        pool_e[q4_d.c[5:1]] <= ((q4_d.p == 7'd0) ? 16'sd0 : pool_e[q4_d.c[5:1]]) + 16'(signed'(q4_y));
+      if (r4_v && (lay == 4'd8))
+        pool_o[r4_d.c[5:1]] <= ((r4_d.p == 7'd0) ? 16'sd0 : pool_o[r4_d.c[5:1]]) + 16'(signed'(r4_y));
+    end
+    assign pool_rd = g_k[0] ? pool_o[g_k[5:1]] : pool_e[g_k[5:1]];
+  end
+
   always_ff @(posedge clk_i) begin
-    if (q4_v && (lay == 4'd8))
-      pool_m[q4_d.c] <= ((q4_d.p == 7'd0) ? 16'sd0 : pool_m[q4_d.c]) + 16'(signed'(q4_y));
     if (act_re_i) act_lane_q <= cmod;
   end
 
+  // argmax, first maximum: lane 0 before lane 1 (an L9 pair is channels 2k, 2k + 1)
+  always_comb begin
+    best0 = best;
+    cls0  = cls;
+    if (q4_v && (lay == 4'd9) && ((q4_d.c == 6'd0) || ($signed(q4_y) > $signed(best)))) begin
+      best0 = q4_y;
+      cls0  = q4_d.c[3:0];
+    end
+  end
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       for (int i = 0; i < 16; i++) logit[i] <= 8'd0;
       best <= 8'd0;
       cls  <= 4'd0;
-    end else if (q4_v && (lay == 4'd9)) begin
-      logit[q4_d.c[3:0]] <= q4_y;
-      if ((q4_d.c == 6'd0) || ($signed(q4_y) > $signed(best))) begin
-        best <= q4_y;
-        cls  <= q4_d.c[3:0];
+    end else begin
+      if (q4_v && (lay == 4'd9)) logit[q4_d.c[3:0]] <= q4_y;
+      if (r4_v && (lay == 4'd9)) logit[r4_d.c[3:0]] <= r4_y;
+      best <= best0;
+      cls  <= cls0;
+      if (r4_v && (lay == 4'd9) && ((r4_d.c == 6'd0) || ($signed(r4_y) > $signed(best0)))) begin
+        best <= r4_y;
+        cls  <= r4_d.c[3:0];
       end
     end
   end

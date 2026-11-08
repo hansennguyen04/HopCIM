@@ -5,6 +5,10 @@ as a Vivado gate netlist, on the Verilator SoC and **on the board** (Nexys A7-10
 bitstreams). Every per-decision board number equals Verilator's (§8). The first bitstreams exposed
 a Vivado synthesis mismatch, which was found and fixed (§8a).
 
+**2026-11-08: the baseline S** (sign-gated requantisation, a second requantisation lane, no L8 write) is built behind
+the parameter `SEQ_S` and replaces R6b as the baseline: 67,841 cycles per inference instead of 85,352, exact on all
+4,890 test clips, on the board at 15.36 MHz (`BASELINE_S.md`). With `SEQ_S = 0` everything below is unchanged.
+
 ## 1. Result
 
 `rtl/cim_seq.sv` runs the whole MLPerf Tiny int8 DS-CNN on the CIM by itself. Per decision, the

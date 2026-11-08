@@ -1,0 +1,38 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Sun Nov  8 14:20:23 2026
+| Host         : hansen0411-Lenovo-Legion-5-15ARH05 running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_utilization -hierarchical -file /home/hansen0411/APlus_Project/hopcim/syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1/utilization_hier.rpt
+| Design       : cim_endpoint
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++------------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+|     Instance     |     Module    | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++------------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+| cim_endpoint     |         (top) |       8116 |       7478 |     604 |   34 | 5977 |     41 |     11 |        147 |
+|   (cim_endpoint) |         (top) |          2 |          2 |       0 |    0 | 1012 |      0 |      1 |          0 |
+|   g_fe_cim.i_fe  |        cim_fe |       1256 |       1054 |     202 |    0 |  344 |      0 |      4 |          7 |
+|   i_audio        |     cim_audio |       1404 |       1404 |       0 |    0 |  850 |      0 |      0 |          1 |
+|     (i_audio)    |     cim_audio |        417 |        417 |       0 |    0 |  140 |      0 |      0 |          0 |
+|     i_dec        |       pdm_dec |        987 |        987 |       0 |    0 |  710 |      0 |      0 |          1 |
+|   i_engine       |    cim_engine |       2196 |       2061 |     128 |    7 | 1637 |     32 |      0 |        128 |
+|   i_seq          |       cim_seq |       3263 |       2961 |     274 |   28 | 2134 |      9 |      6 |         11 |
+|     (i_seq)      |       cim_seq |       3069 |       2767 |     274 |   28 | 2077 |      9 |      6 |          7 |
+|     i_log2       | cim_log2fix16 |        195 |        195 |       0 |    0 |   57 |      0 |      0 |          4 |
++------------------+---------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+
