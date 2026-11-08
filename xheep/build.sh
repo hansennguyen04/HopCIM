@@ -46,7 +46,7 @@ if [ "$V" = app ]; then
     exit 0
 fi
 
-row=$(echo "$VARIANTS" | awk -F'|' -v v="$V" '{gsub(/ /, "", $1)} $1 == v')
+row=$(echo "$VARIANTS" | awk -F'|' -v v="$V" '{k = $1; gsub(/ /, "", k)} k == v')   # not gsub on $1: that rebuilds $0 without the |
 [ -n "$row" ] || usage
 kind=$(echo "$row" | cut -d'|' -f2 | xargs); root=$(echo "$row" | cut -d'|' -f3 | xargs)
 flags=$(echo "$row" | cut -d'|' -f4 | xargs); name=$(echo "$row" | cut -d'|' -f5 | xargs)
