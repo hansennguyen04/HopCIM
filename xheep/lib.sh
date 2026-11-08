@@ -1,0 +1,32 @@
+# Shared by xheep/setup.sh, check.sh and build.sh (sourced, not run).
+XHEEP_HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+HOPCIM=$(dirname "$XHEEP_HERE")
+# shellcheck source=base.env
+. "$XHEEP_HERE/base.env"
+
+die() { echo "error: $*" >&2; exit 1; }
+
+# Tool paths (RISC-V GCC, Verilator, Vivado, verible). XHEEP_ENV names a script to source;
+# the default is the one this project has always used, if it exists.
+xheep_tools() {
+    local env=${XHEEP_ENV:-$HOME/APlus_Project/planenest/hw/xheep_env.sh}
+    if [ -f "$env" ]; then
+        # shellcheck disable=SC1090
+        . "$env" > /dev/null
+    fi
+}
+
+# Files the patch series touches, one per line (from the patches' own headers).
+series_files() {
+    sed -n 's|^diff --git a/\(.*\) b/.*|\1|p' "$XHEEP_HERE"/patches/*.patch | sort -u
+}
+
+# Untracked paths HopCIM puts into an X-HEEP tree: the links, the build roots, logs.
+ours_untracked() {
+    local a
+    echo "hw/ip/hopcim"
+    echo ".hopcim-gen-start"
+    echo ".hopcim-build.lock"
+    echo ".venv"              # when setup.sh links it (.gitignore only covers a directory)
+    for a in "$HOPCIM"/sw/applications/*/; do echo "sw/applications/$(basename "$a")/"; done
+}

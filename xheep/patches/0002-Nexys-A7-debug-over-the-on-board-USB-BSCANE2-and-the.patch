@@ -1,0 +1,513 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hansen0411 <hansennguyen.ee14@nycu.edu.tw>
+Date: Sun, 8 Nov 2026 20:00:00 +0800
+Subject: [PATCH 2/3] Nexys A7: debug over the on-board USB (BSCANE2) and the
+ on-board PDM microphone
+
+- vendored riscv_dbg: TCK of the BSCANE2 DTM on a BUFG (a placement change broke the debug
+  module: "Debug Module did not become active"); constraints/common/bscan.xdc constrains it,
+  added to the FPGA core under use_bscane_xilinx. Kept for re-vendoring as
+  hw/vendor/patches/pulp_platform_riscv_dbg/0002-bscane-tck-on-a-bufg.patch.
+- vendored xheep_fpga_support: PDM pins J5 (M_CLK) and H5 (M_DATA) of the on-board ADMP421,
+  rst_i_IBUF on local routing; kept as hw/vendor/patches/xheep_fpga_support/0001-*.patch
+  (patch_dir added to xheep_fpga_support.vendor.hjson).
+- configs/kws_nexys.py: configs/general.py + PDM2PCM at 0x30060000 (make mcu-gen X_HEEP_CFG=...).
+- tb/core-v-mini-mcu-nexys-bscan.cfg, tb/nexys-a7-program-fpga.cfg: OpenOCD over the on-board
+  FTDI (no external JTAG adapter).
+---
+ configs/kws_nexys.py                          | 188 ++++++++++++++++++
+ hw/fpga/xheep_fpga_support.vendor.hjson       |   2 +
+ .../constraints/common/bscan.xdc              |   6 +
+ .../constraints/nexys/pin_assign.xdc          |   5 +-
+ .../core-v-mini-mcu-fpga.core                 |   6 +
+ .../0002-bscane-tck-on-a-bufg.patch           |  30 +++
+ ...s-bscan-constraints-and-pdm-mic-pins.patch |  59 ++++++
+ .../riscv_dbg/src/dmi_bscane_tap.sv           |  12 +-
+ tb/core-v-mini-mcu-nexys-bscan.cfg            |  53 +++++
+ tb/nexys-a7-program-fpga.cfg                  |  18 ++
+ 10 files changed, 376 insertions(+), 3 deletions(-)
+ create mode 100644 configs/kws_nexys.py
+ create mode 100644 hw/fpga/xheep_fpga_support/constraints/common/bscan.xdc
+ create mode 100644 hw/vendor/patches/pulp_platform_riscv_dbg/0002-bscane-tck-on-a-bufg.patch
+ create mode 100644 hw/vendor/patches/xheep_fpga_support/0001-nexys-bscan-constraints-and-pdm-mic-pins.patch
+ create mode 100644 tb/core-v-mini-mcu-nexys-bscan.cfg
+ create mode 100644 tb/nexys-a7-program-fpga.cfg
+
+diff --git a/configs/kws_nexys.py b/configs/kws_nexys.py
+new file mode 100644
+index 0000000..fa20874
+--- /dev/null
++++ b/configs/kws_nexys.py
+@@ -0,0 +1,188 @@
++# Copyright 2026 EPFL
++# Licensed under the Apache License, Version 2.0, see LICENSE for details.
++# SPDX-License-Identifier: Apache-2.0
++#
++# Author(s): David Mallasen
++# Description: Generic (default) configuration for X-HEEP
++
++from xheep import XHeep
++from address_map.address_map import AddressMap
++from address_map.address_region import AddressRegion
++from cpu.cv32e20 import cv32e20
++from bus_type import BusType
++from debug_ss.debug_ss import DebugSS
++from memory_ss.memory_ss import MemorySS
++from memory_ss.linker_section import LinkerSection
++from peripherals.base_peripherals import (
++    SOC_ctrl,
++    Bootrom,
++    SPI_flash,
++    W25Q128JW_Controller,
++    DMA,
++    Power_manager,
++    RV_timer_ao,
++    Fast_intr_ctrl,
++    Ext_peripheral,
++    Pad_control,
++    GPIO_ao,
++)
++
++from peripherals.user_peripherals import (
++    RV_plic,
++    SPI_host,
++    GPIO,
++    I2C,
++    RV_timer,
++    SPI2,
++    PDM2PCM,
++    I2S,
++    UART,
++)
++
++from linker_script.linker_script import LinkerScript
++from interrupts.interrupts import Interrupts
++from peripherals.peripheral_domain import PeripheralDomain
++
++
++def config():
++    system = XHeep()
++
++    system.set_bus_type(BusType.NtoM)
++
++    system.set_cpu(cv32e20())
++
++    memory_ss = MemorySS()
++    memory_ss.add_ram_banks([32] * 4)
++    memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x00000E800))
++    memory_ss.add_linker_section(LinkerSection("data", 0x00000E800, None))
++    system.set_memory_ss(memory_ss)
++
++    system.set_linker_script_config(LinkerScript(stack_size=0x800, heap_size=0x800))
++
++    system.set_debug_ss(DebugSS(has_spi_slave=1))
++
++    address_map = AddressMap()
++    address_map.add_region(
++        AddressRegion("debug", start_address=0x10000000, length=0x00100000)
++    )
++    address_map.add_region(
++        AddressRegion(
++            "base_peripheral_domain", start_address=0x20000000, length=0x00100000
++        )
++    )
++    address_map.add_region(
++        AddressRegion(
++            "user_peripheral_domain", start_address=0x30000000, length=0x00100000
++        )
++    )
++    address_map.add_region(
++        AddressRegion("flash_mem", start_address=0x40000000, length=0x01000000)
++    )
++    address_map.add_region(
++        AddressRegion("serial_link", start_address=0x50000000, length=0x01000000)
++    )
++    address_map.add_region(
++        AddressRegion("ext_slaves", start_address=0xC0000000, length=0x40000000)
++    )
++    system.set_address_map(address_map)
++
++    # Peripheral domains initialization
++    base_peripheral_domain = PeripheralDomain(name="base_peripheral_domain")
++    user_peripheral_domain = PeripheralDomain(name="user_peripheral_domain")
++
++    # Base peripherals. All base peripherals must be added.
++    base_peripheral_domain.add_peripheral(SOC_ctrl(0x00000000))
++    base_peripheral_domain.add_peripheral(Bootrom(0x00010000))
++    base_peripheral_domain.add_peripheral(SPI_flash(0x00020000, 0x00008000))
++    base_peripheral_domain.add_peripheral(
++        W25Q128JW_Controller(0x00029000, 0x00007000, cache="yes")
++    )
++    base_peripheral_domain.add_peripheral(
++        DMA(
++            address=0x30000,
++            length=0x10000,
++            num_channels=4,
++            num_master_ports=2,
++            num_channels_per_master_port=2,
++        )
++    )
++    base_peripheral_domain.add_peripheral(Power_manager(0x00040000))
++    base_peripheral_domain.add_peripheral(RV_timer_ao(0x00050000))
++    base_peripheral_domain.add_peripheral(Fast_intr_ctrl(0x00060000))
++    base_peripheral_domain.add_peripheral(Ext_peripheral(0x00070000))
++    base_peripheral_domain.add_peripheral(Pad_control(0x00080000))
++    base_peripheral_domain.add_peripheral(GPIO_ao(0x00090000))
++
++    # User peripherals. All are optional.
++    user_peripheral_domain.add_peripheral(RV_plic(0x00000000))
++    user_peripheral_domain.add_peripheral(SPI_host(0x00010000))
++    user_peripheral_domain.add_peripheral(GPIO(0x00020000))
++    user_peripheral_domain.add_peripheral(I2C(0x00030000))
++    user_peripheral_domain.add_peripheral(RV_timer(0x00040000))
++    user_peripheral_domain.add_peripheral(SPI2(0x00050000))
++    user_peripheral_domain.add_peripheral(
++        PDM2PCM(0x00060000)
++    )  # KWS bring-up: CIC-only PDM front-end
++    user_peripheral_domain.add_peripheral(I2S(0x00070000))
++    user_peripheral_domain.add_peripheral(UART(0x00080000))
++
++    # Add the peripheral domains to the system
++    system.add_peripheral_domain(base_peripheral_domain)
++    system.add_peripheral_domain(user_peripheral_domain)
++
++    interrupts = Interrupts()
++    interrupts.add_interrupt("null_intr", 0)
++    interrupts.add_interrupt("uart_intr_tx_watermark", 1)
++    interrupts.add_interrupt("uart_intr_rx_watermark", 2)
++    interrupts.add_interrupt("uart_intr_tx_empty", 3)
++    interrupts.add_interrupt("uart_intr_rx_overflow", 4)
++    interrupts.add_interrupt("uart_intr_rx_frame_err", 5)
++    interrupts.add_interrupt("uart_intr_rx_break_err", 6)
++    interrupts.add_interrupt("uart_intr_rx_timeout", 7)
++    interrupts.add_interrupt("uart_intr_rx_parity_err", 8)
++    interrupts.add_interrupt("gpio_intr_8", 9)
++    interrupts.add_interrupt("gpio_intr_9", 10)
++    interrupts.add_interrupt("gpio_intr_10", 11)
++    interrupts.add_interrupt("gpio_intr_11", 12)
++    interrupts.add_interrupt("gpio_intr_12", 13)
++    interrupts.add_interrupt("gpio_intr_13", 14)
++    interrupts.add_interrupt("gpio_intr_14", 15)
++    interrupts.add_interrupt("gpio_intr_15", 16)
++    interrupts.add_interrupt("gpio_intr_16", 17)
++    interrupts.add_interrupt("gpio_intr_17", 18)
++    interrupts.add_interrupt("gpio_intr_18", 19)
++    interrupts.add_interrupt("gpio_intr_19", 20)
++    interrupts.add_interrupt("gpio_intr_20", 21)
++    interrupts.add_interrupt("gpio_intr_21", 22)
++    interrupts.add_interrupt("gpio_intr_22", 23)
++    interrupts.add_interrupt("gpio_intr_23", 24)
++    interrupts.add_interrupt("gpio_intr_24", 25)
++    interrupts.add_interrupt("gpio_intr_25", 26)
++    interrupts.add_interrupt("gpio_intr_26", 27)
++    interrupts.add_interrupt("gpio_intr_27", 28)
++    interrupts.add_interrupt("gpio_intr_28", 29)
++    interrupts.add_interrupt("gpio_intr_29", 30)
++    interrupts.add_interrupt("gpio_intr_30", 31)
++    interrupts.add_interrupt("gpio_intr_31", 32)
++    interrupts.add_interrupt("intr_fmt_watermark", 33)
++    interrupts.add_interrupt("intr_rx_watermark", 34)
++    interrupts.add_interrupt("intr_fmt_overflow", 35)
++    interrupts.add_interrupt("intr_rx_overflow", 36)
++    interrupts.add_interrupt("intr_nak", 37)
++    interrupts.add_interrupt("intr_scl_interference", 38)
++    interrupts.add_interrupt("intr_sda_interference", 39)
++    interrupts.add_interrupt("intr_stretch_timeout", 40)
++    interrupts.add_interrupt("intr_sda_unstable", 41)
++    interrupts.add_interrupt("intr_trans_complete", 42)
++    interrupts.add_interrupt("intr_tx_empty", 43)
++    interrupts.add_interrupt("intr_tx_nonempty", 44)
++    interrupts.add_interrupt("intr_tx_overflow", 45)
++    interrupts.add_interrupt("intr_acq_overflow", 46)
++    interrupts.add_interrupt("intr_ack_stop", 47)
++    interrupts.add_interrupt("intr_host_timeout", 48)
++    interrupts.add_interrupt("spi2_intr_event", 49)
++    interrupts.add_interrupt("i2s_intr_event", 50)
++    interrupts.add_interrupt("w25q128jw_controller_intr_event", 51)
++    system.set_interrupts(interrupts)
++
++    return system
+diff --git a/hw/fpga/xheep_fpga_support.vendor.hjson b/hw/fpga/xheep_fpga_support.vendor.hjson
+index 92c37aa..d59e19d 100644
+--- a/hw/fpga/xheep_fpga_support.vendor.hjson
++++ b/hw/fpga/xheep_fpga_support.vendor.hjson
+@@ -10,4 +10,6 @@
+     rev: "07af02035dc6533131f5109a35b82ee459102acd",
+   },
+ 
++  patch_dir: "../vendor/patches/xheep_fpga_support",
++
+ }
+diff --git a/hw/fpga/xheep_fpga_support/constraints/common/bscan.xdc b/hw/fpga/xheep_fpga_support/constraints/common/bscan.xdc
+new file mode 100644
+index 0000000..abff4cb
+--- /dev/null
++++ b/hw/fpga/xheep_fpga_support/constraints/common/bscan.xdc
+@@ -0,0 +1,6 @@
++# Local addition (HopCIM): constraints for the BSCANE2 debug TAP (FuseSoC flag use_bscane_xilinx).
++# TCK comes from the FPGA's own JTAG port through BSCANE2 (OpenOCD drives it at 1 MHz). Without a
++# clock definition its registers are unclocked and never timed. The DMI crossing to the system
++# clock is a cdc_2phase handshake, so TCK is asynchronous to every other clock.
++create_clock -name bscan_tck -period 100.000 [get_pins -hierarchical -filter {NAME =~ "*i_dmi_jtag_tap/i_tap_dtmcs/TCK"}]
++set_clock_groups -asynchronous -group [get_clocks bscan_tck]
+diff --git a/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc b/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
+index 15d3577..b0442c1 100644
+--- a/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
++++ b/hw/fpga/xheep_fpga_support/constraints/nexys/pin_assign.xdc
+@@ -15,6 +15,7 @@ set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {exit_valid_
+ set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports {exit_value_o}];
+ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_led_o_OBUF]
+ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_led_o_OBUF]
++set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_i_IBUF]
+ 
+ ##Switches
+ set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {boot_select_i}]; #Sch=sw[2]
+@@ -82,8 +83,8 @@ set_property -dict { PACKAGE_PIN T10 IOSTANDARD LVCMOS33} [get_ports { spi_slave
+ set_property -dict { PACKAGE_PIN R10 IOSTANDARD LVCMOS33} [get_ports { spi_slave_cs_io }];
+ set_property -dict { PACKAGE_PIN K16 IOSTANDARD LVCMOS33} [get_ports { spi_slave_miso_io }];
+ set_property -dict { PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports { spi_slave_mosi_io }];
+-set_property -dict { PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }];
+-set_property -dict { PACKAGE_PIN T11 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }];
++set_property -dict { PACKAGE_PIN J5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }]; #Sch=m_clk (onboard PDM mic; M_LRSEL F5 left at default pull-down)
++set_property -dict { PACKAGE_PIN H5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }]; #Sch=m_data
+ set_property -dict { PACKAGE_PIN L18 IOSTANDARD LVCMOS33} [get_ports { i2s_sck_io }];
+ set_property -dict { PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports { i2s_ws_io }];
+ set_property -dict { PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports { i2s_sd_rx_io }];
+diff --git a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+index 0636329..26cc2f0 100644
+--- a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
++++ b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+@@ -81,6 +81,11 @@ filesets:
+     - constraints/common/sync.xdc
+     file_type: xdc
+ 
++  xdc-fpga-bscan:
++    files:
++    - constraints/common/bscan.xdc
++    file_type: xdc
++
+   xdc-fpga-pynq-z2:
+     files:
+     - constraints/pynq-z2/pin_assign.xdc
+@@ -155,6 +160,7 @@ targets:
+     - target_pynq-z2 ? (tcl-fpga-ps-utils)
+     - target_nexys-a7-100t ? (ip-fpga-nexys)
+     - target_nexys-a7-100t ? (xdc-fpga-nexys)
++    - use_bscane_xilinx ? (xdc-fpga-bscan)
+     - target_zcu104 ? (ip-fpga-zcu104)
+     - target_zcu104 ? (xdc-fpga-zcu104)
+     - target_zcu102 ? (ip-fpga-zcu102)
+diff --git a/hw/vendor/patches/pulp_platform_riscv_dbg/0002-bscane-tck-on-a-bufg.patch b/hw/vendor/patches/pulp_platform_riscv_dbg/0002-bscane-tck-on-a-bufg.patch
+new file mode 100644
+index 0000000..e82fd6e
+--- /dev/null
++++ b/hw/vendor/patches/pulp_platform_riscv_dbg/0002-bscane-tck-on-a-bufg.patch
+@@ -0,0 +1,30 @@
++diff --git a/src/dmi_bscane_tap.sv b/src/dmi_bscane_tap.sv
++index 5fe5d86..a349933 100644
++--- a/src/dmi_bscane_tap.sv
+++++ b/src/dmi_bscane_tap.sv
++@@ -44,6 +44,16 @@ module dmi_jtag_tap #(
++   input  logic        dmi_tdo_i
++ );
++ 
+++  // Local patch (HopCIM): TCK is put on a global buffer. Left on local routing, its skew across
+++  // the DTM registers is unchecked, and a placement change (e.g. a larger design) can break the
+++  // debug module (OpenOCD: "Debug Module did not become active"). See constraints/common/bscan.xdc.
+++  logic tck_bscan;
+++
+++  BUFG i_tck_bufg (
+++    .I (tck_bscan),
+++    .O (tck_o)
+++  );
+++
++   BSCANE2 #(
++     .JTAG_CHAIN (3)
++   ) i_tap_dtmcs (
++@@ -53,7 +63,7 @@ module dmi_jtag_tap #(
++     .RUNTEST (),
++     .SEL (dtmcs_select_o),
++     .SHIFT (shift_o),
++-    .TCK (tck_o),
+++    .TCK (tck_bscan),
++     .TDI (tdi_o),
++     .TMS (),
++     .TDO (dtmcs_tdo_i),
+diff --git a/hw/vendor/patches/xheep_fpga_support/0001-nexys-bscan-constraints-and-pdm-mic-pins.patch b/hw/vendor/patches/xheep_fpga_support/0001-nexys-bscan-constraints-and-pdm-mic-pins.patch
+new file mode 100644
+index 0000000..54f098f
+--- /dev/null
++++ b/hw/vendor/patches/xheep_fpga_support/0001-nexys-bscan-constraints-and-pdm-mic-pins.patch
+@@ -0,0 +1,59 @@
++diff --git a/constraints/common/bscan.xdc b/constraints/common/bscan.xdc
++new file mode 100644
++index 0000000..abff4cb
++--- /dev/null
+++++ b/constraints/common/bscan.xdc
++@@ -0,0 +1,6 @@
+++# Local addition (HopCIM): constraints for the BSCANE2 debug TAP (FuseSoC flag use_bscane_xilinx).
+++# TCK comes from the FPGA's own JTAG port through BSCANE2 (OpenOCD drives it at 1 MHz). Without a
+++# clock definition its registers are unclocked and never timed. The DMI crossing to the system
+++# clock is a cdc_2phase handshake, so TCK is asynchronous to every other clock.
+++create_clock -name bscan_tck -period 100.000 [get_pins -hierarchical -filter {NAME =~ "*i_dmi_jtag_tap/i_tap_dtmcs/TCK"}]
+++set_clock_groups -asynchronous -group [get_clocks bscan_tck]
++diff --git a/constraints/nexys/pin_assign.xdc b/constraints/nexys/pin_assign.xdc
++index 15d3577..b0442c1 100644
++--- a/constraints/nexys/pin_assign.xdc
+++++ b/constraints/nexys/pin_assign.xdc
++@@ -15,6 +15,7 @@ set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {exit_valid_
++ set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports {exit_value_o}];
++ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_led_o_OBUF]
++ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_led_o_OBUF]
+++set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets rst_i_IBUF]
++ 
++ ##Switches
++ set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {boot_select_i}]; #Sch=sw[2]
++@@ -82,8 +83,8 @@ set_property -dict { PACKAGE_PIN T10 IOSTANDARD LVCMOS33} [get_ports { spi_slave
++ set_property -dict { PACKAGE_PIN R10 IOSTANDARD LVCMOS33} [get_ports { spi_slave_cs_io }];
++ set_property -dict { PACKAGE_PIN K16 IOSTANDARD LVCMOS33} [get_ports { spi_slave_miso_io }];
++ set_property -dict { PACKAGE_PIN K13 IOSTANDARD LVCMOS33} [get_ports { spi_slave_mosi_io }];
++-set_property -dict { PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }];
++-set_property -dict { PACKAGE_PIN T11 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }];
+++set_property -dict { PACKAGE_PIN J5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_clk_io }]; #Sch=m_clk (onboard PDM mic; M_LRSEL F5 left at default pull-down)
+++set_property -dict { PACKAGE_PIN H5 IOSTANDARD LVCMOS33} [get_ports { pdm2pcm_pdm_io }]; #Sch=m_data
++ set_property -dict { PACKAGE_PIN L18 IOSTANDARD LVCMOS33} [get_ports { i2s_sck_io }];
++ set_property -dict { PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports { i2s_ws_io }];
++ set_property -dict { PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports { i2s_sd_rx_io }];
++diff --git a/core-v-mini-mcu-fpga.core b/core-v-mini-mcu-fpga.core
++index 0636329..26cc2f0 100644
++--- a/core-v-mini-mcu-fpga.core
+++++ b/core-v-mini-mcu-fpga.core
++@@ -81,6 +81,11 @@ filesets:
++     - constraints/common/sync.xdc
++     file_type: xdc
++ 
+++  xdc-fpga-bscan:
+++    files:
+++    - constraints/common/bscan.xdc
+++    file_type: xdc
+++
++   xdc-fpga-pynq-z2:
++     files:
++     - constraints/pynq-z2/pin_assign.xdc
++@@ -155,6 +160,7 @@ targets:
++     - target_pynq-z2 ? (tcl-fpga-ps-utils)
++     - target_nexys-a7-100t ? (ip-fpga-nexys)
++     - target_nexys-a7-100t ? (xdc-fpga-nexys)
+++    - use_bscane_xilinx ? (xdc-fpga-bscan)
++     - target_zcu104 ? (ip-fpga-zcu104)
++     - target_zcu104 ? (xdc-fpga-zcu104)
++     - target_zcu102 ? (ip-fpga-zcu102)
+diff --git a/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv b/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
+index 5fe5d86..a349933 100644
+--- a/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
++++ b/hw/vendor/pulp_platform/riscv_dbg/src/dmi_bscane_tap.sv
+@@ -44,6 +44,16 @@ module dmi_jtag_tap #(
+   input  logic        dmi_tdo_i
+ );
+ 
++  // Local patch (HopCIM): TCK is put on a global buffer. Left on local routing, its skew across
++  // the DTM registers is unchecked, and a placement change (e.g. a larger design) can break the
++  // debug module (OpenOCD: "Debug Module did not become active"). See constraints/common/bscan.xdc.
++  logic tck_bscan;
++
++  BUFG i_tck_bufg (
++    .I (tck_bscan),
++    .O (tck_o)
++  );
++
+   BSCANE2 #(
+     .JTAG_CHAIN (3)
+   ) i_tap_dtmcs (
+@@ -53,7 +63,7 @@ module dmi_jtag_tap #(
+     .RUNTEST (),
+     .SEL (dtmcs_select_o),
+     .SHIFT (shift_o),
+-    .TCK (tck_o),
++    .TCK (tck_bscan),
+     .TDI (tdi_o),
+     .TMS (),
+     .TDO (dtmcs_tdo_i),
+diff --git a/tb/core-v-mini-mcu-nexys-bscan.cfg b/tb/core-v-mini-mcu-nexys-bscan.cfg
+new file mode 100644
+index 0000000..2868a92
+--- /dev/null
++++ b/tb/core-v-mini-mcu-nexys-bscan.cfg
+@@ -0,0 +1,53 @@
++# OpenOCD config: X-HEEP on Nexys A7-100T, debug through the on-board USB.
++# Requires a bitstream built with FUSESOC_FLAGS=--flag=use_bscane_xilinx, which
++# places the RISC-V DTM behind the Artix-7 BSCANE2 USER3 (dtmcs) and USER4
++# (dmi) registers. No external JTAG adapter is needed: the Nexys A7's FT2232H
++# channel A (the one Vivado uses to program the FPGA) drives the FPGA JTAG.
++# Adapted from core-v-mini-mcu-pynq-z2-bscan.cfg.
++
++adapter driver ftdi
++adapter speed 1000
++transport select jtag
++
++# Digilent on-board FT2232H (same layout as interface/ftdi/digilent-hs1.cfg)
++ftdi_vid_pid 0x0403 0x6010
++ftdi_channel 0
++ftdi_layout_init 0x0088 0x008b
++
++reset_config none
++
++echo "ftdi setting..."
++
++# Artix-7 XC7A100T: IR length 6, IDCODE 0x?3631093 (version nibble ignored)
++set _CHIPNAME riscv
++jtag newtap $_CHIPNAME cpu -irlen 6 -ignore-version -expected-id 0x03631093
++
++set _TARGETNAME $_CHIPNAME.cpu
++target create $_TARGETNAME riscv -chain-position $_TARGETNAME -coreid 0x000
++
++echo "target created..."
++
++log_output openocd_fpga.log
++
++# 7-series instruction codes: IDCODE 0x09, USER3 0x22, USER4 0x23
++riscv set_ir idcode 0x09
++riscv set_ir dtmcs 0x22
++riscv set_ir dmi 0x23
++
++riscv set_reset_timeout_sec 2000
++riscv set_command_timeout_sec 2000
++
++# prefer to use sba for system bus access
++riscv set_prefer_sba off
++
++echo "setting preferences..."
++
++scan_chain
++
++init
++
++echo "init routine started"
++
++halt
++
++echo "Ready for Remote Connections"
+diff --git a/tb/nexys-a7-program-fpga.cfg b/tb/nexys-a7-program-fpga.cfg
+new file mode 100644
+index 0000000..6e3e832
+--- /dev/null
++++ b/tb/nexys-a7-program-fpga.cfg
+@@ -0,0 +1,18 @@
++# OpenOCD config: program the Nexys A7-100T FPGA over the on-board USB.
++# Usage (from the x-heep root):
++#   openocd -f tb/nexys-a7-program-fpga.cfg -c "pld load 0 <bitstream.bit>" -c shutdown
++# Alternative to Vivado's hw_server; do not run both at the same time.
++
++adapter driver ftdi
++adapter speed 10000
++transport select jtag
++
++ftdi_vid_pid 0x0403 0x6010
++ftdi_channel 0
++ftdi_layout_init 0x0088 0x008b
++
++reset_config none
++
++source [find cpld/xilinx-xc7.cfg]
++
++init

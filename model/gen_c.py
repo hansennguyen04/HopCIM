@@ -12,7 +12,7 @@ import mfcc_int as mi
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SW = os.path.join(HERE, "..", "sw")
-APP = os.path.expanduser("~/APlus_Project/planenest/hw/x-heep/sw/applications/hopcim_mfcc")
+APP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sw", "applications", "hopcim_mfcc")  # linked into X-HEEP by xheep/setup.sh
 
 
 def carr(name, ctype, a, per_line=16, const=True):

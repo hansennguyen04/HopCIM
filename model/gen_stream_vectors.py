@@ -26,7 +26,7 @@ import stream_int as si
 HERE = os.path.dirname(os.path.abspath(__file__))
 STREAM_CLIPS = (2, 17, 9)
 FW_HOPS = 100                                       # firmware: the first 2 s
-APP = os.path.expanduser("~/APlus_Project/planenest/hw/x-heep/sw/applications/hopcim_stream")
+APP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sw", "applications", "hopcim_stream")  # linked into X-HEEP by xheep/setup.sh
 
 
 def stream():

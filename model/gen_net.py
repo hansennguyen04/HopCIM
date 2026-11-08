@@ -16,7 +16,7 @@ from gen_c import carr
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SW = os.path.join(HERE, "..", "sw")
-APP = os.path.expanduser("~/APlus_Project/planenest/hw/x-heep/sw/applications/hopcim_net")
+APP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sw", "applications", "hopcim_net")  # linked into X-HEEP by xheep/setup.sh
 TEST = os.path.join(HERE, "..", "..", "kws_gate", "data", "test")
 LABELS = ["down", "go", "left", "no", "off", "on", "right", "stop", "up", "yes", "_silence_", "_unknown_"]
 

@@ -1,0 +1,882 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hansen0411 <hansennguyen.ee14@nycu.edu.tw>
+Date: Sun, 8 Nov 2026 20:00:00 +0800
+Subject: [PATCH 3/3] HopCIM endpoint (hw/ip/hopcim) behind FuseSoC flags
+
+- core-v-mini-mcu.core: flags use_cim, use_cim_ded, use_cim_mic, use_cim_mic5, use_cim_s,
+  use_cim_mic4 (defines USE_CIM, CIM_FE_DED, USE_CIM_MIC, CIM_MIC_5M12, CIM_SEQ_S, CIM_MIC_4M096);
+  depends on hopcim:ip:cim_endpoint (hw/ip/hopcim is a link to the HopCIM repository).
+- hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv: the endpoint on the CPU data master's external-slave
+  port (a 1-to-1 tap); its PDM clock/data through x_heep_system; for use_cim_mic4 a BUFGCE that
+  halves the 8.192 MHz MMCM output to 4.096 MHz.
+- hw/system/x_heep_system.sv.tpl: ports cim_pdm_clk_i / cim_pdm_data_o (USE_CIM_MIC).
+- tb/testharness.sv.tpl, tb/testharness_pkg.sv.tpl: the same tap in the Verilator SoC, so
+  simulation and board see the same CPU-to-endpoint timing; a reserved 256 KiB window at
+  0xC0040000 on the external bus. (Before this patch these lines existed only in the generated
+  tb/testharness*.sv, which make mcu-gen overwrites.)
+- tb/x-heep-tb-utils.core: depends on hopcim:ip:cim_endpoint under use_cim.
+- vendored xheep_fpga_support: one clock-wizard fileset per flag (15 MHz stock, 15.36, 5.12,
+  8.192 MHz) and their scripts; kept as hw/vendor/patches/xheep_fpga_support/0002-*.patch.
+- sw/device/target/nexys-a7-100t/x-heep.h: REFERENCE_CLOCK_Hz can be set on the command line.
+---
+ core-v-mini-mcu.core                          |  57 +++++
+ .../core-v-mini-mcu-fpga.core                 |  23 ++
+ .../xilinx_generate_clk_wizard_15m36.tcl      |  44 ++++
+ .../nexys/xilinx_generate_clk_wizard_5m12.tcl |  44 ++++
+ .../xilinx_generate_clk_wizard_8m192.tcl      |  48 +++++
+ hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv     | 104 +++++++++
+ hw/system/x_heep_system.sv.tpl                |  23 +-
+ ...02-hopcim-clock-filesets-and-scripts.patch | 198 ++++++++++++++++++
+ sw/device/target/nexys-a7-100t/x-heep.h       |   4 +-
+ tb/testharness.sv.tpl                         |  44 +++-
+ tb/testharness_pkg.sv.tpl                     |  14 +-
+ tb/x-heep-tb-utils.core                       |   1 +
+ 12 files changed, 599 insertions(+), 5 deletions(-)
+ create mode 100644 hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
+ create mode 100644 hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
+ create mode 100644 hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
+ create mode 100644 hw/vendor/patches/xheep_fpga_support/0002-hopcim-clock-filesets-and-scripts.patch
+
+diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
+index f645e94..f445378 100644
+--- a/core-v-mini-mcu.core
++++ b/core-v-mini-mcu.core
+@@ -93,6 +93,7 @@ filesets:
+     depend:
+     - x-heep:x-heep:x-heep-fpga-support
+     - use_hls_example ? (epfl:ip:dot_product)
++    - use_cim ? (hopcim:ip:cim_endpoint)
+     files:
+     - hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+     file_type: systemVerilogSource
+@@ -270,6 +271,53 @@ parameters:
+       HLS) and pulls in epfl:ip:dot_product -- so without the flag,
+       building/simulating X-HEEP never requires Vitis HLS to be installed.
+     default: false
++  USE_CIM:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      Include the HopCIM endpoint (hopcim:ip:cim_endpoint, hw/ip/hopcim): on the testbench
++      external bus at 0xC0040000 in simulation, on the CPU data master's external-slave port
++      on the FPGA. Enable with `--flag use_cim`.
++    default: false
++  CIM_FE_DED:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM: use the dedicated MFCC front-end baseline B3 (mfcc_ded) instead of the CIM
++      front-end (cim_fe). Enable with `--flag use_cim_ded` in addition to `--flag use_cim`.
++    default: false
++  USE_CIM_MIC:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM on the Nexys A7: the HopCIM live audio path (R7) drives the on-board PDM
++      microphone (J5 clock, H5 data) instead of X-HEEP's pdm2pcm, and the system clock is
++      15.36 MHz (exactly 16 kHz audio). Enable with `--flag use_cim_mic`.
++    default: false
++  CIM_MIC_5M12:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM_MIC: a 5.12 MHz system clock and PDM clock divider 5 instead of 15.36 MHz and 15,
++      the lowest clock with a 1.024 MHz PDM clock at which every hop is still processed in time.
++      Enable with `--flag use_cim_mic5` in addition to `--flag use_cim_mic`.
++    default: false
++  CIM_SEQ_S:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM: the baseline S in the HopCIM sequencer (cim_endpoint SEQ_S): sign-gated
++      requantisation, a second requantisation lane, no L8 write to ACT. Enable with `--flag use_cim_s`.
++    default: false
++  CIM_MIC_4M096:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With USE_CIM_MIC and CIM_SEQ_S: a 4.096 MHz system clock and PDM clock divider 4 (1.024 MHz PDM
++      clock, 16 kHz audio exactly). The MMCM makes 8.192 MHz (no MMCM output divider gives 4.096 MHz
++      from 100 MHz) and a BUFGCE passes every second edge. Enable with `--flag use_cim_mic4` in addition
++      to `--flag use_cim_mic` and `--flag use_cim_s`.
++    default: false
+ 
+ scripts:
+   # Build utils
+@@ -361,6 +409,9 @@ targets:
+     - COMMON_CELLS_ASSERTS_OFF
+     - ASSERTS_OFF
+     - use_hls_example ? (USE_HLS_EXAMPLE=true)
++    - use_cim ? (USE_CIM=true)
++    - use_cim_ded ? (CIM_FE_DED=true)
++    - use_cim_s ? (CIM_SEQ_S=true)
+     tools:
+       modelsim:
+         vlog_options:
+@@ -481,6 +532,12 @@ targets:
+     - FPGA_SYNTHESIS=true
+     - FPGA_NEXYS=true
+     - NO_DDR_CLK_PORTS=true
++    - use_cim ? (USE_CIM=true)
++    - use_cim_ded ? (CIM_FE_DED=true)
++    - use_cim_mic ? (USE_CIM_MIC=true)
++    - use_cim_mic5 ? (CIM_MIC_5M12=true)
++    - use_cim_s ? (CIM_SEQ_S=true)
++    - use_cim_mic4 ? (CIM_MIC_4M096=true)
+     tools:
+       vivado:
+         part: xc7a100tcsg324-1
+diff --git a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+index 26cc2f0..0b4ca4d 100644
+--- a/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
++++ b/hw/fpga/xheep_fpga_support/core-v-mini-mcu-fpga.core
+@@ -40,9 +40,28 @@ filesets:
+   ip-fpga-nexys:
+     files:
+     - scripts/nexys/generate_sram.tcl
++    file_type: tclSource
++
++  ip-fpga-nexys-clk15:
++    files:
+     - scripts/nexys/xilinx_generate_clk_wizard.tcl
+     file_type: tclSource
+ 
++  ip-fpga-nexys-clk15m36:                            # HopCIM live audio (use_cim_mic): 16 kHz exactly
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
++    file_type: tclSource
++
++  ip-fpga-nexys-clk5m12:                             # HopCIM live audio at 5.12 MHz (use_cim_mic5)
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
++    file_type: tclSource
++
++  ip-fpga-nexys-clk8m192:                            # HopCIM live audio at 4.096 MHz (use_cim_mic4): 8.192 MHz, halved by a BUFGCE
++    files:
++    - scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
++    file_type: tclSource
++
+   ip-fpga-zcu104:
+     files:
+     - scripts/zcu104/generate_sram.tcl
+@@ -159,6 +178,10 @@ targets:
+     - target_pynq-z2 ? (xdc-fpga-pynq-z2)
+     - target_pynq-z2 ? (tcl-fpga-ps-utils)
+     - target_nexys-a7-100t ? (ip-fpga-nexys)
++    - target_nexys-a7-100t ? (!use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15)))
++    - target_nexys-a7-100t ? (use_cim_mic ? (!use_cim_mic5 ? (!use_cim_mic4 ? (ip-fpga-nexys-clk15m36))))
++    - target_nexys-a7-100t ? (use_cim_mic5 ? (ip-fpga-nexys-clk5m12))
++    - target_nexys-a7-100t ? (use_cim_mic4 ? (ip-fpga-nexys-clk8m192))
+     - target_nexys-a7-100t ? (xdc-fpga-nexys)
+     - use_bscane_xilinx ? (xdc-fpga-bscan)
+     - target_zcu104 ? (ip-fpga-zcu104)
+diff --git a/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
+new file mode 100644
+index 0000000..95ed5f1
+--- /dev/null
++++ b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
+@@ -0,0 +1,44 @@
++# Copyright 2026 X-HEEP contibutors
++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
++# HopCIM live audio (use_cim_mic): 15.36 MHz system clock, i.e. a 1.024 MHz PDM clock (/15) and
++# 16 kHz audio (/64) exactly. VCO = 100 MHz * 48 / 5 = 960 MHz, /62.5.
++# Define design macros
++
++set design_name      xilinx_clk_wizard
++set in_clk_freq_MHz  100
++set out_clk_freq_MHz 15.36
++set out_clk_freq_Hz  15360000
++
++
++# Create block design
++create_bd_design $design_name
++
++# Create ports
++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
++
++# Create instance and set properties
++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
++set_property -dict [ list \
++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {15.36} \
++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
++ CONFIG.MMCM_CLKFBOUT_MULT_F {48.000} \
++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {62.500} \
++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
++ CONFIG.USE_LOCKED {false} \
++ CONFIG.USE_RESET {false} \
++] $clk_wiz_0
++
++# Create port connections
++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
++
++# Save and close block design
++save_bd_design
++close_bd_design $design_name
++
++# create wrapper
++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
++add_files -norecurse -fileset sources_1 $wrapper_path
+diff --git a/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
+new file mode 100644
+index 0000000..fe7c624
+--- /dev/null
++++ b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
+@@ -0,0 +1,44 @@
++# Copyright 2026 X-HEEP contibutors
++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
++# HopCIM live audio at its lowest real-time clock (use_cim_mic5): 5.12 MHz system clock, i.e. a 1.024 MHz
++# PDM clock (/5) and 16 kHz audio (/64) exactly. VCO = 100 MHz * 32 / 5 = 640 MHz, /125.
++# Define design macros
++
++set design_name      xilinx_clk_wizard
++set in_clk_freq_MHz  100
++set out_clk_freq_MHz 5.12
++set out_clk_freq_Hz  5120000
++
++
++# Create block design
++create_bd_design $design_name
++
++# Create ports
++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
++
++# Create instance and set properties
++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
++set_property -dict [ list \
++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {5.12} \
++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
++ CONFIG.MMCM_CLKFBOUT_MULT_F {32.000} \
++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {125.000} \
++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
++ CONFIG.USE_LOCKED {false} \
++ CONFIG.USE_RESET {false} \
++] $clk_wiz_0
++
++# Create port connections
++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
++
++# Save and close block design
++save_bd_design
++close_bd_design $design_name
++
++# create wrapper
++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
++add_files -norecurse -fileset sources_1 $wrapper_path
+diff --git a/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
+new file mode 100644
+index 0000000..9fd55b8
+--- /dev/null
++++ b/hw/fpga/xheep_fpga_support/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
+@@ -0,0 +1,48 @@
++# Copyright 2026 X-HEEP contibutors
++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
++# HopCIM live audio at its lowest real-time clock (use_cim_mic4): 8.192 MHz MMCM output without a buffer (exact: override mode), halved by a BUFGCE in the wrapper to 4.096 MHz: a 1.024 MHz
++# PDM clock (/4) and 16 kHz audio (/64) exactly. VCO = 100 MHz * 32 / 5 = 640 MHz, /78.125 (fractional, CLKOUT0).
++# Define design macros
++
++set design_name      xilinx_clk_wizard
++set in_clk_freq_MHz  100
++set out_clk_freq_MHz 8.192
++set out_clk_freq_Hz  8192000
++
++
++# Create block design
++create_bd_design $design_name
++
++# Create ports
++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
++
++# Create instance and set properties
++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
++set_property -dict [ list \
++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {8.192} \
++ CONFIG.OVERRIDE_MMCM {true} \
++ CONFIG.CLKOUT1_DRIVES {No_buffer} \
++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
++ CONFIG.MMCM_CLKFBOUT_MULT_F {32.000} \
++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {78.125} \
++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
++ CONFIG.USE_LOCKED {false} \
++ CONFIG.USE_RESET {false} \
++] $clk_wiz_0
++
++# Create port connections
++# no output buffer: the feedback is wired here (the wizard then leaves clkfb_in open)
++if {[llength [get_bd_pins -quiet clk_wiz_0/clkfb_out]]} { connect_bd_net [get_bd_pins clk_wiz_0/clkfb_out] [get_bd_pins clk_wiz_0/clkfb_in] }
++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
++
++# Save and close block design
++save_bd_design
++close_bd_design $design_name
++
++# create wrapper
++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
++add_files -norecurse -fileset sources_1 $wrapper_path
+diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+index ca0dbcd..e6371b5 100644
+--- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
++++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+@@ -329,10 +329,27 @@ module xilinx_core_v_mini_mcu_wrapper
+       .clk_out1_0(clk_gen)
+   );
+ `elsif FPGA_NEXYS
++`ifdef CIM_MIC_4M096
++  // 4.096 MHz: no MMCM output divider reaches it from 100 MHz (only CLKOUT0 divides fractionally, and
++  // 4.096 MHz needs 156.25 > 128), so the MMCM makes 8.192 MHz without an output buffer, a BUFGCE passes
++  // every second rising edge, and a parallel BUFG clocks the enable's toggle. The MMCM output must not go
++  // through a BUFG first: X-HEEP's own BUFGMUX cascades on the system clock would then be one level too
++  // deep to place. Timing is analysed at 8.192 MHz, which is stricter.
++  wire clk_8m192_raw, clk_8m192;
++  logic clk_half_ce = 1'b0;
++  xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
++      .clk_100MHz(clk_i),
++      .clk_out1_0(clk_8m192_raw)
++  );
++  BUFG bufg_8m192_i (.I(clk_8m192_raw), .O(clk_8m192));
++  always_ff @(posedge clk_8m192) clk_half_ce <= !clk_half_ce;
++  BUFGCE bufgce_4m096_i (.I(clk_8m192_raw), .CE(clk_half_ce), .O(clk_gen));
++`else
+   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
+       .clk_100MHz(clk_i),
+       .clk_out1_0(clk_gen)
+   );
++`endif
+ `else  // FPGA PYNQ-Z2
+   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
+       .clk_125MHz(clk_i),
+@@ -595,6 +612,26 @@ module xilinx_core_v_mini_mcu_wrapper
+   xheep_obi_rsp_t [1:0] dotprod_gmem_obi_rsp;
+ `endif
+ 
++`ifdef USE_CIM
++`ifdef USE_HLS_EXAMPLE
++  $error("USE_CIM and USE_HLS_EXAMPLE both use the CPU data master's external-slave port");
++`endif
++  // HopCIM endpoint (hw/ip/hopcim) on the CPU data master's external-slave port, a 1-to-1 tap:
++  // every CPU access to 0xC000_0000-0xFFFF_FFFF reaches it and it decodes addr[17:0], so the
++  // simulation address 0xC004_0000 works unchanged. Its interrupt is external line 3, as in
++  // the testharness.
++  xheep_obi_req_t cim_obi_req;
++  xheep_obi_rsp_t cim_obi_rsp;
++  logic           cim_irq;
++  logic [core_v_mini_mcu_pkg::NEXT_INT-1:0] cim_intr_vector;
++  logic cim_pdm_clk, cim_pdm_data;                     // HopCIM live audio path (R7)
++
++  always_comb begin
++    cim_intr_vector    = '0;
++    cim_intr_vector[3] = cim_irq;
++  end
++`endif
++
+   x_heep_system #(
+ `ifdef USE_HLS_EXAMPLE
+       .EXT_XBAR_NMASTER(2)
+@@ -602,7 +639,11 @@ module xilinx_core_v_mini_mcu_wrapper
+   ) x_heep_system_i (
+       .hart_id_i('0),
+       .xheep_instance_id_i('0),
++`ifdef USE_CIM
++      .intr_vector_ext_i(cim_intr_vector),
++`else
+       .intr_vector_ext_i('0),
++`endif
+       .xif_compressed_if(ext_if),
+       .xif_issue_if(ext_if),
+       .xif_commit_if(ext_if),
+@@ -667,6 +708,21 @@ module xilinx_core_v_mini_mcu_wrapper
+       .ext_dma_write_resp_i('0),
+       .ext_dma_addr_req_o(),
+       .ext_dma_addr_resp_i('0),
++`elsif USE_CIM
++      .ext_xbar_master_req_i('0),
++      .ext_xbar_master_resp_o(),
++      .ext_core_instr_req_o(),
++      .ext_core_instr_resp_i('0),
++      .ext_core_data_req_o(cim_obi_req),
++      .ext_core_data_resp_i(cim_obi_rsp),
++      .ext_debug_master_req_o(),
++      .ext_debug_master_resp_i('0),
++      .ext_dma_read_req_o(),
++      .ext_dma_read_resp_i('0),
++      .ext_dma_write_req_o(),
++      .ext_dma_write_resp_i('0),
++      .ext_dma_addr_req_o(),
++      .ext_dma_addr_resp_i('0),
+ `else
+       .ext_xbar_master_req_i('0),
+       .ext_xbar_master_resp_o(),
+@@ -772,6 +828,10 @@ module xilinx_core_v_mini_mcu_wrapper
+       .spi2_sck_io(spi2_sck_o),
+       .pdm2pcm_clk_io,
+       .pdm2pcm_pdm_io,
++`ifdef USE_CIM_MIC                                    // the HopCIM live audio path drives the microphone
++      .cim_pdm_clk_i (cim_pdm_clk),
++      .cim_pdm_data_o(cim_pdm_data),
++`endif
+       .i2s_sck_io(i2s_sck_io),
+       .i2s_ws_io(i2s_ws_io),
+       .i2s_sd_rx_io(i2s_sd_rx_io),
+@@ -808,6 +868,50 @@ module xilinx_core_v_mini_mcu_wrapper
+       .gmem_b_obi_rsp_i(dotprod_gmem_obi_rsp[1])
+   );
+ `endif
++`endif
++
++`ifdef USE_CIM
++`ifdef CIM_MIC_5M12
++`ifndef USE_CIM_MIC
++  $error("CIM_MIC_5M12 (--flag use_cim_mic5) needs USE_CIM_MIC (--flag use_cim_mic)");
++`endif
++`endif
++`ifdef CIM_MIC_4M096
++`ifndef USE_CIM_MIC
++  $error("CIM_MIC_4M096 (--flag use_cim_mic4) needs USE_CIM_MIC (--flag use_cim_mic)");
++`endif
++`ifndef CIM_SEQ_S
++  $error("CIM_MIC_4M096 (--flag use_cim_mic4) needs CIM_SEQ_S (--flag use_cim_s): R6b overruns at 4.096 MHz");
++`endif
++`endif
++  cim_endpoint #(
++      .TILES (128),
++`ifdef CIM_MIC_5M12
++      .PDM_CLKDIV(5),                                 // 5.12 MHz system clock: PDM clock 1.024 MHz
++`endif
++`ifdef CIM_MIC_4M096
++      .PDM_CLKDIV(4),                                 // 4.096 MHz system clock: PDM clock 1.024 MHz
++`endif
++`ifdef CIM_SEQ_S
++      .SEQ_S(1'b1),                                   // baseline S in the sequencer
++`endif
++`ifdef CIM_FE_DED
++      .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
++`else
++      .FE_DED(1'b0)
++`endif
++  ) cim_endpoint_i (
++      .clk_i     (clk_gen),
++      .rst_ni    (rst_n),
++      .obi_req_i (cim_obi_req),
++      .obi_rsp_o (cim_obi_rsp),
++      .irq_o     (cim_irq),
++      .pdm_clk_o (cim_pdm_clk),
++      .pdm_data_i(cim_pdm_data)
++  );
++`ifndef USE_CIM_MIC                                   // with it, x_heep_system's pad ring routes J5 / H5
++  assign cim_pdm_data = 1'b0;
++`endif
+ `endif
+ 
+   assign exit_value_o = exit_value[0];
+diff --git a/hw/system/x_heep_system.sv.tpl b/hw/system/x_heep_system.sv.tpl
+index da2b975..f8c5ffc 100644
+--- a/hw/system/x_heep_system.sv.tpl
++++ b/hw/system/x_heep_system.sv.tpl
+@@ -101,6 +101,13 @@ module x_heep_system #(
+     // External SPC interface
+     output logic [core_v_mini_mcu_pkg::DMA_CH_NUM-1:0] dma_done_o,
+ 
++`ifdef USE_CIM_MIC
++    // HopCIM live audio path (hw/ip/hopcim, R7): it drives the PDM clock pad and receives the
++    // PDM data pad; X-HEEP's pdm2pcm keeps the data but no longer drives the clock
++    input  logic cim_pdm_clk_i,
++    output logic cim_pdm_data_o,
++`endif
++
+     % for pad in xheep.get_padring().pad_list:
+       <%
+       has_input_pin = any(isinstance(pin, Input) for pin in pad.pins)
+@@ -240,6 +247,10 @@ module x_heep_system #(
+ <%
+ analog_signal_pads = [ pad for pad in xheep.get_padring().pad_list if any(isinstance(pin, Asignal) for pin in pad.pins) ] 
+ %>
++`ifdef USE_CIM_MIC
++  assign cim_pdm_data_o = pdm2pcm_pdm_in_x_muxed;
++`endif
++
+   pad_ring pad_ring_i (
+     % for pad in xheep.get_padring().pad_list:
+       <%
+@@ -252,7 +263,17 @@ analog_signal_pads = [ pad for pad in xheep.get_padring().pad_list if any(isinst
+       pin0_name = pad.pins[0].rtl_name()
+       muxed_string = "_muxed" if pad.is_muxed() else ""
+       %>\
+-      % if has_inout_pin or (has_input_pin and has_output_pin):
++      % if pin0_name == "pdm2pcm_clk_":
++`ifdef USE_CIM_MIC
++        .pdm2pcm_clk_i(cim_pdm_clk_i),
++        .pdm2pcm_clk_oe_i(1'b1),
++`else
++        .${pin0_name}i(${pin0_name}out_x${muxed_string}),
++        .${pin0_name}oe_i(${pin0_name}oe_x${muxed_string}),
++`endif
++        .${pin0_name}o(${pin0_name}in_x${muxed_string}),
++        .${pin0_name}io(${pin0_name}io),
++      % elif has_inout_pin or (has_input_pin and has_output_pin):
+         .${pin0_name}i(${pin0_name}out_x${muxed_string}),
+         .${pin0_name}oe_i(${pin0_name}oe_x${muxed_string}),
+         .${pin0_name}o(${pin0_name}in_x${muxed_string}),
+diff --git a/hw/vendor/patches/xheep_fpga_support/0002-hopcim-clock-filesets-and-scripts.patch b/hw/vendor/patches/xheep_fpga_support/0002-hopcim-clock-filesets-and-scripts.patch
+new file mode 100644
+index 0000000..762e7c0
+--- /dev/null
++++ b/hw/vendor/patches/xheep_fpga_support/0002-hopcim-clock-filesets-and-scripts.patch
+@@ -0,0 +1,198 @@
++diff --git a/core-v-mini-mcu-fpga.core b/core-v-mini-mcu-fpga.core
++index 26cc2f0..0b4ca4d 100644
++--- a/core-v-mini-mcu-fpga.core
+++++ b/core-v-mini-mcu-fpga.core
++@@ -40,9 +40,28 @@ filesets:
++   ip-fpga-nexys:
++     files:
++     - scripts/nexys/generate_sram.tcl
+++    file_type: tclSource
+++
+++  ip-fpga-nexys-clk15:
+++    files:
++     - scripts/nexys/xilinx_generate_clk_wizard.tcl
++     file_type: tclSource
++ 
+++  ip-fpga-nexys-clk15m36:                            # HopCIM live audio (use_cim_mic): 16 kHz exactly
+++    files:
+++    - scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
+++    file_type: tclSource
+++
+++  ip-fpga-nexys-clk5m12:                             # HopCIM live audio at 5.12 MHz (use_cim_mic5)
+++    files:
+++    - scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
+++    file_type: tclSource
+++
+++  ip-fpga-nexys-clk8m192:                            # HopCIM live audio at 4.096 MHz (use_cim_mic4): 8.192 MHz, halved by a BUFGCE
+++    files:
+++    - scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
+++    file_type: tclSource
+++
++   ip-fpga-zcu104:
++     files:
++     - scripts/zcu104/generate_sram.tcl
++@@ -159,6 +178,10 @@ targets:
++     - target_pynq-z2 ? (xdc-fpga-pynq-z2)
++     - target_pynq-z2 ? (tcl-fpga-ps-utils)
++     - target_nexys-a7-100t ? (ip-fpga-nexys)
+++    - target_nexys-a7-100t ? (!use_cim_mic ? (!use_cim_mic5 ? (ip-fpga-nexys-clk15)))
+++    - target_nexys-a7-100t ? (use_cim_mic ? (!use_cim_mic5 ? (!use_cim_mic4 ? (ip-fpga-nexys-clk15m36))))
+++    - target_nexys-a7-100t ? (use_cim_mic5 ? (ip-fpga-nexys-clk5m12))
+++    - target_nexys-a7-100t ? (use_cim_mic4 ? (ip-fpga-nexys-clk8m192))
++     - target_nexys-a7-100t ? (xdc-fpga-nexys)
++     - use_bscane_xilinx ? (xdc-fpga-bscan)
++     - target_zcu104 ? (ip-fpga-zcu104)
++diff --git a/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl b/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
++new file mode 100644
++index 0000000..95ed5f1
++--- /dev/null
+++++ b/scripts/nexys/xilinx_generate_clk_wizard_15m36.tcl
++@@ -0,0 +1,44 @@
+++# Copyright 2026 X-HEEP contibutors
+++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+++# HopCIM live audio (use_cim_mic): 15.36 MHz system clock, i.e. a 1.024 MHz PDM clock (/15) and
+++# 16 kHz audio (/64) exactly. VCO = 100 MHz * 48 / 5 = 960 MHz, /62.5.
+++# Define design macros
+++
+++set design_name      xilinx_clk_wizard
+++set in_clk_freq_MHz  100
+++set out_clk_freq_MHz 15.36
+++set out_clk_freq_Hz  15360000
+++
+++
+++# Create block design
+++create_bd_design $design_name
+++
+++# Create ports
+++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
+++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
+++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
+++
+++# Create instance and set properties
+++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
+++set_property -dict [ list \
+++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {15.36} \
+++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
+++ CONFIG.MMCM_CLKFBOUT_MULT_F {48.000} \
+++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {62.500} \
+++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
+++ CONFIG.USE_LOCKED {false} \
+++ CONFIG.USE_RESET {false} \
+++] $clk_wiz_0
+++
+++# Create port connections
+++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
+++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
+++
+++# Save and close block design
+++save_bd_design
+++close_bd_design $design_name
+++
+++# create wrapper
+++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
+++add_files -norecurse -fileset sources_1 $wrapper_path
++diff --git a/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl b/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
++new file mode 100644
++index 0000000..fe7c624
++--- /dev/null
+++++ b/scripts/nexys/xilinx_generate_clk_wizard_5m12.tcl
++@@ -0,0 +1,44 @@
+++# Copyright 2026 X-HEEP contibutors
+++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+++# HopCIM live audio at its lowest real-time clock (use_cim_mic5): 5.12 MHz system clock, i.e. a 1.024 MHz
+++# PDM clock (/5) and 16 kHz audio (/64) exactly. VCO = 100 MHz * 32 / 5 = 640 MHz, /125.
+++# Define design macros
+++
+++set design_name      xilinx_clk_wizard
+++set in_clk_freq_MHz  100
+++set out_clk_freq_MHz 5.12
+++set out_clk_freq_Hz  5120000
+++
+++
+++# Create block design
+++create_bd_design $design_name
+++
+++# Create ports
+++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
+++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
+++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
+++
+++# Create instance and set properties
+++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
+++set_property -dict [ list \
+++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {5.12} \
+++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
+++ CONFIG.MMCM_CLKFBOUT_MULT_F {32.000} \
+++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {125.000} \
+++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
+++ CONFIG.USE_LOCKED {false} \
+++ CONFIG.USE_RESET {false} \
+++] $clk_wiz_0
+++
+++# Create port connections
+++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
+++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
+++
+++# Save and close block design
+++save_bd_design
+++close_bd_design $design_name
+++
+++# create wrapper
+++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
+++add_files -norecurse -fileset sources_1 $wrapper_path
++diff --git a/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl b/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
++new file mode 100644
++index 0000000..9fd55b8
++--- /dev/null
+++++ b/scripts/nexys/xilinx_generate_clk_wizard_8m192.tcl
++@@ -0,0 +1,48 @@
+++# Copyright 2026 X-HEEP contibutors
+++# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+++# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+++# HopCIM live audio at its lowest real-time clock (use_cim_mic4): 8.192 MHz MMCM output without a buffer (exact: override mode), halved by a BUFGCE in the wrapper to 4.096 MHz: a 1.024 MHz
+++# PDM clock (/4) and 16 kHz audio (/64) exactly. VCO = 100 MHz * 32 / 5 = 640 MHz, /78.125 (fractional, CLKOUT0).
+++# Define design macros
+++
+++set design_name      xilinx_clk_wizard
+++set in_clk_freq_MHz  100
+++set out_clk_freq_MHz 8.192
+++set out_clk_freq_Hz  8192000
+++
+++
+++# Create block design
+++create_bd_design $design_name
+++
+++# Create ports
+++set clk_100MHz [ create_bd_port -dir I -type clk -freq_hz [ expr $in_clk_freq_MHz * 1000000 ] clk_100MHz ]
+++set clk_out1_0 [ create_bd_port -dir O -type clk clk_out1_0 ]
+++set_property -dict [ list CONFIG.FREQ_HZ $out_clk_freq_Hz ] $clk_out1_0
+++
+++# Create instance and set properties
+++set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
+++set_property -dict [ list \
+++ CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {8.192} \
+++ CONFIG.OVERRIDE_MMCM {true} \
+++ CONFIG.CLKOUT1_DRIVES {No_buffer} \
+++ CONFIG.MMCM_DIVCLK_DIVIDE {5} \
+++ CONFIG.MMCM_CLKFBOUT_MULT_F {32.000} \
+++ CONFIG.MMCM_CLKOUT0_DIVIDE_F {78.125} \
+++ CONFIG.PRIM_IN_FREQ $in_clk_freq_MHz \
+++ CONFIG.USE_LOCKED {false} \
+++ CONFIG.USE_RESET {false} \
+++] $clk_wiz_0
+++
+++# Create port connections
+++# no output buffer: the feedback is wired here (the wizard then leaves clkfb_in open)
+++if {[llength [get_bd_pins -quiet clk_wiz_0/clkfb_out]]} { connect_bd_net [get_bd_pins clk_wiz_0/clkfb_out] [get_bd_pins clk_wiz_0/clkfb_in] }
+++connect_bd_net -net clk_in1_0_1 [ get_bd_ports clk_100MHz ] [ get_bd_pins clk_wiz_0/clk_in1 ]
+++connect_bd_net -net clk_wiz_0_clk_out1 [ get_bd_ports clk_out1_0 ] [ get_bd_pins clk_wiz_0/clk_out1 ]
+++
+++# Save and close block design
+++save_bd_design
+++close_bd_design $design_name
+++
+++# create wrapper
+++set wrapper_path [ make_wrapper -fileset sources_1 -files [ get_files -norecurse xilinx_clk_wizard.bd ] -top ]
+++add_files -norecurse -fileset sources_1 $wrapper_path
+diff --git a/sw/device/target/nexys-a7-100t/x-heep.h b/sw/device/target/nexys-a7-100t/x-heep.h
+index b53fe4b..69936ff 100644
+--- a/sw/device/target/nexys-a7-100t/x-heep.h
++++ b/sw/device/target/nexys-a7-100t/x-heep.h
+@@ -12,7 +12,9 @@ extern "C" {
+ #endif  // __cplusplus
+ 
+ 
+-#define REFERENCE_CLOCK_Hz (15*1000*1000) // 15 MHz for FPGA synthesis
++#ifndef REFERENCE_CLOCK_Hz                   // the HopCIM live-audio build (use_cim_mic) runs at 15.36 MHz:
++#define REFERENCE_CLOCK_Hz (15*1000*1000)    // make app COMPILER_FLAGS=-DREFERENCE_CLOCK_Hz=15360000
++#endif                                       // 15 MHz for FPGA synthesis
+ #define UART_BAUDRATE 9600
+ // Calculation formula: NCO = 16 * 2^nco_width * baud / fclk.
+ // Note that this will be calculated at compile time, so no 64-bit operations will be performed in CPU.
+diff --git a/tb/testharness.sv.tpl b/tb/testharness.sv.tpl
+index 49f8444..f1280c7 100644
+--- a/tb/testharness.sv.tpl
++++ b/tb/testharness.sv.tpl
+@@ -152,6 +152,8 @@ module testharness #(
+   obi_rsp_t heep_core_instr_resp;
+   obi_req_t heep_core_data_req;
+   obi_rsp_t heep_core_data_resp;
++  obi_req_t bus_core_data_req;                  // CPU data port of ext_bus (see USE_CIM below)
++  obi_rsp_t bus_core_data_resp;
+   obi_req_t heep_debug_master_req;
+   obi_rsp_t heep_debug_master_resp;
+   obi_req_t [core_v_mini_mcu_pkg::DMA_NUM_MASTER_PORTS-1:0] heep_dma_read_req;
+@@ -190,6 +192,7 @@ module testharness #(
+   // External interrupts
+   logic [NEXT_INT_RND-1:0] intr_vector_ext;
+   logic memcopy_intr;
++  logic cim_intr;
+ 
+   // External subsystems
+   logic [EXT_DOMAINS_RND-1:0] external_subsystem_powergate_switch_n;
+@@ -235,6 +238,7 @@ module testharness #(
+     intr_vector_ext[0] = memcopy_intr;
+     intr_vector_ext[1] = iffifo_int_o;
+     intr_vector_ext[2] = im2col_spc_done_int_o;
++    intr_vector_ext[3] = cim_intr;
+   end
+ 
+   //log parameters
+@@ -409,8 +413,8 @@ module testharness #(
+       .default_idx_i           (SLOW_MEMORY0_IDX[LOG_EXT_XBAR_NSLAVE-1:0]),
+       .heep_core_instr_req_i   (heep_core_instr_req),
+       .heep_core_instr_resp_o  (heep_core_instr_resp),
+-      .heep_core_data_req_i    (heep_core_data_req),
+-      .heep_core_data_resp_o   (heep_core_data_resp),
++      .heep_core_data_req_i    (bus_core_data_req),
++      .heep_core_data_resp_o   (bus_core_data_resp),
+       .heep_debug_master_req_i (heep_debug_master_req),
+       .heep_debug_master_resp_o(heep_debug_master_resp),
+       .heep_dma_read_req_i     (heep_dma_read_req),
+@@ -427,6 +431,42 @@ module testharness #(
+       .ext_slave_resp_i        (ext_slave_resp)
+   );
+ 
++  // HopCIM endpoint (hw/ip/hopcim). Only built with the 'use_cim' FuseSoC flag, which defines
++  // USE_CIM and pulls in hopcim:ip:cim_endpoint. As on the FPGA (xilinx_core_v_mini_mcu_wrapper),
++  // it is the CPU data master's external slave, a 1-to-1 tap with no crossbar, so simulation and
++  // board see the same CPU-to-endpoint timing; every CPU access to 0xC000_0000-0xFFFF_FFFF
++  // reaches it (it decodes addr[17:0]). The other masters keep using ext_bus. The FuseSoC flag
++  // use_cim_ded (CIM_FE_DED) selects the dedicated front-end baseline B3.
++`ifdef USE_CIM
++  assign bus_core_data_req = '0;
++  cim_endpoint #(
++      .TILES (128),
++`ifdef CIM_SEQ_S
++      .SEQ_S (1'b1),                                  // baseline S in the sequencer (use_cim_s)
++`endif
++`ifdef CIM_FE_DED
++      .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
++`else
++      .FE_DED(1'b0)
++`endif
++  ) cim_endpoint_i (
++      .clk_i,
++      .rst_ni,
++      .obi_req_i(heep_core_data_req),
++      .obi_rsp_o(heep_core_data_resp),
++      .irq_o    (cim_intr),
++      .pdm_clk_o(),                                     // no microphone in simulation
++      .pdm_data_i(1'b0)
++  );
++`else
++  assign bus_core_data_req   = heep_core_data_req;
++  assign heep_core_data_resp = bus_core_data_resp;
++  assign cim_intr = 1'b0;
++`endif
++`ifndef SIM_SYSTEMC
++  assign ext_slave_resp[testharness_pkg::CIM_IDX] = '0;      // window unused (CPU uses the tap)
++`endif
++
+   // Power switch emulation
+   // ----------------------
+   always_ff @(posedge clk_i) begin : blockName
+diff --git a/tb/testharness_pkg.sv.tpl b/tb/testharness_pkg.sv.tpl
+index 267ea87..5ab862c 100644
+--- a/tb/testharness_pkg.sv.tpl
++++ b/tb/testharness_pkg.sv.tpl
+@@ -13,7 +13,7 @@ package testharness_pkg;
+ `ifdef SIM_SYSTEMC
+   localparam EXT_XBAR_NSLAVE = 1;
+ `else
+-  localparam EXT_XBAR_NSLAVE = ${3 + (1 if user_peripheral_domain.contains_peripheral('serial_link_reg') else 0)};
++  localparam EXT_XBAR_NSLAVE = ${4 + (1 if user_peripheral_domain.contains_peripheral('serial_link_reg') else 0)};
+ `endif
+ 
+   //master idx
+@@ -59,6 +59,13 @@ package testharness_pkg;
+   localparam logic [31:0] DOT_PRODUCT_CTRL_END_ADDRESS = DOT_PRODUCT_CTRL_START_ADDRESS + DOT_PRODUCT_CTRL_SIZE;
+   localparam logic [31:0] DOT_PRODUCT_CTRL_IDX = ${2 + (1 if user_peripheral_domain.contains_peripheral('serial_link_reg') else 0)};
+ 
++  // HopCIM endpoint (hw/ip/hopcim): a 256 KiB window aligned to its size, since the endpoint
++  // decodes addr[17:0]. Reserved only: with USE_CIM the CPU reaches the endpoint by a direct tap.
++  localparam logic [31:0] CIM_START_ADDRESS = core_v_mini_mcu_pkg::EXT_SLAVE_START_ADDRESS + 32'h40000;
++  localparam logic [31:0] CIM_SIZE = 32'h40000;
++  localparam logic [31:0] CIM_END_ADDRESS = CIM_START_ADDRESS + CIM_SIZE;
++  localparam logic [31:0] CIM_IDX = ${3 + (1 if user_peripheral_domain.contains_peripheral('serial_link_reg') else 0)};
++
+   localparam addr_map_rule_t [EXT_XBAR_NSLAVE-1:0] EXT_XBAR_ADDR_RULES = '{
+       '{
+           idx: SLOW_MEMORY0_IDX,
+@@ -83,6 +90,11 @@ package testharness_pkg;
+           idx: DOT_PRODUCT_CTRL_IDX,
+           start_addr: DOT_PRODUCT_CTRL_START_ADDRESS,
+           end_addr: DOT_PRODUCT_CTRL_END_ADDRESS
++      },
++      '{
++          idx: CIM_IDX,
++          start_addr: CIM_START_ADDRESS,
++          end_addr: CIM_END_ADDRESS
+       }
+ `endif
+   };
+diff --git a/tb/x-heep-tb-utils.core b/tb/x-heep-tb-utils.core
+index c336492..337c558 100644
+--- a/tb/x-heep-tb-utils.core
++++ b/tb/x-heep-tb-utils.core
+@@ -23,6 +23,7 @@ filesets:
+     - example:ip:dlc
+     - x-heep:ip:serial_link_xheep_wrapper
+     - use_hls_example ? (epfl:ip:dot_product)
++    - use_cim ? (hopcim:ip:cim_endpoint)
+ 
+   files_verilator_waiver:
+     files:

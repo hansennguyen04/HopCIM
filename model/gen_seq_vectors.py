@@ -26,7 +26,7 @@ from gen_net import clips
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "tb", "seq_vec")
-DBG = os.path.expanduser("~/APlus_Project/planenest/hw/x-heep/sw/applications/hopcim_seq_dbg")
+DBG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sw", "applications", "hopcim_seq_dbg")  # linked into X-HEEP by xheep/setup.sh
 
 
 def tile_words(t):
