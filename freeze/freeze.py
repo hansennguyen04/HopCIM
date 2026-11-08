@@ -356,9 +356,9 @@ def claims():
         dict(id="D2", label="[M]", text="Endpoint with cim_fe, out of context: 7,635 LUT, 5,819 FF, 145 DSP",
              evidence=UTIL, check=lambda: has(UTIL, r"\| cim_endpoint\s+\|\s+\(top\) \|\s+7635 \|.*\|\s+5819 \|.*\|\s+145 \|"),
              docs=[("docs/LIVE_AUDIO.md", "7,635 (+18)")], how="`vivado -mode batch -source syn/ooc.tcl -tclargs cim_endpoint FE_DED=0 PDM_CLKDIV=15`"),
-        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository: 28 of 28 benches pass",
-             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"28 of 28 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
-             docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 10 min"),
+        dict(id="D3", label="[M]", text="RTL regression from a clean clone of this repository, R6b and the baseline S: 40 of 40 benches pass",
+             evidence="freeze/regression_clean_clone.log", check=lambda: has("freeze/regression_clean_clone.log", r"40 of 40 benches pass") and not has("freeze/regression_clean_clone.log", r"(?m)^FAIL"),
+             docs=[("docs/HOPCIM_PROPOSAL.md", "hopcim/sim/run_all.sh")], how="`sim/run_all.sh`, about 15 min"),
         dict(id="D4", label="[M]", text="RTL regression in the main tree, R6b and the baseline S, with the directed benches of extreme input, stalls and overrun: 40 of 40 benches pass (one of them: R6b must overrun at 4.096 MHz)",
              evidence="freeze/regression_main.log", check=lambda: has("freeze/regression_main.log", r"40 of 40 benches pass") and not has("freeze/regression_main.log", r"(?m)^FAIL")
              and has("freeze/regression_main.log", r"PASS  !run_mic_tb\.sh cim 4 1 "),

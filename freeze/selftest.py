@@ -50,6 +50,10 @@ BREAKS = [
     ("the StreamFuse replay has a mismatch", replace("model/streamfuse_results.json", '"bad_logit_clips": 0', '"bad_logit_clips": 1', 1), r"FAIL\s+S1"),
     ("the modelled S energy changes", replace("model/streamfuse_energy.json", "1119.818640181629", "1129.818640181629", 1), r"FAIL\s+S2"),
     ("a StreamFuse broken design is no longer caught", replace("model/streamfuse_results.json", '"caught": true', '"caught": false', 1), r"FAIL\s+S1"),
+    ("a test clip fails in the RTL with S", replace("sim/seq_allclips_s.log", "0 with a logit or class error, 0 errors; 67841", "1 with a logit or class error, 1 errors; 67841"), r"FAIL\s+S3"),
+    ("an overrun at 4.096 MHz", replace(B + "hopcim_live_nexys_4m096_board_20261108_162809.uart.log", "[120 s] 6000 decisions (66 missed while printing), 0 keywords, overrun 0",
+                                        "[120 s] 6000 decisions (66 missed while printing), 0 keywords, overrun 1"), r"FAIL\s+S8"),
+    ("S's worst hop changes", replace("sim/mic_tb_cim_div4_s_hm.log", "worst 80072 cycles;", "worst 80073 cycles;"), r"FAIL\s+S4"),
     ("the results freeze index is edited by hand", replace("freeze/RESULTS_FREEZE.md", "## 7. Thesis tables", "## 7. Thesis table"), r"FAIL\s+RESULTS_FREEZE"),
 ]
 
