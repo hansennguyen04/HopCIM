@@ -1,6 +1,8 @@
 # Shared by xheep/setup.sh, check.sh and build.sh (sourced, not run).
 XHEEP_HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-HOPCIM=$(dirname "$XHEEP_HERE")
+# the repository the tree's links must lead to: this one, unless XHEEP_CHECK_HOPCIM names another clone (the freeze
+# self-test checks the working tree from a throw-away clone, whose patches it compares, while the links lead here)
+HOPCIM=${XHEEP_CHECK_HOPCIM:-$(dirname "$XHEEP_HERE")}
 # shellcheck source=base.env
 . "$XHEEP_HERE/base.env"
 

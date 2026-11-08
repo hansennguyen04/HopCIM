@@ -2,7 +2,7 @@ audio path enabled (FE_DED = 0, PDM clock = clk / 4, network every 1 hops): 3072
 decisions: 0 of 101 wrong, 0 at a wrong hop; ring: 0 of 727 samples wrong; 150 hops; last decision at cycle 12402785
 RESULT: 0 errors
 PASS
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:187: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:188: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 124ms; walltime 31.587 s; speed 3.934 ms/s
-- Verilator: cpu 31.528 s on 1 threads; alloced 130 MB
+- Verilator: $finish at 124ms; walltime 38.558 s; speed 3.424 ms/s
+- Verilator: cpu 36.222 s on 1 threads; alloced 130 MB

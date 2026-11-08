@@ -580,6 +580,92 @@ def s_rtl(out=print):
     return res
 
 
+# B1 (docs/STREAMFUSE_B1.md): cim_seq inside the endpoint, Vivado out of context, B1 against S on the same source
+# (syn/ooc_cim_endpoint_*_SEQ_B11 and syn/ooc_cim_endpoint_S_same_source_as_B1): logic and SRL LUTs and FFs are the
+# added control; the LUT RAM (line buffer, fusion vector) is priced as memory by the frozen rules instead.
+B1_OOC_ADD = dict(lut=(3385 - 2967) + (30 - 28), ff=2334 - 2137, lutram=492 - 274)
+SF_MEM[("lb", 128)] = "lb_128"
+
+
+def b1_rtl(out=print):
+    """B1 priced from the RTL's own counters (sim/run_energy_counts.sh cim 5 1 b1) against S from its counters, with the
+    StreamFuse costing rules, and against B1 as the schedule model predicts it. Writes energy_b1_rtl.json."""
+    tools = json.load(open(os.path.join(HERE, "energy_components.json")))
+    act = json.load(open(os.path.join(HERE, "energy_activity.json")))
+    reuse = json.load(open(os.path.join(HERE, "reuse_results.json")))
+    sf = json.load(open(os.path.join(HERE, "streamfuse_results.json")))
+    cc, cs, cb = load_counts("cim"), load_counts("cim_s"), load_counts("cim_b1")
+    check_counts(cc, "cim")
+    nd = 101
+    for k in ("seq.requant", "seq.requant_mults", "seq.requant_gated", "seq.passes", "seq.gather_tv_lt0", "engine.xw_rows"):
+        assert cb[k] == cs[k], f"{k}: B1 {cb[k]}, S {cs[k]}"
+    assert all(cb[k] == cs[k] for k in cs if k.startswith("engine.pass_")), "same passes on the same tiles"
+    per = {k: cb[f"seq.b1_{k}"] / nd for k in ("gather_lb", "gather_fv", "fill_act_reads", "lb_writes", "fv_byte_writes")}
+    assert per == dict(gather_lb=9490, gather_fv=1000, fill_act_reads=1250, lb_writes=1250, fv_byte_writes=8000), per
+    assert cb["seq.act_writes"] == 56000 * nd
+    log = open(os.path.join(HERE, "..", "sim", "seq_tb_cim_b1.log")).read()
+    cyc = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", log)[1])
+    cyc_s = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", open(os.path.join(HERE, "..", "sim", "seq_tb_cim_s.log")).read())[1])
+    assert (cs["seq.run_cycles"] - cb["seq.run_cycles"]) / nd == cyc_s - cyc, "the counters and the sequencer bench agree on the saving"
+    rows_net = (cb["engine.xw_rows"] - cb["seq.lraw_ring_reads"]) / nd
+    act_r = (cb["seq.gather_tv_lt1"] + cb["seq.gather_tv_lt2"]) / nd - per["gather_lb"] - per["gather_fv"] + per["fill_act_reads"]
+    common = dict(feat_reads=cb["seq.gather_tv_lt0"] / nd, requant=cb["seq.requant"] / nd, x_rows=rows_net)
+    d_b1 = dict(total=cyc, words={"act": 2500, "lb": 128, "fv": 16},
+                counts=dict(reads={"act": act_r, "lb": per["gather_lb"], "fv": per["gather_fv"]},
+                            byte_writes={"act": cb["seq.act_writes"] / nd, "fv": per["fv_byte_writes"]},
+                            word_writes={"lb": per["lb_writes"]}, **common))
+    d_s = dict(total=cyc_s, words={"act": 2500},
+               counts=dict(reads={"act": (cs["seq.gather_tv_lt1"] + cs["seq.gather_tv_lt2"]) / nd},
+                           byte_writes={"act": cs["seq.act_writes"] / nd}, word_writes={}, **common))
+    mb = sf["B1"]["B1"]
+    d_mod = dict(total=mb["total"], words=mb["words"],
+                 counts=dict(reads=mb["reads"], byte_writes=mb["byte_writes"], word_writes=mb["word_writes"],
+                             feat_reads=mb["feat_reads"], requant=mb["requant"], x_rows=mb["x_rows"]))
+    gated = cb["seq.requant_gated"] / nd
+    ctrl_ge = lambda m: B1_OOC_ADD["lut"] * m.a["ge_per_lut"] + B1_OOC_ADD["ff"] * m.a["ge_per_ff"]
+    res = dict(cycles=cyc, cycles_S=cyc_s, act_reads=act_r, counts=per, control=B1_OOC_ADD, variants={})
+
+    def b1_energy(m, d, rule):
+        """rule 'measured': the OOC-measured control every cycle, with its leakage; 'frozen': B's 25 % share."""
+        if rule == "frozen":
+            net = sf_network(m, d, gated, SF_SHARE["B"])
+            lk = sf_leak(m, d, SF_SHARE["B"], True)
+        else:
+            net = sf_network(m, d, gated, 0.0)
+            net["sequencer logic"] += d["total"] * (B1_OOC_ADD["lut"] * m.e_lut + B1_OOC_ADD["ff"] * m.e_ff) / 1000
+            lk = sf_leak(m, d, 0.0, True)
+            lk["digital logic"] += ctrl_ge(m) * m.a["leak_pw_per_ge"] * 1e-6
+        return net, lk, sf_power(m, sum(net.values()), lk)
+
+    rows = []
+    for vname, o in VARIANTS + [("4.096 MHz clock", dict(f_sys_hz=4.096e6))]:
+        m = Model(tools, act, cc, reuse, **o)
+        net_s = sf_network(m, d_s, gated, 0.0)
+        lk_s = sf_leak(m, d_s, 0.0, True)
+        pw_s = sf_power(m, sum(net_s.values()), lk_s)
+        nb, lb_, pb = b1_energy(m, d_b1, "measured")
+        nm_, _, _ = b1_energy(m, d_mod, "measured")
+        nf, _, pf = b1_energy(m, d_b1, "frozen")
+        es, eb, em, ef = (sum(x.values()) for x in (net_s, nb, nm_, nf))
+        res["variants"][vname] = dict(S_nJ=es / 1000, B1_nJ=eb / 1000, B1_model_nJ=em / 1000, B1_frozen_rule_nJ=ef / 1000,
+                                      ratio=eb / es, ratio_frozen_rule=ef / es, power_S_uW=pw_s, power_B1_uW=pb, power_B1_frozen_uW=pf,
+                                      parts_S_pJ=net_s if vname == "baseline" else None, parts_B1_pJ=nb if vname == "baseline" else None)
+        rows.append([vname, f"{es / 1000:.1f}", f"{eb / 1000:.1f}", f"{eb / em:.4f}", f"{eb / es:.3f}", f"{ef / es:.3f}",
+                     " / ".join(f"{pw_s[k]:.1f}" for k in (1, 2, 4)), " / ".join(f"{pb[k]:.1f}" for k in (1, 2, 4))])
+    out(f"B1 from its RTL counters (tb_cim_mic, 101 decisions): {cyc} cycles per inference (S {cyc_s}); per inference "
+        f"{act_r:.0f} ACT word reads (incl. {per['fill_act_reads']:.0f} fill reads), {per['gather_lb']:.0f} line-buffer reads, "
+        f"{per['gather_fv']:.0f} fusion-vector chunk reads, {cb['seq.act_writes'] / nd:.0f} ACT and {per['fv_byte_writes']:.0f} "
+        f"fusion-vector byte writes; added control as measured: +{B1_OOC_ADD['lut']} LUT, +{B1_OOC_ADD['ff']} FF")
+    out("\nOne inference, nJ [E], and total power, uW [E]:")
+    tab(rows, ["variant", "S", "B1", "B1 RTL / model", "B1 / S", "B1 / S, frozen 25 % rule", "S at 20 / 40 / 80 ms", "B1 at 20 / 40 / 80 ms"])
+    b = res["variants"]["baseline"]
+    out("\nBy part, baseline variant, nJ (S -> B1): " + ", ".join(
+        f"{k} {b['parts_S_pJ'][k] / 1000:.1f} -> {b['parts_B1_pJ'][k] / 1000:.1f}" for k in b["parts_S_pJ"]))
+    with open(os.path.join(HERE, "energy_b1_rtl.json"), "w") as f:
+        json.dump(res, f, indent=1, default=float)
+    return res
+
+
 def tab(rows, head):
     w = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
     print("  " + "  ".join(str(h).ljust(w[i]) for i, h in enumerate(head)))
@@ -731,5 +817,8 @@ if __name__ == "__main__":
         sys.exit(0)
     if len(sys.argv) > 1 and sys.argv[1] == "s_rtl":
         s_rtl()
+        sys.exit(0)
+    if len(sys.argv) > 1 and sys.argv[1] == "b1_rtl":
+        b1_rtl()
         sys.exit(0)
     sys.exit(main())

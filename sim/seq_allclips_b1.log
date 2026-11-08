@@ -1,0 +1,21 @@
+vectors:
+  c4eb2982fa6c4ae73056164fa0cfb0a27c2c2c4b645fc4430eba794ae195498f  feat.hex
+  68c39e3a820b2f4dd1ad1dd7822fcc9afab311358229a3e7dfd5fe5c363ff193  logits.hex
+  e4df2ee696be9860e4a3dd77c605a77860c1f76615f195fe44134c53f30fbb1f  meta.hex
+loaded 61 network tiles and 640 parameter entries (FE_DED = 0, SEQ_S = 1, SEQ_B1 = 1)
+  500 clips, 0 with a logit or class error
+  1000 clips, 0 with a logit or class error
+  1500 clips, 0 with a logit or class error
+  2000 clips, 0 with a logit or class error
+  2500 clips, 0 with a logit or class error
+  3000 clips, 0 with a logit or class error
+  3500 clips, 0 with a logit or class error
+  4000 clips, 0 with a logit or class error
+  4500 clips, 0 with a logit or class error
+engine contract: 0 violations
+RESULT (all clips): 4890 clips, 0 with a logit or class error, 0 errors; 67817..67817 cycles go -> interrupt
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv:297: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 3s; walltime 768.568 s; speed 4.336 ms/s
+- Verilator: cpu 768.500 s on 1 threads; alloced 132 MB

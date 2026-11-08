@@ -2,7 +2,7 @@
 """Mutation test of the assertions (docs/VERIFICATION.md): each mutant breaks the RTL in one place, in a scratch
 copy, and the bench named must then trip the assertion named (or, for "bench", fail its own comparison with the golden
 model). A check that cannot fail proves nothing.
-Usage: verif_mutants.py [jobs]       writes model/verif_mutants.json. Standard library only.
+Usage: verif_mutants.py [jobs] [name prefix]   writes model/verif_mutants.json (all mutants only). Standard library only.
 """
 import concurrent.futures as cf
 import json
@@ -56,6 +56,20 @@ M = [
     ("S: L8 not written even when the run stops after it", "cim_seq", "assign l8_act  = !NO_L8A || (lay != 4'd8) || (stop_q == 4'd9);",
      "assign l8_act  = !NO_L8A || (lay != 4'd8);", ["seq", "cim", "s"], "bench"),
     ("S: two results drained, three counted", "cim_seq", "d_rem <= d_rem - 5'd2;", "d_rem <= (d_rem > 5'd2) ? d_rem - 5'd3 : 5'd0;", ["seq", "cim", "s"], "bench"),
+    # B1 (SEQ_B1 = 1): StreamFuse B in block 1
+    ("B1: fusion-vector source interlock removed", "cim_seq",
+     "    else if (g_pw) g_src = (fv_wp > g_pwp) || ((fv_wp == g_pwp) && (fv_wc >= {4'(g_k[2:0]) + 4'd1, 3'b000}));",
+     "    else if (g_pw) g_src = 1'b1;", ["seq", "cim", "b1"], "seq.b1_fv_read_complete"),
+    ("B1: a fill ignores the readers of the word it replaces", "cim_seq", "  assign f_free  = !f_old || !g_on || (g_key > f_key);",
+     "  assign f_free  = 1'b1;", ["seq", "cim", "b1"], "seq.b1_fill_overwrites_dead_words"),
+    ("B1: the fill writes the neighbouring slot", "cim_seq", "    always_ff @(posedge clk_i) if (f_on && f_free) f1_slot <= f_rw;",
+     "    always_ff @(posedge clk_i) if (f_on && f_free) f1_slot <= f_rw + 7'd1;", ["seq", "cim", "b1"], "bench"),
+    ("B1: pointwise reads the other fusion-vector half", "cim_seq", "  assign fv_ra = {g_pwp[0], g_k[2:0]};", "  assign fv_ra = {!g_pwp[0], g_k[2:0]};",
+     ["seq", "cim", "b1"], "seq.b1_fv_read_complete"),
+    ("B1: a depthwise result also written to ACT", "cim_seq", "  assign act_we  = q4_v && (lay != 4'd9) && l8_act && !(fz && !q4_d.pw);",
+     "  assign act_we  = q4_v && (lay != 4'd9) && l8_act;", ["seq", "cim", "b1"], "seq.b1_dw_not_to_act"),
+    ("B1: L2 written to map 0", "cim_seq", "  assign act_wa  = {fz ? 1'b1 : wbuf, q4_d.p, q4_d.cg};", "  assign act_wa  = {fz ? 1'b0 : wbuf, q4_d.p, q4_d.cg};",
+     ["seq", "cim", "b1"], "bench"),
 ]
 
 
@@ -65,7 +79,11 @@ EQUIVALENT = [("sequencer issue ignores ready", "cim_seq", "assign issue   = i_o
                "assign issue   = i_on && i_full && (pace == 5'd0) && (tq_cnt != 3'd4);", ["seq", "cim"], "engine.start_only_when_ready"),
               # S: with two lanes a pass drains in at most 8 cycles, and the engine spaces passes 9 apart, so the drain pacing never binds
               ("S: no drain pacing with two lanes", "cim_seq", "if (issue) pace <= RQ_2L ? 5'((6'(i_tag.n) + 6'd1) >> 1) - 5'd1 :",
-               "if (issue) pace <= RQ_2L ? 5'd0 :", ["seq", "cim", "s"], "seq.results_drained_before_pop")]
+               "if (issue) pace <= RQ_2L ? 5'd0 :", ["seq", "cim", "s"], "seq.results_drained_before_pop"),
+              # B1: the fill, in the order of first use, is always ahead of the depthwise gather (all 6 source stalls of the schedule
+              # model are on the fusion vector, and without the line-buffer check the model has the same 67,817 cycles and no hazard)
+              ("B1: line-buffer source interlock removed", "cim_seq", "    else           g_src = !g_fu || (fl_cnt > gq);",
+               "    else           g_src = 1'b1;", ["seq", "cim", "b1"], "seq.b1_lb_read_holds_its_word")]
 
 
 def run(item):
@@ -109,9 +127,14 @@ def run(item):
 
 def main():
     jobs = int(sys.argv[1]) if len(sys.argv) > 1 else 4
+    only = sys.argv[2] if len(sys.argv) > 2 else None          # a name prefix: run only those (no json written)
+    sel = [m for m in M if only is None or m[0].startswith(only)]
     with cf.ThreadPoolExecutor(jobs) as ex:
-        res = list(ex.map(run, enumerate(M)))
-        equiv = list(ex.map(run, enumerate(EQUIVALENT)))
+        res = list(ex.map(run, enumerate(sel)))
+        equiv = list(ex.map(run, enumerate(EQUIVALENT))) if only is None else []
+    if only is not None:
+        print(f"{sum(bool(r.get('caught')) for r in res)} of {len(res)} selected mutants caught")
+        return 0 if all(r.get("caught") for r in res) else 1
     with open(os.path.join(ROOT, "model", "verif_mutants.json"), "w") as f:
         json.dump(dict(mutants=res, equivalent=equiv), f, indent=1)
     caught = sum(bool(r.get("caught")) for r in res)

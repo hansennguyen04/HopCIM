@@ -42,13 +42,28 @@
 //           odd bank (no extra capacity); passes are paced by max(9, ceil(outputs / 2))
 //   NO_L8A  L8 is not written to ACT (the pool sums are its only consumer), except in a run that
 //           stops after L8, so that it can be read back
+//
+// Option B1 (FUSE1; docs/STREAMFUSE_B1.md, StreamFuse B in block 1 only; built with S):
+//   L1 and L2 run as one segment (lay = 1). Vectors in the order DW(p, g = 0..9), PW(p - 1), for
+//   p = 0..125. Depthwise taps are read from a line buffer of 128 words (slot = raster word
+//   10 pin + g mod 128), filled from map 0 one word per cycle in the order of first use, over the
+//   ACT read port that the segment's gather does not need. Depthwise results go to a fusion
+//   vector (2 x 8 words of 8 bytes, half p mod 2, word c / 8, lane c mod 8) instead of ACT; the
+//   pointwise gather reads it in 8 chunks of 8 rows. L2 is written to map 1, so L3..L8 read and
+//   write the maps the other way round. Interlocks: a depthwise tap that is a word's first use
+//   waits until that word has landed in the line buffer (fill count against the gather's count of
+//   first uses); a pointwise chunk waits until its 8 channels of the position are written; a fill
+//   waits until the word it replaces (raster word - 128) has had its last read, by comparing the
+//   gather's position with that word's last reader. The fusion vector needs no overwrite check:
+//   PW(p - 2) is gathered before DW(p) is.
 
 module cim_seq #(
     parameter int unsigned TW = 7,                   // engine tile index width
     parameter int unsigned XB = 24,                  // engine input width
     parameter bit          RQ_SG  = 1'b0,
     parameter bit          RQ_2L  = 1'b0,
-    parameter bit          NO_L8A = 1'b0
+    parameter bit          NO_L8A = 1'b0,
+    parameter bit          FUSE1  = 1'b0             // B1: L1 -> L2 fused (see above)
 ) (
     input  logic               clk_i,
     input  logic               rst_ni,
@@ -123,6 +138,7 @@ module cim_seq #(
     logic [3:0] cg0;                                 // c0 / 7
     logic [2:0] cl0;                                 // c0 % 7
     logic [4:0] n;                                   // results
+    logic       pw;                                  // FUSE1: a pointwise pass of the fused segment
   } tag_t;
 
   typedef struct packed {                            // destination of one result
@@ -130,6 +146,7 @@ module cim_seq #(
     logic [5:0] c;
     logic [3:0] cg;
     logic [2:0] cl;
+    logic       pw;                                  // FUSE1: of the fused segment's pointwise layer
   } dst_t;
 
   function automatic logic signed [8:0] s9(input logic [7:0] v);
@@ -174,6 +191,8 @@ module cim_seq #(
   logic          lay_start, lay_end, fin, front_done, back_idle;
   logic          wp_on, net_on, wp_fin;              // window-path phase, network phase, end of the first
   logic          wp_only_q, wp_frame_q;
+  logic          fz;                                 // FUSE1: the fused segment (L1 and L2, lay = 1)
+  logic          swp;                                // FUSE1: L3..L8 use the maps the other way round
 
   always_comb begin
     if (lay == 4'd0)      lt = T_CONV1;
@@ -181,10 +200,12 @@ module cim_seq #(
     else if (lay[0])      lt = T_DW;
     else                  lt = T_PW;
   end
+  assign fz   = FUSE1 && (lay == 4'd1);
+  assign swp  = FUSE1 && (lay >= 4'd3);
   assign blk  = 2'((lay - 4'd1) >> 1);
   assign t14  = TW'({blk, 4'd0}) - TW'({blk, 1'b0});
-  assign rbuf = !lay[0];
-  assign wbuf = lay[0];
+  assign rbuf = swp ? lay[0] : !lay[0];
+  assign wbuf = swp ? !lay[0] : lay[0];              // the fused segment's L2 goes to map 1 (write-back)
   always_comb begin
     unique case (lt)
       T_CONV1: begin tl_base = tbase_q;               npass_m1 = 2'd3; nchunk_m1 = 6'd9;  rstep = 6'd4; end
@@ -194,7 +215,8 @@ module cim_seq #(
     endcase
   end
 
-  assign fin       = ((stop_q != 4'd0) && (lay == stop_q - 4'd1)) || (lay == 4'd9);
+  // FUSE1: a stop after L1 or after L2 both end with the fused segment
+  assign fin       = ((stop_q != 4'd0) && ((lay == stop_q - 4'd1) || (fz && (stop_q == 4'd3)))) || (lay == 4'd9);
   assign lay_end   = net_on && front_done && back_idle;
   assign lay_start = (start_i && !run && !wp_i) || (lay_end && !fin) || (wp_fin && !wp_only_q);
 
@@ -239,7 +261,7 @@ module cim_seq #(
           run    <= 1'b0;
           net_on <= 1'b0;
           done_q <= 1'b1;
-        end else lay <= lay + 4'd1;
+        end else lay <= fz ? 4'd3 : lay + 4'd1;
       end
     end
   end
@@ -518,16 +540,25 @@ module cim_seq #(
   logic [6:0]    vm_p [2];                           // per X bank: the vector's position,
   logic [3:0]    vm_g [2];                           //   channel group,
   logic [1:0]    vm_last;                            //   last vector of the layer
+  logic [1:0]    vm_pw;                              //   FUSE1: a pointwise vector of the fused segment
+  logic          g_pw;                               // FUSE1: the vector is PW(g_p - 1) of the fused segment
+  ltype_e        gk;                                 // kind of the vector being gathered
+  logic [5:0]    g_ncm1, g_rst;                      // its chunks - 1, X rows per chunk step
+  logic          g_src;                              // FUSE1: the chunk's source word is there (interlock)
 
-  assign g_lastc = (g_k == nchunk_m1);
-  assign g_lastv = (lt == T_FC) || ((g_p == 7'd124) && ((lt != T_DW) || (g_g == 4'd9)));
+  assign gk      = fz ? (g_pw ? T_PW : T_DW) : lt;
+  assign g_ncm1  = fz ? (g_pw ? 6'd7 : 6'd8) : nchunk_m1;
+  assign g_rst   = fz ? (g_pw ? 6'd8 : 6'd7) : rstep;
+  assign g_lastc = (g_k == g_ncm1);
+  assign g_lastv = fz ? (g_pw && (g_p == 7'd125))
+                      : ((lt == T_FC) || ((g_p == 7'd124) && ((lt != T_DW) || (g_g == 4'd9))));
   // a new vector needs its bank free: no vector in it, and its last pass past its X reads
-  assign g_req   = g_on && ((g_k != 6'd0) || (!bbusy[g_b] && (bcnt[g_b] == 3'd0)));
+  assign g_req   = g_on && ((g_k != 6'd0) || (!bbusy[g_b] && (bcnt[g_b] == 3'd0))) && g_src;
   always_comb begin
-    unique case (lt)
+    unique case (gk)
       T_CONV1: g_n = 4'd4;
       T_DW:    g_n = (g_g == 4'd9) ? 4'd1 : 4'd7;
-      T_PW:    g_n = (g_k == 6'd9) ? 4'd1 : 4'd7;
+      T_PW:    g_n = fz ? 4'd8 : ((g_k == 6'd9) ? 4'd1 : 4'd7);
       default: g_n = 4'd1;
     endcase
   end
@@ -544,6 +575,7 @@ module cim_seq #(
       g_row <= 6'd0;
       g_fy  <= 2'd0;
       g_fx  <= 2'd0;
+      g_pw  <= 1'b0;
     end else if (lay_start) begin
       g_on  <= 1'b1;
       g_b   <= 1'b0;
@@ -555,6 +587,7 @@ module cim_seq #(
       g_row <= 6'd0;
       g_fy  <= 2'd0;
       g_fx  <= 2'd0;
+      g_pw  <= 1'b0;
     end else if (g_req) begin
       if (g_lastc) begin
         g_k   <= 6'd0;
@@ -563,10 +596,14 @@ module cim_seq #(
         g_fx  <= 2'd0;
         g_b   <= !g_b;
         if (g_lastv) g_on <= 1'b0;
-        if ((lt == T_DW) && (g_g != 4'd9)) g_g <= g_g + 4'd1;
-        else begin
-          g_g <= 4'd0;
-          g_p <= g_p + 7'd1;
+        if ((gk == T_DW) && (g_g != 4'd9)) g_g <= g_g + 4'd1;
+        else if (fz && !g_pw && (g_p != 7'd0)) begin  // fused: DW(p, 9) -> PW(p - 1)
+          g_g  <= 4'd0;
+          g_pw <= 1'b1;
+        end else begin                                // fused: PW(p - 1) -> DW(p + 1, 0), or PW(124) last
+          g_g  <= 4'd0;
+          g_pw <= fz && g_pw && (g_p == 7'd124);
+          g_p  <= g_p + 7'd1;
           if (g_ox == 3'd4) begin
             g_ox <= 3'd0;
             g_oy <= g_oy + 5'd1;
@@ -574,7 +611,7 @@ module cim_seq #(
         end
       end else begin
         g_k   <= g_k + 6'd1;
-        g_row <= g_row + rstep;
+        g_row <= g_row + g_rst;
         if (g_fx == 2'd2) begin
           g_fx <= 2'd0;
           g_fy <= g_fy + 2'd1;
@@ -619,17 +656,47 @@ module cim_seq #(
   assign d_y1  = g_oy + {3'd0, g_fy};
   assign d_x1  = g_ox + {1'b0, g_fx};
   assign d_pin = 7'({1'b0, d_y1, 2'b00} + {3'd0, d_y1} + {5'd0, d_x1} - 8'd6);
+  logic [11:0] f_ra;                                 // FUSE1: the line-buffer fill's ACT word (below)
+  /* verilator lint_off UNUSEDSIGNAL */            // FUSE1 only
+  logic        f_on, f1_v, f_start;                  // FUSE1: fill running, word landing, segment start
+  /* verilator lint_on UNUSEDSIGNAL */
   always_comb begin
-    if (lt == T_CONV1)   g_tv = (c_iy4 >= 6'd4) && (c_iy4 <= 6'd52);
-    else if (lt == T_DW) g_tv = (d_y1 >= 5'd1) && (d_y1 <= 5'd25) && (d_x1 >= 3'd1) && (d_x1 <= 3'd5);
+    if (gk == T_CONV1)   g_tv = (c_iy4 >= 6'd4) && (c_iy4 <= 6'd52);
+    else if (gk == T_DW) g_tv = (d_y1 >= 5'd1) && (d_y1 <= 5'd25) && (d_x1 >= 3'd1) && (d_x1 <= 3'd5);
     else                 g_tv = 1'b1;
-    if (lt == T_DW) ga = {rbuf, d_pin, g_g};
-    else            ga = {rbuf, g_p, g_k[3:0]};
+    if (fz)              ga = f_ra;                  // the fused gather reads no ACT: the fill has the port
+    else if (lt == T_DW) ga = {rbuf, d_pin, g_g};
+    else                 ga = {rbuf, g_p, g_k[3:0]};
+  end
+
+  // FUSE1 gather sources: line-buffer slot of the tap's word, fusion-vector word of the chunk
+  /* verilator lint_off UNUSEDSIGNAL */            // FUSE1 only
+  logic [6:0]  g_rw;                                 // raster word 10 pin + g of the tap, mod 128 (its slot)
+  logic [6:0]  lb_ra;
+  logic [3:0]  fv_ra;
+  /* verilator lint_on UNUSEDSIGNAL */
+  logic [6:0]  g_pwp;                                // position of the pointwise vector
+  logic        g_fu;                                 // the tap is its word's first use
+  logic [10:0] gq, fl_cnt;                           // first uses requested by the gather, words landed
+  logic [6:0]  fv_wp, fv_wc;                         // fusion vector: position being written, channels of it
+  assign g_rw  = 7'({d_pin, 3'b000} + {2'b00, d_pin, 1'b0} + {6'd0, g_g});
+  assign lb_ra = g_rw[6:0];
+  assign g_pwp = g_p - 7'd1;
+  assign fv_ra = {g_pwp[0], g_k[2:0]};
+  // first reader of input (iy, ix) is output (max(iy - 1, 0), max(ix - 1, 0))
+  assign g_fu  = g_tv && ((g_fy == 2'd2) || ((g_oy == 5'd0) && (g_fy == 2'd1)))
+                      && ((g_fx == 2'd2) || ((g_ox == 3'd0) && (g_fx == 2'd1)));
+  always_comb begin
+    if (!fz)       g_src = 1'b1;
+    else if (g_pw) g_src = (fv_wp > g_pwp) || ((fv_wp == g_pwp) && (fv_wc >= {4'(g_k[2:0]) + 4'd1, 3'b000}));
+    else           g_src = !g_fu || (fl_cnt > gq);
   end
 
   // memories read in stage R (data in G1)
   logic [7:0] feat_q [4];
   logic [7:0] act_q [7];
+  logic [7:0] lb_q [7];                              // FUSE1: line buffer
+  logic [7:0] fv_q [8];                              // FUSE1: fusion vector
   logic signed [15:0] pool_rd;                       // pool sum of channel g_k (FC gather; write-back)
 
   // FEAT: written by the CPU, or by the window path while it runs; read by the gather, or by the
@@ -650,7 +717,8 @@ module cim_seq #(
   assign feat_rdata_o = {feat_q[3], feat_q[2], feat_q[1], feat_q[0]};
 
   // stage G1
-  logic        g1_v, g1_b, g1_last, g1_tv;
+  logic        g1_v, g1_b, g1_last, g1_tv, g1_fz;
+  ltype_e      g1_kind;
   logic [5:0]  g1_row;
   logic [3:0]  g1_n, g1_ixv;
   logic [1:0]  g1_ix0;
@@ -671,18 +739,23 @@ module cim_seq #(
       g1_ixv  <= c_ixv;
       g1_ix0  <= c_ix0;
       g1_pool <= pool_rd;
+      g1_kind <= gk;
+      g1_fz   <= fz;
     end
   end
 
   always_comb begin
     for (int i = 0; i < 8; i++) gx[i] = 9'sd0;
-    unique case (lt)
+    unique case (g1_kind)
       T_CONV1:
         for (int f = 0; f < 4; f++)
           if (g1_tv && g1_ixv[f]) gx[f] = s9(feat_q[2'(g1_ix0 + 2'(f))]) - s9(zin0_q);
       T_DW, T_PW:
-        for (int i = 0; i < 7; i++)
-          if (g1_tv) gx[i] = s9(act_q[i]) - s9(zact_q);
+        if (g1_fz && (g1_kind == T_PW))                // fused pointwise: 8 channels of the fusion vector
+          for (int i = 0; i < 8; i++) gx[i] = s9(fv_q[i]) - s9(zact_q);
+        else
+          for (int i = 0; i < 7; i++)
+            if (g1_tv) gx[i] = s9(g1_fz ? lb_q[i] : act_q[i]) - s9(zact_q);
       default: gx[0] = pooled(g1_pool) - s9(zact_q);
     endcase
   end
@@ -730,7 +803,7 @@ module cim_seq #(
 
   assign i_full  = bfull[i_b] || (g2_v && g2_last && (g2_b == i_b));
   assign issue   = i_on && i_full && eng_ready_i && (pace == 5'd0) && (tq_cnt != 3'd4);
-  assign i_lastp = (i_j == npass_m1);
+  assign i_lastp = (i_j == (fz ? (vm_pw[i_b] ? 2'd3 : 2'd0) : npass_m1));
   logic [TW-1:0] n_tile;                             // the network's pass tile
   assign go_o    = wp_on ? wp_go : issue;
   assign tile_o  = wp_on ? wp_tile : n_tile;
@@ -738,21 +811,26 @@ module cim_seq #(
   assign xbits_o = wp_on ? 5'(WP_B_DCT) : 5'd9;
 
   always_comb begin
-    unique case (lt)
-      T_DW: begin
-        n_tile = tl_base + TW'(vm_g[i_b]);
-        i_tag  = '{p: vm_p[i_b], c0: 6'(7 * int'(vm_g[i_b])), cg0: vm_g[i_b], cl0: 3'd0,
-                   n: (vm_g[i_b] == 4'd9) ? 5'd1 : 5'd7};
-      end
-      T_FC: begin
-        n_tile = tl_base;
-        i_tag  = '{p: 7'd0, c0: 6'd0, cg0: 4'd0, cl0: 3'd0, n: 5'd12};
-      end
-      default: begin                                 // pass j: channels 16 j .. (16 j = 14 j + 2 j)
-        n_tile = tl_base + TW'(i_j);
-        i_tag  = '{p: vm_p[i_b], c0: {i_j, 4'd0}, cg0: {1'b0, i_j, 1'b0}, cl0: {i_j, 1'b0}, n: 5'd16};
-      end
-    endcase
+    if (fz && vm_pw[i_b]) begin                      // fused pointwise L2: tiles of block 0
+      n_tile = tbase_q + TW'(14) + TW'(i_j);
+      i_tag  = '{p: vm_p[i_b], c0: {i_j, 4'd0}, cg0: {1'b0, i_j, 1'b0}, cl0: {i_j, 1'b0}, n: 5'd16, pw: 1'b1};
+    end else begin
+      unique case (lt)
+        T_DW: begin
+          n_tile = tl_base + TW'(vm_g[i_b]);
+          i_tag  = '{p: vm_p[i_b], c0: 6'(7 * int'(vm_g[i_b])), cg0: vm_g[i_b], cl0: 3'd0,
+                     n: (vm_g[i_b] == 4'd9) ? 5'd1 : 5'd7, pw: 1'b0};
+        end
+        T_FC: begin
+          n_tile = tl_base;
+          i_tag  = '{p: 7'd0, c0: 6'd0, cg0: 4'd0, cl0: 3'd0, n: 5'd12, pw: 1'b0};
+        end
+        default: begin                               // pass j: channels 16 j .. (16 j = 14 j + 2 j)
+          n_tile = tl_base + TW'(i_j);
+          i_tag  = '{p: vm_p[i_b], c0: {i_j, 4'd0}, cg0: {1'b0, i_j, 1'b0}, cl0: {i_j, 1'b0}, n: 5'd16, pw: 1'b0};
+        end
+      endcase
+    end
   end
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
@@ -766,6 +844,7 @@ module cim_seq #(
       bcnt[0] <= 3'd0;
       bcnt[1] <= 3'd0;
       vm_last <= 2'b00;
+      vm_pw   <= 2'b00;
     end else begin
       if (issue) pace <= RQ_2L ? 5'((6'(i_tag.n) + 6'd1) >> 1) - 5'd1 : i_tag.n - 5'd1;   // drain time
       else if (pace != 5'd0) pace <= pace - 5'd1;
@@ -781,6 +860,7 @@ module cim_seq #(
         if (g_req && (g_k == 6'd0)) begin
           bbusy[g_b]   <= 1'b1;
           vm_last[g_b] <= g_lastv;
+          vm_pw[g_b]   <= g_pw;
         end
         if (g2_v && g2_last) bfull[g2_b] <= 1'b1;
         if (issue) begin
@@ -798,7 +878,7 @@ module cim_seq #(
   end
   always_ff @(posedge clk_i) begin
     if (g_req && (g_k == 6'd0)) begin
-      vm_p[g_b] <= g_p;
+      vm_p[g_b] <= g_pw ? g_pwp : g_p;
       vm_g[g_b] <= g_g;
     end
   end
@@ -819,6 +899,8 @@ module cim_seq #(
   logic [2:0]  d_cl;
   logic        d_two;                                // RQ_2L: two results drain this cycle
   logic        d_sw;                                 // RQ_2L: the first result has an odd channel
+  logic        d_pw;                                 // FUSE1: the pass is the fused segment's pointwise
+  logic [3:0]  d_lay;                                // layer of its parameters
   dst_t        d_d1, d_d2;                           // destinations of the first and the second result
   /* verilator lint_off UNUSEDSIGNAL */            // used with RQ_2L only
   logic [4:0]  d_ix0, d_ix1;                         // RQ_2L: parameter index (channel / 2), lanes 0, 1
@@ -828,8 +910,10 @@ module cim_seq #(
   assign t_pop = tq[tq_rp];
   assign d_two = RQ_2L && (d_rem > 5'd1);
   assign d_sw  = RQ_2L && d_c[0];
-  assign d_d1  = '{p: d_p, c: d_c, cg: d_cg, cl: d_cl};
-  assign d_d2  = '{p: d_p, c: d_c + 6'd1, cg: (d_cl == 3'd6) ? d_cg + 4'd1 : d_cg, cl: (d_cl == 3'd6) ? 3'd0 : d_cl + 3'd1};
+  assign d_d1  = '{p: d_p, c: d_c, cg: d_cg, cl: d_cl, pw: d_pw};
+  assign d_d2  = '{p: d_p, c: d_c + 6'd1, cg: (d_cl == 3'd6) ? d_cg + 4'd1 : d_cg, cl: (d_cl == 3'd6) ? 3'd0 : d_cl + 3'd1,
+                   pw: d_pw};
+  assign d_lay = (fz && d_pw) ? 4'd2 : lay;
   assign d_ix0 = 5'((7'(d_c) + 7'd1) >> 1);          // the even channel of the pair (d_c or d_c + 1)
   assign d_ix1 = d_c[5:1];                           // the odd one
 
@@ -844,6 +928,7 @@ module cim_seq #(
       d_c    <= 6'd0;
       d_cg   <= 4'd0;
       d_cl   <= 3'd0;
+      d_pw   <= 1'b0;
       err_q  <= 1'b0;
     end else begin
       if (issue) tq_wp <= tq_wp + 2'd1;
@@ -858,6 +943,7 @@ module cim_seq #(
         d_c   <= t_pop.c0;
         d_cg  <= t_pop.cg0;
         d_cl  <= t_pop.cl0;
+        d_pw  <= t_pop.pw;
       end else if (d_two) begin
         d_rem <= d_rem - 5'd2;
         d_i   <= d_i + 4'd2;
@@ -902,7 +988,7 @@ module cim_seq #(
     (* ram_style = "block" *) logic [3:0]  e_m [1024];
     logic [9:0]  prm_ra, prm_ra_q, prm_ra_q2;
 
-    assign prm_ra = {lay, d_c};
+    assign prm_ra = {d_lay, d_c};
     always_ff @(posedge clk_i) begin
       if (prm_we_i && (prm_field_i == 2'd0)) bias_m[prm_addr_i] <= prm_data_i[23:0];
       if (prm_we_i && (prm_field_i == 2'd1)) qm_m[prm_addr_i] <= prm_data_i[30:0];
@@ -927,7 +1013,7 @@ module cim_seq #(
 
       assign wa     = {prm_addr_i[9:6], prm_addr_i[5:1]};
       assign we     = prm_we_i && (prm_addr_i[0] == 1'(k));
-      assign prm_ra = {lay, (k == 0) ? d_ix0 : d_ix1};
+      assign prm_ra = {d_lay, (k == 0) ? d_ix0 : d_ix1};
       always_ff @(posedge clk_i) begin
         if (we && (prm_field_i == 2'd0)) bias_m[wa] <= prm_data_i[23:0];
         if (we && (prm_field_i == 2'd1)) qm_m[wa] <= prm_data_i[30:0];
@@ -1037,7 +1123,7 @@ module cim_seq #(
 
   assign back_idle  = (tq_cnt == 3'd0) && (d_rem == 5'd0) && !q0_v && !q1_v && !q2_v && !q3_v && !q4_v
                       && !r0_v && !r1_v && !r2_v && !r3_v && !r4_v;
-  assign front_done = !g_on && !i_on;
+  assign front_done = !g_on && !i_on && !f_on && !f1_v;
 
   // ================================================================== write-back
   // ACT (L0..L8; NO_L8A: L8 only in a run that stops after it), the pool sums (L8; the first
@@ -1052,10 +1138,11 @@ module cim_seq #(
   logic [3:0]  cls, cls0;
 
   assign l8_act  = !NO_L8A || (lay != 4'd8) || (stop_q == 4'd9);
-  assign act_we  = q4_v && (lay != 4'd9) && l8_act;
-  assign act_we1 = r4_v && (lay != 4'd9) && l8_act;
-  assign act_wa  = {wbuf, q4_d.p, q4_d.cg};
-  assign act_wa1 = {wbuf, r4_d.p, r4_d.cg};
+  // FUSE1: the fused segment's depthwise results go to the fusion vector, its pointwise ones to map 1
+  assign act_we  = q4_v && (lay != 4'd9) && l8_act && !(fz && !q4_d.pw);
+  assign act_we1 = r4_v && (lay != 4'd9) && l8_act && !(fz && !r4_d.pw);
+  assign act_wa  = {fz ? 1'b1 : wbuf, q4_d.p, q4_d.cg};
+  assign act_wa1 = {fz ? 1'b1 : wbuf, r4_d.p, r4_d.cg};
   assign cdiv    = 4'((int'(act_ch_i) * 37) >> 8);
   assign cmod    = 3'(act_ch_i - 6'(7 * int'(cdiv)));
   assign act_ra  = run ? ga : {act_buf_i, act_pos_i, cdiv};
@@ -1092,6 +1179,138 @@ module cim_seq #(
     if (act_re_i) act_lane_q <= cmod;
   end
 
+  // ================================================================== FUSE1: line buffer and fusion vector
+  // Fill: for each output (oy, ox) in raster order and group g, the taps that are first uses, in tap
+  // order: new rows fy = 1, 2 if oy = 0 else 2; new columns fx = 1, 2 if ox = 0 else 2 (outputs with
+  // ox = 4 or oy = 24 have none). 1,250 words, one per cycle: F0 reads map 0, F1 writes the slot.
+  /* verilator lint_off UNUSEDSIGNAL */            // FUSE1 only
+  logic [4:0]  f_oy, f_iy, f_yo, f_ly;
+  logic [2:0]  f_ox, f_ix, f_xo, f_lx;
+  logic [3:0]  f_g, f_go, f_lk;
+  logic        f_a, f_b, f_amax, f_bmax, f_free, f_b1, f_b2, f_old;
+  logic [6:0]  f_pin, f_lp, f1_slot;
+  logic [6:0]  f_rw;                                 // raster word mod 128: the slot
+  logic [14:0] g_key, f_key;
+  logic        fv_we0, fv_we1;
+  /* verilator lint_on UNUSEDSIGNAL */
+
+  assign f_start = lay_end && !fin && FUSE1 && (lay == 4'd0);
+  assign f_iy    = (f_oy == 5'd0) ? {4'd0, f_a} : f_oy + 5'd1;
+  assign f_ix    = (f_ox == 3'd0) ? {2'd0, f_b} : f_ox + 3'd1;
+  assign f_pin   = 7'({f_iy, 2'b00} + {2'b00, f_iy} + {4'd0, f_ix});
+  assign f_rw    = 7'({f_pin, 3'b000} + {2'b00, f_pin, 1'b0} + {6'd0, f_g});
+  assign f_ra    = {1'b0, f_pin, f_g};
+  assign f_amax  = (f_oy != 5'd0) || f_a;
+  assign f_bmax  = (f_ox != 3'd0) || f_b;
+  // the word in its slot before: raster word - 128 = 50 (iy - 2) + 10 (ix - 2) + (g - 8), with borrows
+  assign f_b1    = (f_g < 4'd8);
+  assign f_go    = f_b1 ? f_g + 4'd2 : f_g - 4'd8;
+  assign f_b2    = ({1'b0, f_ix} < (f_b1 ? 4'd3 : 4'd2));
+  assign f_xo    = f_b2 ? f_ix + (f_b1 ? 3'd2 : 3'd3) : f_ix - (f_b1 ? 3'd3 : 3'd2);
+  assign f_old   = (f_iy >= (f_b2 ? 5'd3 : 5'd2));
+  assign f_yo    = f_iy - (f_b2 ? 5'd3 : 5'd2);
+  // its last reader: output (min(y + 1, 24), min(x + 1, 4)), group g_old, tap 3 fy + fx
+  assign f_ly    = (f_yo == 5'd24) ? 5'd24 : f_yo + 5'd1;
+  assign f_lx    = (f_xo == 3'd4) ? 3'd4 : f_xo + 3'd1;
+  assign f_lk    = ((f_yo == 5'd24) ? 4'd3 : 4'd0) + ((f_xo == 3'd4) ? 4'd1 : 4'd0);
+  assign f_lp    = 7'({f_ly, 2'b00} + {2'b00, f_ly} + {4'd0, f_lx});
+  assign f_key   = {f_lp, f_go, f_lk};
+  // the gather's next chunk (a pointwise vector comes after all depthwise vectors of position g_p)
+  assign g_key   = {g_p, g_pw ? 4'd10 : g_g, g_pw ? 4'd0 : g_k[3:0]};
+  assign f_free  = !f_old || !g_on || (g_key > f_key);
+
+  assign fv_we0 = q4_v && fz && !q4_d.pw;
+  assign fv_we1 = r4_v && fz && !r4_d.pw;
+
+  if (FUSE1) begin : g_fuse
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        f_on   <= 1'b0;
+        f1_v   <= 1'b0;
+        f_oy   <= 5'd0;
+        f_ox   <= 3'd0;
+        f_g    <= 4'd0;
+        f_a    <= 1'b0;
+        f_b    <= 1'b0;
+        fl_cnt <= 11'd0;
+        gq     <= 11'd0;
+        fv_wp  <= 7'd0;
+        fv_wc  <= 7'd0;
+      end else begin
+        f1_v <= f_on && f_free;
+        if (f1_v) fl_cnt <= fl_cnt + 11'd1;
+        if (g_req && fz && !g_pw && g_fu) gq <= gq + 11'd1;
+        // both lanes of one cycle come from one pass, so from one position
+        if (fv_we0 || fv_we1) begin
+          if ((fv_we0 ? q4_d.p : r4_d.p) != fv_wp) begin
+            fv_wp <= fv_we0 ? q4_d.p : r4_d.p;
+            fv_wc <= {6'd0, fv_we0} + {6'd0, fv_we1};
+          end else fv_wc <= fv_wc + {6'd0, fv_we0} + {6'd0, fv_we1};
+        end
+        if (f_start) begin
+          f_on   <= 1'b1;
+          f_oy   <= 5'd0;
+          f_ox   <= 3'd0;
+          f_g    <= 4'd0;
+          f_a    <= 1'b0;
+          f_b    <= 1'b0;
+          fl_cnt <= 11'd0;
+          gq     <= 11'd0;
+          fv_wp  <= 7'd0;
+          fv_wc  <= 7'd0;
+        end else if (f_on && f_free) begin
+          if (!f_bmax) f_b <= 1'b1;
+          else begin
+            f_b <= 1'b0;
+            if (!f_amax) f_a <= 1'b1;
+            else begin
+              f_a <= 1'b0;
+              if (f_g != 4'd9) f_g <= f_g + 4'd1;
+              else begin
+                f_g <= 4'd0;
+                if (f_ox != 3'd3) f_ox <= f_ox + 3'd1;
+                else begin
+                  f_ox <= 3'd0;
+                  if (f_oy == 5'd23) f_on <= 1'b0;
+                  else f_oy <= f_oy + 5'd1;
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    always_ff @(posedge clk_i) if (f_on && f_free) f1_slot <= f_rw;
+
+    // line buffer: 128 x 7 bytes (F1 writes the ACT word read in F0)
+    for (genvar l = 0; l < 7; l++) begin : g_lb
+      (* ram_style = "distributed" *) logic [7:0] lbm [128];
+      always_ff @(posedge clk_i) begin
+        if (f1_v) lbm[f1_slot] <= act_q[l];
+        lb_q[l] <= lbm[lb_ra];
+      end
+    end
+    // fusion vector: byte lane c mod 8, word {p mod 2, c / 8}; the two lanes have consecutive channels
+    for (genvar l = 0; l < 8; l++) begin : g_fv
+      (* ram_style = "distributed" *) logic [7:0] fvm [16];
+      logic w0, w1;
+      assign w0 = fv_we0 && (q4_d.c[2:0] == 3'(l));
+      assign w1 = fv_we1 && (r4_d.c[2:0] == 3'(l));
+      always_ff @(posedge clk_i) begin
+        if (w0 || w1) fvm[w0 ? {q4_d.p[0], q4_d.c[5:3]} : {r4_d.p[0], r4_d.c[5:3]}] <= w0 ? q4_y : r4_y;
+        fv_q[l] <= fvm[fv_ra];
+      end
+    end
+  end else begin : g_fuse_off
+    assign {f_on, f1_v, f_oy, f_ox, f_g, f_a, f_b, fl_cnt, gq, fv_wp, fv_wc, f1_slot} = '0;
+    for (genvar l = 0; l < 7; l++) begin : g_lb0
+      assign lb_q[l] = 8'd0;
+    end
+    for (genvar l = 0; l < 8; l++) begin : g_fv0
+      assign fv_q[l] = 8'd0;
+    end
+  end
+
   // argmax, first maximum: lane 0 before lane 1 (an L9 pair is channels 2k, 2k + 1)
   always_comb begin
     best0 = best;
@@ -1123,7 +1342,7 @@ module cim_seq #(
   assign busy_o      = run;
   assign done_o      = done_q;
   assign err_o       = err_q;
-  assign layer_o     = lay;
+  assign layer_o     = fz ? 4'd2 : lay;              // FUSE1: the fused segment ends with L2
   assign class_o     = cls;
   assign wp_all_o    = wall_q;
   assign lmx_o       = lmx_q;

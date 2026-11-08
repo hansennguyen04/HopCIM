@@ -9,10 +9,11 @@ repository, and an X-HEEP tree is *built* from it rather than edited by hand:
 | `patches/0001-*.patch` | build environment: SiFive GCC 10.1 multilib flags, Verilator 5.040 version parsing and a lint waiver, `XHEEP_NO_TRACE=1` |
 | `patches/0002-*.patch` | Nexys A7 board: debug over the on-board USB (BSCANE2 TCK on a BUFG, `bscan.xdc`), the on-board PDM microphone pins, `configs/kws_nexys.py`, OpenOCD configs |
 | `patches/0003-*.patch` | the HopCIM endpoint behind the FuseSoC flags `use_cim`, `use_cim_ded`, `use_cim_mic`, `use_cim_mic5`, `use_cim_s`, `use_cim_mic4`: the FPGA wrapper, the Verilator testharness (templates), the `x_heep_system` microphone ports, the clock wizards (15.36, 5.12, 8.192 MHz) |
+| `patches/0004-*.patch` | the flag `use_cim_b1`: StreamFuse B in block 1 (`docs/STREAMFUSE_B1.md`), in the wrapper and the testharness |
 | `generated.sha256` | what `make mcu-gen X_HEEP_CFG=configs/kws_nexys.py` writes in a fresh tree (97 files) |
-| `setup.sh` | builds a tree: clone at the commit, `git am` the series, check the result tree, link this repository in, run the generator, check |
+| `setup.sh` | builds a tree: clone at the commit, `git am` the series (4 patches), check the result tree, link this repository in, run the generator, check |
 | `check.sh` | checks a tree against the series, the generator output and the links, and reports any other change |
-| `build.sh` | bitstreams (`s`, `s4`, `r6b`, `r6b5`), Verilator SoC models (`sim`, `sim-ded`, `sim-s`), firmware (`app`) |
+| `build.sh` | bitstreams (`s`, `s4`, `b1`, `b1-4`, `r6b`, `r6b5`), Verilator SoC models (`sim`, `sim-ded`, `sim-s`, `sim-b1`), firmware (`app`) |
 
 The firmware is in `../sw/applications/` (19 apps). `setup.sh` links it into the tree file by file,
 so the apps' relative includes (`../../../hw/ip/hopcim/sw/cim.h`) resolve inside the X-HEEP tree.

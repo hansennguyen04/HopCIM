@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: hansen0411 <hansennguyen.ee14@nycu.edu.tw>
 Date: Sun, 8 Nov 2026 20:00:00 +0800
-Subject: [PATCH 2/3] Nexys A7: debug over the on-board USB (BSCANE2) and the
+Subject: [PATCH 2/4] Nexys A7: debug over the on-board USB (BSCANE2) and the
  on-board PDM microphone
 
 - vendored riscv_dbg: TCK of the BSCANE2 DTM on a BUFG (a placement change broke the debug

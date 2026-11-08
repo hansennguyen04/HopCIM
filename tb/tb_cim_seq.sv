@@ -13,6 +13,8 @@
 //      multipliers, no ReLU clamp): every layer and the logits of clip 0;
 //   6. the same with zero point -128 (the baseline S's sign gate is active) and acc + bias = -1, 0,
 //      +1 at one position of every channel: every layer and the logits of clip 0.
+// B1 (StreamFuse B in block 1, SEQ_B1): L1 never reaches ACT, so its outputs are taken from the
+// sequencer's fusion-vector writes (a monitor; not in NETLIST runs); L2..L8 are in the other map.
 // A monitor checks the engine contract throughout: no wide-port write to an X bank in the 8
 // edges after a pass on that bank started (its reads run until 9 edges after the start).
 // +define+NETLIST simulates a Vivado functional netlist of the endpoint instead of the RTL (no
@@ -25,7 +27,8 @@
 
 module tb_cim_seq #(
     parameter bit DED = 1'b0,
-    parameter bit S   = 1'b0                            // the baseline S in the sequencer (SEQ_S)
+    parameter bit S   = 1'b0,                           // the baseline S in the sequencer (SEQ_S)
+    parameter bit B1  = 1'b0                            // with S: StreamFuse B in block 1 (SEQ_B1)
 );
   import xheep_obi_pkg::*;
   localparam logic [31:0] BASE = 32'hC004_0000;
@@ -43,7 +46,7 @@ module tb_cim_seq #(
       .\obi_rsp_o[gnt] (rsp.gnt), .\obi_rsp_o[rvalid] (rsp.rvalid), .\obi_rsp_o[rdata] (rsp.rdata), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `else
-  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
+  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `endif
 `ifdef QUICK
@@ -79,6 +82,38 @@ module tb_cim_seq #(
   always @(posedge clk) edge_cnt <= edge_cnt + 1;
 
   task automatic tick(); @(posedge clk); #1; endtask
+
+  // B1: L1 as written into the fusion vector (position p, channel c), and the map of layer L
+  logic [7:0] l1_cap [8000];
+  bit         l1_got [8000];
+`ifndef NETLIST
+  if (B1) begin : g_l1mon
+    always @(posedge clk) begin
+      if (dut.i_seq.fv_we0) begin
+        l1_cap[int'(dut.i_seq.q4_d.p) * 64 + int'(dut.i_seq.q4_d.c)] = dut.i_seq.q4_y;
+        l1_got[int'(dut.i_seq.q4_d.p) * 64 + int'(dut.i_seq.q4_d.c)] = 1'b1;
+      end
+      if (dut.i_seq.fv_we1) begin
+        l1_cap[int'(dut.i_seq.r4_d.p) * 64 + int'(dut.i_seq.r4_d.c)] = dut.i_seq.r4_y;
+        l1_got[int'(dut.i_seq.r4_d.p) * 64 + int'(dut.i_seq.r4_d.c)] = 1'b1;
+      end
+    end
+  end
+`endif
+  function automatic int map_of(int L);
+    return (B1 && (L >= 2)) ? (L + 1) % 2 : L % 2;
+  endfunction
+  // layer L's output at (p, c): from ACT, or for B1's L1 from the monitor (NETLIST: not checked, ok = 0)
+  task automatic get_act(int L, int p, int c, output logic [31:0] v, output bit ok);
+    ok = 1'b1;
+    if (B1 && (L == 1)) begin
+`ifdef NETLIST
+      ok = 1'b0; v = 32'd0;
+`else
+      v = l1_got[p * 64 + c] ? {{24{l1_cap[p * 64 + c][7]}}, l1_cap[p * 64 + c]} : 32'hDEAD_BEEF;
+`endif
+    end else rd(BASE + 32'h1_0000 + (32'(map_of(L)) << 15) + (32'(p) << 8) + (32'(c) << 2), v);
+  endtask
 
 `ifndef NETLIST
   // engine contract monitor (edge_cnt is the pre-edge count, as in obi())
@@ -238,7 +273,7 @@ module tb_cim_seq #(
     wr(BASE + 32'h08, 32'h4);                         // IRQ_EN: sequencer done
     rd(BASE + 32'h28, d);
     if (d !== meta[1]) begin $display("ERROR: SEQ_ZP reads 0x%08h", d); errors++; end
-    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d, SEQ_S = %0d)", NT, DED, S);
+    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d, SEQ_S = %0d, SEQ_B1 = %0d)", NT, DED, S, B1);
 `ifdef ALLCLIPS
     begin
       int bad_clips = 0, e0;
@@ -267,13 +302,15 @@ module tb_cim_seq #(
     load_feat(0, 0);
     for (int s = 1; s <= NSTOP; s++) begin
       int L = s - 1, bad = 0;
+      bit ok;
+      for (int i = 0; i < 8000; i++) l1_got[i] = 1'b0;
       obi(1'b1, BASE + 32'h20, seq_word(s, 0), d, t_go);
       seq_finish(t_go, cyc, st);
-      if (st[11:8] != 4'(L)) begin $display("ERROR: stopped in layer %0d, expected %0d", st[11:8], L); errors++; end
+      if (st[11:8] != 4'((B1 && (L == 1)) ? 2 : L)) begin $display("ERROR: stopped in layer %0d, expected %0d", st[11:8], L); errors++; end
       for (int p = 0; p < 125; p++)
         for (int c = 0; c < 64; c++) begin
-          rd(BASE + 32'h1_0000 + (32'(L % 2) << 15) + (32'(p) << 8) + (32'(c) << 2), d);
-          if (d !== {{24{acts_exp[L * 8000 + p * 64 + c][7]}}, acts_exp[L * 8000 + p * 64 + c]}) begin
+          get_act(L, p, c, d, ok);
+          if (ok && (d !== {{24{acts_exp[L * 8000 + p * 64 + c][7]}}, acts_exp[L * 8000 + p * 64 + c]})) begin
             if (bad < 4) $display("  L%0d p %0d c %0d: got %0d expected %0d", L, p, c, $signed(d), $signed(acts_exp[L * 8000 + p * 64 + c]));
             bad++;
           end
@@ -360,6 +397,8 @@ module tb_cim_seq #(
       load_feat(0, 0);
       for (int s = 1; s <= 10; s++) begin
         int L = s - 1, bad = 0;
+        bit ok;
+        for (int i = 0; i < 8000; i++) l1_got[i] = 1'b0;
         obi(1'b1, BASE + 32'h20, seq_word(s == 10 ? 0 : s, 0), d, t_go);
         seq_finish(t_go, cyc, st);
         if (s == 10) begin
@@ -374,8 +413,8 @@ module tb_cim_seq #(
           for (int p = 0; p < 125; p++)
             for (int c = 0; c < 64; c++) begin
               logic [7:0] a = set ? s2_acts[L * 8000 + p * 64 + c] : s_acts[L * 8000 + p * 64 + c];
-              rd(BASE + 32'h1_0000 + (32'(L % 2) << 15) + (32'(p) << 8) + (32'(c) << 2), d);
-              if (d !== {{24{a[7]}}, a}) bad++;
+              get_act(L, p, c, d, ok);
+              if (ok && (d !== {{24{a[7]}}, a})) bad++;
             end
           $display("%s, layer L%0d: %0d / 8000 mismatches", tag, L, bad);
         end

@@ -1290,5 +1290,125 @@
    "skipped": 177695259,
    "sg_skipped_per_inference": 36338.49877300613
   }
+ },
+ "B1": {
+  "B1": {
+   "total": 67817,
+   "segments": [
+    4533,
+    15780,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    92
+   ],
+   "hazards": 0,
+   "storage_bits": 148192,
+   "words": {
+    "act": 2500,
+    "lb": 128,
+    "fv": 16
+   },
+   "reads": {
+    "act": 33470,
+    "lb": 9490,
+    "fv": 1000
+   },
+   "byte_writes": {
+    "act": 56000,
+    "fv": 8000
+   },
+   "word_writes": {
+    "lb": 1250
+   },
+   "chunks": {
+    "conv1": 1250,
+    "dw": 45000,
+    "pw": 4750,
+    "fc": 64
+   },
+   "passes": 7501,
+   "requant": 72012,
+   "x_rows": 325064,
+   "feat_reads": 1175,
+   "pool_reads": 64,
+   "pool_updates": 8000,
+   "src_stalls": 6,
+   "dest_stalls": 0,
+   "fill_stalls": 13593
+  },
+  "B1, 120-word line buffer": {
+   "total": 67817,
+   "segments": [
+    4533,
+    15780,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    92
+   ],
+   "hazards": 0,
+   "storage_bits": 147744,
+   "words": {
+    "act": 2500,
+    "lb": 120,
+    "fv": 16
+   },
+   "reads": {
+    "act": 33470,
+    "lb": 9490,
+    "fv": 1000
+   },
+   "byte_writes": {
+    "act": 56000,
+    "fv": 8000
+   },
+   "word_writes": {
+    "lb": 1250
+   },
+   "chunks": {
+    "conv1": 1250,
+    "dw": 45000,
+    "pw": 4750,
+    "fc": 64
+   },
+   "passes": 7501,
+   "requant": 72012,
+   "x_rows": 325064,
+   "feat_reads": 1175,
+   "pool_reads": 64,
+   "pool_updates": 8000,
+   "src_stalls": 6,
+   "dest_stalls": 0,
+   "fill_stalls": 13665
+  },
+  "S": {
+   "total": 67841,
+   "segments": [
+    4533,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    11273,
+    4531,
+    92
+   ]
+  },
+  "exact": {
+   "clips": 4890,
+   "bad_clips": 0,
+   "bad_values": 0,
+   "bad_logit_clips": 0,
+   "skipped": 177695259
+  }
  }
 }

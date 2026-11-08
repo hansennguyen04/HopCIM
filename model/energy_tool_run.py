@@ -49,6 +49,7 @@ MEMS = {
     "act_1250":  (56, 1250),     # B with a 25-row map (no row lag)
     "lb_120":    (56, 120),      # A, B: the smallest hazard-free line buffer
     "lb_150":    (56, 150),      # C: each of the 4 line buffers
+    "lb_128":    (56, 128),      # B1 RTL (docs/STREAMFUSE_B1.md): a power of two, slot = raster word mod 128
 }
 MULTS = {"requant_25x31": (25, 31), "window_16x15": (16, 15), "twiddle_16x16": (16, 16),
          "butterfly_18x18": (18, 18), "square_21x21": (21, 21), "mel_18x8": (18, 8), "fir_17x16": (17, 16)}

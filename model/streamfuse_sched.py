@@ -18,6 +18,7 @@ Usage: streamfuse_sched.py cycles            cycle model of every design, V1 and
        streamfuse_sched.py selftest          three broken designs must be caught (hazards or wrong values)
        streamfuse_sched.py exact [clips]     data replay on the GSC test clips (default all 4,890): V2 and G1
        streamfuse_sched.py all               both, writes model/streamfuse_results.json
+       streamfuse_sched.py b1 [clips]        B in block 1 only (the RTL prototype's prediction)
 """
 import glob
 import json
@@ -240,6 +241,66 @@ def build(name, sched, lanes, sg=True, lb=False, l8_act=False, lb_words=None, fv
             P.segments.append(seg)
             P.fills.append([("act", map_word(lev_in, pin, g), ver(Ld - 1, pin, g), "lb",
                              (50 * (pin // 5) + 10 * (pin % 5) + g) % lb_words) for pin in range(NPOS) for g in range(NG)])
+        P.segments.append([fc_vec()])
+        P.segments[-1][-1].last = True
+        P.fills.append([])
+
+    elif sched == "fuse1":
+        # B1 (docs/STREAMFUSE_B1.md): B in block 1 only, S everywhere else. L1 reads a line buffer filled from map 0
+        # (slot = raster word mod lb_words), writes the fusion vector; L2 reads it and writes map 1, so no layer
+        # writes in place; L3..L8 then read and write the two maps the other way round from S.
+        P.buffers["act"] = 2500
+        P.buffers["lb"] = lb_words
+        P.buffers["fv"] = 2 * FVN
+
+        def dest_lbl(L_, p, c, wbuf):
+            g, lane = divmod(c, 7)
+            out = []
+            if L_ <= 8 and (L_ < 8 or l8_act):
+                out.append(("act", act_word(wbuf, p, g), lane, ver(L_, p, g)))
+            if L_ == 8:
+                out.append(("pool", c))
+            return out
+
+        P.segments.append([conv1_vec(p, lambda L_, p_, c: dest_lbl(L_, p_, c, 0)) for p in range(NPOS)])
+        P.segments[-1][-1].last = True
+        P.fills.append([])
+
+        def src_lb1(Lprev, pin, g):
+            sh = 1 if mutate == "line buffer slot shifted" else 0
+            return ("lb", (10 * pin + g + sh) % lb_words, ver(Lprev, pin, g))
+
+        def fv_dest1(L_, p, c):
+            g, lane = divmod(c, FVW)
+            return [("fv", (p % 2) * FVN + g, lane, ver(L_, p, g))]
+
+        def fv_src1(Lprev, p, k):
+            par = (p + 1) % 2 if mutate == "fusion vector swapped" else p % 2
+            return ("fv", par * FVN + k, ver(Lprev, p, k))
+
+        seg = []
+        for p in range(NPOS + 1):
+            if p < NPOS:
+                seg += [dw_vec(1, p, g, src_lb1, fv_dest1) for g in range(NG)]
+            if p >= 1:
+                seg.append(pw_vec(2, p - 1, fv_src1, lambda L_, p_, c: dest_lbl(L_, p_, c, 1), FVN))
+        seg[-1].last = True
+        P.segments.append(seg)
+        P.fills.append([("act", act_word(0, pin, g), ver(0, pin, g), "lb", (10 * pin + g) % lb_words)
+                        for pin in range(NPOS) for g in range(NG)])
+        for L in range(3, 9):
+            rbuf, wbuf = (1, 0) if L % 2 else (0, 1)
+            if L % 2:
+                def src(Lp, pin, g, rbuf=rbuf):
+                    return ("act", act_word(rbuf, pin, g), ver(Lp, pin, g))
+                seg = [dw_vec(L, p, g, src, lambda L_, p_, c, w=wbuf: dest_lbl(L_, p_, c, w)) for p in range(NPOS) for g in range(NG)]
+            else:
+                def src(Lp, p, k, rbuf=rbuf):
+                    return ("act", act_word(rbuf, p, k), ver(Lp, p, k))
+                seg = [pw_vec(L, p, src, lambda L_, p_, c, w=wbuf: dest_lbl(L_, p_, c, w)) for p in range(NPOS)]
+            seg[-1].last = True
+            P.segments.append(seg)
+            P.fills.append([])
         P.segments.append([fc_vec()])
         P.segments[-1][-1].last = True
         P.fills.append([])
@@ -781,11 +842,61 @@ def self_test(n=50):
     return out
 
 
+def b1_study(n=None, out=print):
+    """B1: B in block 1 only, with the RTL's 128-word line buffer (slot = raster word mod 128). The prediction the
+    RTL must match (STREAMFUSE_GATES.md, "B matched the model"): cycles per segment, access counts, exactness."""
+    r = {}
+    for name, lbw in (("B1", 128), ("B1, 120-word line buffer", 120)):
+        P = build(name, "fuse1", 2, sg=True, lb=True, lb_words=lbw)
+        _, x = simulate(P)
+        c = x["counts"]
+        r[name] = dict(total=x["total"], segments=x["segments"], hazards=x["hazards"], storage_bits=x["storage_bits"],
+                       words=x["words"], reads=c["reads"], byte_writes=c["byte_writes"], word_writes=c["word_writes"],
+                       chunks=c["chunks"], passes=c["passes"], requant=c["requant"], x_rows=c["x_rows"],
+                       feat_reads=c["feat_reads"], pool_reads=c["pool_reads"], pool_updates=c["pool_updates"],
+                       src_stalls=c["src_stalls"], dest_stalls=c["dest_stalls"], fill_stalls=c["fill_stalls"])
+        out(f"{name}: {x['total']} cycles, segments {x['segments']}, hazards {x['hazards']}, stalls src {c['src_stalls']} "
+            f"dest {c['dest_stalls']} fill {c['fill_stalls']}; reads {c['reads']}, byte writes {c['byte_writes']}, "
+            f"word writes {c['word_writes']}, storage {x['storage_bits']} bits")
+    _, s = simulate(make("S"))
+    r["S"] = dict(total=s["total"], segments=s["segments"])
+    out(f"S: {s['total']} cycles, segments {s['segments']}")
+    progs = {"B1": build("B1", "fuse1", 2, sg=True, lb=True, lb_words=128)}
+    fs = test_clips(n)
+    sims = {k: simulate(P)[0] for k, P in progs.items()}
+    tot = dict(clips=0, bad_clips=0, bad_values=0, bad_logit_clips=0, skipped=0)
+    t0 = time.time()
+    with Pool(8) as pool:
+        for b0 in range(0, len(fs), 500):
+            rows = pool.map(_clip, fs[b0: b0 + 500])
+            feats = np.stack([q[0] for q in rows])
+            ref = np.stack([q[1] for q in rows])
+            ref_y = np.stack([q[2] for q in rows])
+            o, y, sk = replay(progs["B1"], sims["B1"], feats)
+            got = np.stack([o[L] for L in range(9)], axis=1)
+            badv = got != ref
+            tot["clips"] += len(rows)
+            tot["bad_values"] += int(badv.sum()) + int((y != ref_y).sum())
+            tot["bad_clips"] += int((badv.reshape(len(rows), -1).any(axis=1) | (y != ref_y).any(axis=1)).sum())
+            tot["bad_logit_clips"] += int((y != ref_y).any(axis=1).sum())
+            tot["skipped"] += sk
+            out(f"  {min(b0 + 500, len(fs))} of {len(fs)} clips, {time.time() - t0:.0f} s: {tot['bad_clips']} bad")
+    r["exact"] = tot
+    return r
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     path = os.path.join(HERE, "streamfuse_results.json")
     res = json.load(open(path)) if os.path.exists(path) else {}
+    if sys.argv[1] == "b1":
+        n = int(sys.argv[2]) if len(sys.argv) > 2 else None
+        res["B1"] = b1_study(n)
+        print("B1 exactness:", res["B1"]["exact"])
+        with open(path, "w") as f:
+            json.dump(res, f, indent=1, default=lambda o: o if not isinstance(o, (np.integer,)) else int(o))
+        return
     if sys.argv[1] in ("cycles", "all"):
         cy = cycles_all()
         res["cycles"] = cy

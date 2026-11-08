@@ -63,8 +63,9 @@ module cim_endpoint
     parameter int unsigned TILES  = 128,
     parameter bit          FE_DED = 1'b0,
     parameter int unsigned PDM_CLKDIV = 15,            // PDM clock = clk / 15 (1.024 MHz at 15.36 MHz)
-    parameter bit          SEQ_S  = 1'b0               // baseline S in the sequencer: sign-gated requantisation,
+    parameter bit          SEQ_S  = 1'b0,              // baseline S in the sequencer: sign-gated requantisation,
                                                        //   a second requantisation lane, no L8 write to ACT
+    parameter bit          SEQ_B1 = 1'b0               // with SEQ_S: StreamFuse B in block 1 (docs/STREAMFUSE_B1.md)
 ) (
     input  logic           clk_i,
     input  logic           rst_ni,
@@ -247,7 +248,7 @@ module cim_endpoint
       .nhop_o     (aud_nhop)
   );
 
-  cim_seq #(.TW(TW), .XB(24), .RQ_SG(SEQ_S), .RQ_2L(SEQ_S), .NO_L8A(SEQ_S)) i_seq (
+  cim_seq #(.TW(TW), .XB(24), .RQ_SG(SEQ_S), .RQ_2L(SEQ_S), .NO_L8A(SEQ_S), .FUSE1(SEQ_S && SEQ_B1)) i_seq (
       .clk_i,
       .rst_ni,
       .start_i     ((gnt && seq_go && !aud_en) || aud_seq_go),

@@ -131,6 +131,10 @@ Full table: `model/streamfuse_energy.log`.
 
 ## 7. Decision and next steps
 
+**Since 2026-11-08 B is built in one block (B1, `STREAMFUSE_B1.md`), and the RTL equals this model exactly**: 67,817
+cycles, every segment and every access count. One block alone saves 2.4 % of the network energy [E] and nothing at
+40 ms; the gain of the table above needs all four blocks and B's one map.
+
 The frozen rule allows **RTL for B in one block (depthwise 1 → pointwise 1), behind a parameter, if the student decides
 to go ahead.** Points for that decision:
 - B's gain is real but modest at system level: 7 % of total power at 40 ms beyond S, all of it estimated.

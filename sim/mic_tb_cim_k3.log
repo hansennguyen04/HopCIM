@@ -3,7 +3,7 @@ decisions: 0 of 34 wrong, 0 at a wrong hop; ring: 0 of 1010 samples wrong; 150 h
 restart: first decision at hop 49, count 1
 RESULT: 0 errors
 PASS
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:187: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:188: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 616ms; walltime 161.981 s; speed 3.819 ms/s
-- Verilator: cpu 161.264 s on 1 threads; alloced 130 MB
+- Verilator: $finish at 616ms; walltime 159.546 s; speed 3.864 ms/s
+- Verilator: cpu 159.350 s on 1 threads; alloced 130 MB

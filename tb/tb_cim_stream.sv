@@ -14,7 +14,8 @@
 
 module tb_cim_stream #(
     parameter bit DED = 1'b0,
-    parameter bit S   = 1'b0                            // the baseline S in the sequencer (SEQ_S)
+    parameter bit S   = 1'b0,                           // the baseline S in the sequencer (SEQ_S)
+    parameter bit B1  = 1'b0                            // with S: StreamFuse B in block 1 (SEQ_B1)
 );
   import xheep_obi_pkg::*;
   localparam logic [31:0] BASE = 32'hC004_0000;
@@ -26,7 +27,7 @@ module tb_cim_stream #(
   xheep_obi_rsp_t rsp;
   logic irq;
 
-  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
+  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 
   logic [31:0] fe_tiles [8 * 256];

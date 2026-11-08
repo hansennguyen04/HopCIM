@@ -16,6 +16,8 @@ BENCHES=(
   # the baseline S (SEQ_S = 1); 4 = the 4.096 MHz system clock
   "run_seq_tb.sh cim s" "run_seq_tb.sh ded s" "run_stream_tb.sh cim s" "run_stream_tb.sh ded s" "run_stream_tb.sh cim edge s"
   "run_mic_tb.sh cim 15 1 s" "run_mic_tb.sh cim 5 1 s" "run_mic_tb.sh cim 4 1 s" "run_mic_tb.sh ded 4 1 s" "run_mic_tb.sh cim 4 2 s" "run_mic_tb.sh cim 4 4 s"
+  # B1: S with StreamFuse B in block 1 (SEQ_B1 = 1)
+  "run_seq_tb.sh cim b1" "run_seq_tb.sh ded b1" "run_stream_tb.sh cim b1" "run_mic_tb.sh cim 15 1 b1" "run_mic_tb.sh cim 4 1 b1" "run_mic_tb.sh cim 4 4 b1"
   # expected to fail: R6b overruns at 4.096 MHz
   "!run_mic_tb.sh cim 4 1"
 )

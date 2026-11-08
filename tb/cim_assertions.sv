@@ -110,6 +110,103 @@ module sva_seq #(parameter bit RQ_2L = 1'b0) (
   final for (int i = 0; i < N; i++) $display("ASSERT seq.%s active %0d fail %0d", NAME[i], active[i], fail[i]);
 endmodule
 
+// ---------------------------------------------------------------------- the sequencer's option B1 (FUSE1)
+// A shadow of the line buffer and the fusion vector, kept from the RTL's own fill, gather and write
+// events, checks what the interlocks exist for: a gather read gets the word it needs and that word has
+// landed; a fill overwrites only a word with no reads left; a pointwise chunk reads a fully written
+// word of its own position; a fusion-vector write replaces only a version that was read; each fused
+// segment fills all 1,250 words exactly once; no depthwise result of the segment reaches ACT.
+module sva_seq_b1 (
+    input logic clk_i, input logic rst_ni, input logic fz, input logic f_start, input logic g_req, input logic g_pw,
+    input logic g_tv, input logic [6:0] d_pin, input logic [3:0] g_g, input logic [6:0] lb_ra, input logic [6:0] g_pwp,
+    input logic [3:0] fv_ra, input logic [5:0] g_k, input logic f_issue, input logic [6:0] f_pin, input logic [3:0] f_g,
+    input logic [6:0] f_slot, input logic f1_v, input logic fv_we0, input logic fv_we1, input logic [6:0] q4_p,
+    input logic [5:0] q4_c, input logic [6:0] r4_p, input logic [5:0] r4_c, input logic act_we, input logic act_we1,
+    input logic q4_pw, input logic r4_pw, input logic lay_end
+);
+  localparam int N = 6;
+  longint unsigned active[N] = '{default: 0}, fail[N] = '{default: 0};
+  localparam string NAME[N] = '{"b1_lb_read_holds_its_word", "b1_fill_overwrites_dead_words", "b1_fv_read_complete",
+                                "b1_fv_overwrite_after_read", "b1_fill_each_word_once", "b1_dw_not_to_act"};
+  int  lb_tag [128];                                   // raster word in the slot, -1 empty
+  int  lb_left [128];                                  // its reads still to come
+  int  fv_ver [16];                                    // position whose results the word holds, -1 none
+  int  fv_mask [16];
+  bit  fv_read [16];                                   // that version has been read
+  bit  filled [1250];
+  int  nfill, f1_word, f1_sl;
+  bit  in_seg;
+
+  // outputs whose 3 x 3 window includes input (iy, ix)
+  function automatic int nreads(int r);
+    int pin = r / 10, iy = pin / 5, ix = pin % 5;
+    int ny = ((iy + 1 <= 24) ? iy + 1 : 24) - ((iy - 1 >= 0) ? iy - 1 : 0) + 1;
+    int nx = ((ix + 1 <= 4) ? ix + 1 : 4) - ((ix - 1 >= 0) ? ix - 1 : 0) + 1;
+    return ny * nx;
+  endfunction
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      for (int s = 0; s < 128; s++) begin lb_tag[s] = -1; lb_left[s] = 0; end
+      for (int w = 0; w < 16; w++) begin fv_ver[w] = -1; fv_mask[w] = 0; fv_read[w] = 1'b1; end
+      nfill = 0; in_seg = 1'b0; f1_word = -1; f1_sl = 0;
+    end else begin
+      if (f_start) begin
+        for (int s = 0; s < 128; s++) begin lb_tag[s] = -1; lb_left[s] = 0; end
+        for (int w = 0; w < 16; w++) begin fv_ver[w] = -1; fv_mask[w] = 0; fv_read[w] = 1'b1; end
+        for (int i = 0; i < 1250; i++) filled[i] = 1'b0;
+        nfill = 0; in_seg = 1'b1;
+      end
+      // gather reads (stage R), before this edge's fill write lands
+      if (g_req && fz && !g_pw && g_tv) begin
+        int r = 10 * int'(d_pin) + int'(g_g);
+        `CHK(0, lb_tag[lb_ra] == r, "a depthwise tap read a slot that does not hold its word")
+        if (lb_tag[lb_ra] == r) lb_left[lb_ra] = lb_left[lb_ra] - 1;
+      end
+      if (g_req && fz && g_pw) begin
+        `CHK(2, fv_ver[fv_ra] == int'(g_pwp) && fv_mask[fv_ra] == 8'hFF && fv_ra[2:0] == g_k[2:0] && fv_ra[3] == g_pwp[0],
+             "a pointwise chunk read an incomplete or wrong fusion-vector word")
+        fv_read[fv_ra] = 1'b1;
+      end
+      // the fill: F0 checks the slot it will write, F1 lands
+      if (f1_v) begin
+        lb_tag[f1_sl] = f1_word;
+        lb_left[f1_sl] = nreads(f1_word);
+        if (f1_word >= 0 && f1_word < 1250) begin
+          `CHK(4, !filled[f1_word], "a line-buffer word filled twice")
+          filled[f1_word] = 1'b1;
+        end
+        nfill = nfill + 1;
+      end
+      f1_word = -1;
+      if (f_issue) begin
+        `CHK(1, lb_tag[f_slot] < 0 || lb_left[f_slot] == 0, "a fill replaces a word that still has reads")
+        f1_word = 10 * int'(f_pin) + int'(f_g);
+        f1_sl = int'(f_slot);
+      end
+      // fusion-vector writes
+      if (fv_we0 || fv_we1) begin
+        for (int l = 0; l < 2; l++) begin
+          if ((l == 0) ? fv_we0 : fv_we1) begin
+            int p = int'((l == 0) ? q4_p : r4_p), c = int'((l == 0) ? q4_c : r4_c), w = 8 * (p % 2) + c / 8;
+            if (fv_ver[w] != p) begin
+              `CHK(3, fv_ver[w] < 0 || fv_read[w], "a fusion-vector word overwritten before it was read")
+              fv_ver[w] = p; fv_mask[w] = 0; fv_read[w] = 1'b0;
+            end
+            fv_mask[w] = fv_mask[w] | (1 << (c % 8));
+          end
+        end
+      end
+      if (fz && (act_we || act_we1)) `CHK(5, (!act_we || q4_pw) && (!act_we1 || r4_pw), "a depthwise result of the fused segment written to ACT")
+      if (in_seg && lay_end && !f_start) begin       // the segment's own end, not the one of L0 that starts it
+        `CHK(4, nfill == 1250, "a fused segment without exactly 1,250 fills")
+        in_seg = 1'b0;
+      end
+    end
+  end
+  final for (int i = 0; i < N; i++) $display("ASSERT seq.%s active %0d fail %0d", NAME[i], active[i], fail[i]);
+endmodule
+
 // ---------------------------------------------------------------------- the sequencer's baseline-S options
 // sign_gate_exact recomputes the full requantisation of every gated result and must get -128, so it
 // checks the claim the gate rests on, not the gate's own condition.
@@ -331,6 +428,9 @@ bind cim_seq sva_seq #(.RQ_2L(RQ_2L)) u_sva (.clk_i, .rst_ni, .busy_o, .done_o, 
 bind cim_seq sva_seq_s #(.RQ_2L(RQ_2L), .NO_L8A(NO_L8A)) u_sva_s (.clk_i, .rst_ni, .lay, .stop_q, .zact_q, .q1_v, .q1_g, .q1_x, .qm_q, .q1_e,
     .r1_v, .r1_g, .r1_x, .qm1_q, .r1_e, .q4_v, .r4_v, .q4_c(q4_d.c), .r4_c(r4_d.c), .q4_cl(q4_d.cl), .r4_cl(r4_d.cl), .q4_p(q4_d.p),
     .r4_p(r4_d.p), .act_we, .act_we1);
+bind cim_seq sva_seq_b1 u_sva_b1 (.clk_i, .rst_ni, .fz, .f_start, .g_req, .g_pw, .g_tv, .d_pin, .g_g, .lb_ra, .g_pwp, .fv_ra,
+    .g_k, .f_issue(f_on && f_free), .f_pin, .f_g, .f_slot(f_rw), .f1_v, .fv_we0, .fv_we1, .q4_p(q4_d.p), .q4_c(q4_d.c),
+    .r4_p(r4_d.p), .r4_c(r4_d.c), .act_we, .act_we1, .q4_pw(q4_d.pw), .r4_pw(r4_d.pw), .lay_end);
 `endif
 `ifdef SVA_AUDIO
 bind cim_audio sva_audio #(.CLKDIV(CLKDIV)) u_sva (.clk_i, .rst_ni, .en_i, .sv, .hop_end, .hs, .hc(3'(hc)), .kcnt, .net_km1_i, .ndec_o, .nhop_o,

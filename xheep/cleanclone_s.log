@@ -1,0 +1,34 @@
+Clean-clone build of the baseline S bitstream from the X-HEEP patch series (2026-11-08)
+
+hopcim clone at: c8f01ee (git clone of this repository; scratch directory)
+commands:
+  git clone <hopcim> cc/hopcim
+  XHEEP_URL=<a clone holding b3eb3c8> XHEEP_VENV=<X-HEEP python venv> cc/hopcim/xheep/setup.sh cc/x-heep
+  cc/hopcim/xheep/build.sh cc/x-heep s
+
+setup and check:
+  setup: X-HEEP b3eb3c8d626d + 3 patches, tree 22e5a7c78332 as expected
+  check: PASS (X-HEEP b3eb3c8d626d + series (29 files) + generator (97 files); 26 firmware links)
+
+build:
+  build: s -> xheep_nexys_bscan_cim128ks.bit (use_bscane_xilinx use_cim use_cim_mic use_cim_s), build root build_micks/core, log <scratch>/cc2/x-heep/build_micks.build.log
+  build: <scratch>/cc2/bitstreams/xheep_nexys_bscan_cim128ks.bit  sha256 ebbbce225589bfb7
+  build: s done in 2303 s
+  exit=0
+
+bitstreams:
+  clean clone: ebbbce225589bfb7eccc5a81268e906d8470fe09e88ba3724d1f333198af6fbc  3825915 bytes
+  original   : 971ddb49bbf9e3a05574487a11ebd2f7ecc4511e53c1f0b81b3f5d7dd182d1fb  3825915 bytes  (bitstreams/xheep_nexys_bscan_cim128ks.bit)
+  differing bytes: 4, at offsets 115 117 120 121 
+  header time: original 15:11:36, clean clone 19:51:23
+  identical after the header: yes
+
+utilisation (clean clone; the original's is the same):
+  | Block RAM Tile    | 82.5 |     0 |          0 |       135 | 61.11 |
+  | DSPs           |  148 |     0 |          0 |       240 | 61.67 |
+  | Slice LUTs                 | 42758 |     0 |          0 |     63400 | 67.44 |
+  | Slice Registers                            | 40363 |     0 |          0 |    126800 | 31.83 |
+  | Slice Registers            | 40363 |     0 |          0 |    126800 | 31.83 |
+system clock (clk_out1, 15.36 MHz), setup WNS / hold WHS:
+  clean clone: 15.311 / 0.229 ns
+  original:    15.311 / 0.229 ns

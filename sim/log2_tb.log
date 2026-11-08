@@ -2,5 +2,5 @@ RESULT: 0 of 32767 values wrong, 0 latency errors
 PASS
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_log2fix16.sv:28: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 6ms; walltime 0.489 s; speed 12.269 ms/s
-- Verilator: cpu 0.481 s on 1 threads; alloced 126 MB
+- Verilator: $finish at 6ms; walltime 0.403 s; speed 15.104 ms/s
+- Verilator: cpu 0.391 s on 1 threads; alloced 126 MB

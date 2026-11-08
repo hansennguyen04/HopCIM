@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hansen0411 <hansennguyen.ee14@nycu.edu.tw>
+Date: Sun, 8 Nov 2026 21:00:00 +0800
+Subject: [PATCH 4/4] HopCIM: StreamFuse B in block 1 behind use_cim_b1
+
+- core-v-mini-mcu.core: flag use_cim_b1 (define CIM_SEQ_B1, with use_cim_s) in the sim and Nexys targets.
+- tb/testharness.sv.tpl, hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv: the endpoint's SEQ_B1 = 1 under CIM_SEQ_B1.
+---
+ core-v-mini-mcu.core                      | 10 ++++++++++
+ hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv |  3 +++
+ tb/testharness.sv.tpl                     |  3 +++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
+index f445378..c1116ca 100644
+--- a/core-v-mini-mcu.core
++++ b/core-v-mini-mcu.core
+@@ -318,6 +318,14 @@ parameters:
+       from 100 MHz) and a BUFGCE passes every second edge. Enable with `--flag use_cim_mic4` in addition
+       to `--flag use_cim_mic` and `--flag use_cim_s`.
+     default: false
++  CIM_SEQ_B1:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With CIM_SEQ_S: StreamFuse B in block 1 of the HopCIM sequencer (cim_endpoint SEQ_B1, docs/STREAMFUSE_B1.md):
++      depthwise L1 from a line buffer, its results through a fusion vector to pointwise L2. Enable with
++      `--flag use_cim_b1` in addition to `--flag use_cim_s`.
++    default: false
+ 
+ scripts:
+   # Build utils
+@@ -412,6 +420,7 @@ targets:
+     - use_cim ? (USE_CIM=true)
+     - use_cim_ded ? (CIM_FE_DED=true)
+     - use_cim_s ? (CIM_SEQ_S=true)
++    - use_cim_b1 ? (CIM_SEQ_B1=true)
+     tools:
+       modelsim:
+         vlog_options:
+@@ -538,6 +547,7 @@ targets:
+     - use_cim_mic5 ? (CIM_MIC_5M12=true)
+     - use_cim_s ? (CIM_SEQ_S=true)
+     - use_cim_mic4 ? (CIM_MIC_4M096=true)
++    - use_cim_b1 ? (CIM_SEQ_B1=true)
+     tools:
+       vivado:
+         part: xc7a100tcsg324-1
+diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+index e6371b5..2a987d4 100644
+--- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
++++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+@@ -895,6 +895,9 @@ module xilinx_core_v_mini_mcu_wrapper
+ `ifdef CIM_SEQ_S
+       .SEQ_S(1'b1),                                   // baseline S in the sequencer
+ `endif
++`ifdef CIM_SEQ_B1
++      .SEQ_B1(1'b1),                                  // with S: StreamFuse B in block 1
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else
+diff --git a/tb/testharness.sv.tpl b/tb/testharness.sv.tpl
+index f1280c7..b798713 100644
+--- a/tb/testharness.sv.tpl
++++ b/tb/testharness.sv.tpl
+@@ -444,6 +444,9 @@ module testharness #(
+ `ifdef CIM_SEQ_S
+       .SEQ_S (1'b1),                                  // baseline S in the sequencer (use_cim_s)
+ `endif
++`ifdef CIM_SEQ_B1
++      .SEQ_B1(1'b1),                                  // with S: StreamFuse B in block 1 (use_cim_b1)
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else
