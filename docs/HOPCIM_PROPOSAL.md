@@ -3,7 +3,7 @@
 **Exact, model-preserving MFCC and keyword spotting on a digital compute-in-memory accelerator inside an open RISC-V microcontroller**
 
 Master's thesis direction, NYCU · CIM × RISC-V · thesis due June 2027
-Version 1.2, 2026-11-07 (first version 2026-10-27) · Living document. Design and result details are in the linked specifications.
+Version 1.3, 2026-11-13 (first version 2026-10-27) · Living document. Design and result details are in the linked specifications.
 
 Evidence labels used throughout:
 
@@ -93,13 +93,42 @@ The front-end and the network then share one CIM. Existing MFCC-trained models d
 - Assertions, coverage, mutation and extreme-input tests found no RTL defect (`VERIFICATION.md`).
 - An 8.38-h run in the room found false reports with the current rule in the evening, while the student was in the room, 25 per hour over 1.38 h, and none in the 7 h of the night (`SAME_AUDIO.md` §6). Firmware rules can reduce them; none is chosen yet.
 
-**What remains** (order and reasons in §15.2):
-1. the manual IEEE Xplore search, and repositioning the thesis claim after the H4 result (§13a);
-2. the spoken same-audio runs, with several speakers: whether 80 ms works on real speech, and which confirmation rule to use;
-3. checking the macro assumptions against the papers;
-4. the scoped ASIC flow for the digital logic, which needs permission to install.
+**2026-11-08 to 2026-11-13:**
+- **The baseline S** (`BASELINE_S.md`): sign-gated requantisation, a second requantisation lane and no write of
+  the last layer to the activation memory. The network takes 67,909 cycles from go to interrupt on the board
+  (R6b 85,420), the worst hop 80,072 cycles, and the lowest real-time clock falls from 5.12 to **4.096 MHz**, in RTL
+  and on the board. [E] 1,120.8 nJ per inference (R6b 1,389.3) and 68.8 µW at 40 ms. S is the baseline that any
+  later optimisation must beat.
+- **B1** (`STREAMFUSE_B1.md`): one block of the StreamFuse-B dataflow in RTL, the depthwise layer feeding the
+  pointwise layer through a line buffer and a fusion vector. Every segment's cycles and every access count equal
+  the schedule model's prediction (67,817 cycles), and it is bit-exact on all 4,890 clips and on the board. Its own
+  gain is small (−2.4 % network energy [E], nothing at 40 ms) for +635 LUT and +202 FF. What it shows is that the
+  model behind the four-block numbers (0.837 × S energy, 0.575 × the activation storage) predicts B's mechanisms
+  in RTL exactly.
+- **Macro timing with S** (`TIMING_SENSITIVITY.md` §6a): 4.096 MHz at an issue interval of max(8, b) and with a
+  macro on its own clock, 8.192 MHz at 2b, 11.264 MHz at 2b + 8; 28 grid points bit-exact.
+- **X-HEEP as a patch series** (`xheep/`, `INTEGRATION.md`): 4 patches on upstream X-HEEP. A clean clone
+  rebuilds the S bitstream bit for bit apart from the 4 bytes of its build time.
+- **The six closest KWS works read in full** (`NOVELTY_SYSTEM.md`). The claim that holds is precise: the
+  published *pretrained int8* model, unchanged and bit-exact to TFLite's reference kernels, with a standard MFCC
+  computed exactly, both on one digital CIM in a RISC-V MCU whose CPU sleeps (§13b).
+- **Backup and figures:** the repository and its freeze tags are in a private GitHub repository, with the
+  bitstreams, ELFs and board logs attached to each freeze's release. The paper figures are drawn from the frozen
+  evidence by a script (`figures/`), and the freeze check fails if a plotted number no longer equals its evidence.
 
-The plan (§11) completes these by April 2027 and leaves May–June for writing.
+**What remains** (order and reasons in §15.2):
+1. decisions with the advisor: the claim wording (§13b), whether to build all four blocks of StreamFuse-B, and the
+   venue for a conference paper;
+2. the manual IEEE Xplore search;
+3. the spoken same-audio runs, with several speakers: whether 40 or 80 ms works on real speech, and which
+   confirmation rule to use;
+4. checking the macro assumptions against Chih et al. and Colonnade, whose full texts are not yet in the
+   literature folder;
+5. the scoped ASIC flow for the digital logic, which needs permission to install;
+6. writing the paper and the thesis.
+
+The plan (§11) completes the measurements by April 2027 and leaves May–June for the thesis; the paper is written
+once the venue is chosen.
 
 ---
 
@@ -521,6 +550,9 @@ Feature agreement with the reference:
 | **R6b layer sequencer (RTL)** | Every layer output and logit bit-exact (9 × 8,000 values, 20 clips, a synthetic parameter set with shifts 0..15); 6 of 6 mutations caught |
 | **R6b firmware (SoC and board)** | 60 runs bit-exact on both bitstreams; 85,420 cycles per inference (5.69 ms), CPU asleep; CPU-active 9,678 cycles with a whole window, 459 per streaming step. Board = Verilator line for line (except a fixed 4-cycle offset in the one-time setup) |
 | **R6b bring-up** | The first bitstreams failed on the board while every simulation passed: Vivado 2024.1 miscompiled a signed `int` address expression. Localised by a board layer readback, proven by netlist-vs-RTL simulation, fixed by rewriting the addresses as unsigned logic (`SEQUENCER.md` §8a, reproduction in `syn/vivado_miscompile/`) |
+| **Baseline S (RTL, SoC, board; 2026-11-08)** | 67,841 cycles per inference in RTL, every layer as the schedule model predicted; all 4,890 clips bit-exact. On the board at 15.36 MHz: 67,909 cycles go to interrupt, 60 runs bit-exact; 500, 250, 125 decisions per 10 s with no overrun; at 4.096 MHz, 6,000 decisions in 120 s with no overrun. Endpoint 8,116 LUT, 5,977 FF, 147 DSP; whole SoC 42,758 LUT, +15.3 ns setup slack (`BASELINE_S.md`) |
+| **B1 (RTL, SoC, board; 2026-11-08)** | 67,817 cycles, equal to the schedule model in every segment and access count; all 4,890 clips bit-exact; 6 new assertions, 6 of 6 mutants caught. On the board: 67,885 cycles go to interrupt, 60 runs bit-exact; 500, 250, 125 decisions per 10 s, no overrun, real-microphone logits exact. Endpoint +635 LUT (+218 of it LUT RAM) and +202 FF against S on the same source; whole SoC 43,418 LUT, +16.3 ns setup slack (`STREAMFUSE_B1.md`) |
+| **Clean-clone build (2026-11-08)** | Upstream X-HEEP + the 4-patch series (`xheep/setup.sh`) + `xheep/build.sh s` gives the S bitstream identical to the frozen one except the 4 bytes of the build time; the regression from a clean clone passes 46 of 46 benches (`INTEGRATION.md`, `VERIFICATION.md`) |
 
 Derived from these numbers: with R5a the front-end uses about 0.95 ms of each 20 ms hop, and the CPU about 0.45 ms of it.
 
@@ -528,7 +560,7 @@ Derived from these numbers: with R5a the front-end uses about 0.95 ms of each 20
 
 ## 11. Work plan and timeline
 
-The plan of 2026-10-27, with what has happened since (status 2026-11-07). The thesis is due in June 2027. The current order of work is in §15.2.
+The plan of 2026-10-27, with what has happened since (status 2026-11-13). The thesis is due in June 2027. The current order of work is in §15.2.
 
 | Phase | When | Work | Exit gate |
 |---|---|---|---|
@@ -537,8 +569,8 @@ The plan of 2026-10-27, with what has happened since (status 2026-11-07). The th
 | **2: network on the CIM** | Dec 2026 – Jan 2027 | (a) Integer reference of the int8 DS-CNN, bit-exact against TFLite on all 4,890 clips<br>(b) Tile mapping and the capacity decision (64 → 128 tiles, or depthwise on a vector unit)<br>(c) CPU-orchestrated network firmware (baseline B1 for the network)<br>(d) Hardware layer sequencer + requantisation epilogue (R6) | **Gate C:** end-to-end bit-exact; accuracy identical to TFLite. (a)–(d) done early, Oct 2026: network bit-exact on the board, 5.69 ms per inference with the sequencer |
 | **3: window path + streaming** | Feb 2027 | (a) R5b: window-max tracking, lraw ring, DCT + requant in hardware<br>(b) Cheaper sample input<br>(c) Per-hop schedule (inference every *k* hops)<br>(d) End-to-end per-hop CPU-active cycles and f_min | H1, H3, H5 answered. (a), (b), (d) done early, Oct 2026 (the sample input is the R7 audio path); (c) done Nov 2026 (`LIVE_AUDIO.md` §9) |
 | **4: live demo** | Mar 2027 | PDM → hardware CIC/FIR → ring at exactly 16 kHz (15.36 MHz clock: VCO 960 MHz, M = 48, D = 5, O = 62.5); detection on LEDs/UART; CPU asleep; optional FAR/FRR | **Gate D:** real-time live demo. Fallback: audio replayed over UART. Done early, Oct 2026 (`LIVE_AUDIO.md`); scripted test with one speaker done 2026-11-07 (§9 there) |
-| 5: evaluation | Apr 2027 | All baselines and ablations; freeze results; optional extensions (B5 learned front-end, H6 shared front-end) | Results frozen. First freeze 2026-11-07 (`freeze/RESULTS.md`) |
-| 6: writing | May 2027 | Thesis; paper draft | — |
+| 5: evaluation | Apr 2027 | All baselines and ablations; freeze results; optional extensions (B5 learned front-end, H6 shared front-end) | Results frozen. First freeze 2026-11-07 (`freeze/RESULTS.md`); the baseline S and one StreamFuse-B block (B1) built 2026-11-08; latest freeze `freeze-2026-11-13`, backed up on GitHub |
+| 6: writing | May 2027 | Thesis; conference paper (a goal since 2026-11-08), written once the venue is chosen | Paper figures already drawn from the freeze (`figures/`) |
 | — | Jun 2027 | Buffer; defence | — |
 
 ---
@@ -553,9 +585,11 @@ The plan of 2026-10-27, with what has happened since (status 2026-11-07). The th
 | The assumed macro timing or capacity does not match real silicon | Medium, was medium–high | **Swept** (`TIMING_SENSITIVITY.md`): no change for an issue interval of at most 9 cycles; above that the clock rises about linearly, and the sequencer's input hold must scale. Tile organisation in `ENERGY_ESTIMATE.md` §6. The assumptions still need checking against the papers |
 | False alarms in real use | **Happened** | Measured in the room (`SAME_AUDIO.md` §6): 25 per hour in an evening, none in a 7-h night. Firmware rules reduce them at some cost in recall; to be chosen on spoken runs |
 | TFLite rounding details break exactness | Medium | Build and verify the integer reference against TFLite logits first (Phase 2a) |
-| Real time missed with the full network | **Resolved** | Met on the board, down to 5.12 MHz |
+| Real time missed with the full network | **Resolved** | Met on the board, down to 5.12 MHz with R6b and 4.096 MHz with S |
+| The conference paper needs more architecture novelty (the advisor, 2026-11-08) | **Open** | B1 built: the schedule model is confirmed in RTL, but one block gains little. All four blocks of StreamFuse-B (0.837 × S network energy, 0.575 × the storage [E]) is the candidate; whether to build it is the advisor's decision (§15.3). The novelty lies in the evaluation more than in the mechanism (`STREAMFUSE_NOVELTY.md`) |
+| Loss of the only copy | **Resolved** 2026-11-13 | Private GitHub repository with all freeze tags; bitstreams, ELFs and board logs attached to the freeze's release, pinned by hash in `freeze/MANIFEST.json`. Voice recordings stay off GitHub by decision |
 | Live-mic domain shift lowers demo accuracy | Medium | GSC test-set accuracy stays the primary metric. One speaker so far: 48 of 50 keywords; false alarms measured in one room (above); more speakers are planned (§15.2 step 6) |
-| FPGA resources or timing | Low | Currently 67 % LUT, 61 % DSP, 61 % BRAM, +15.1 ns slack at 15.36 MHz |
+| FPGA resources or timing | Low | S: 67 % LUT, 62 % DSP, 61 % BRAM, +15.3 ns setup slack at 15.36 MHz; B1: 68 % LUT, +16.3 ns |
 | Schedule | Medium | Phases ordered by research value; Phase 4 and the options can shrink |
 
 ---
@@ -570,7 +604,7 @@ The plan of 2026-10-27, with what has happened since (status 2026-11-07). The th
    - exact mapping rules (conjugate symmetry, band-limited bins, rounding on ties).
 2. **Measured evidence of Amdahl's law for CIM front-ends in an MCU.** Offloading only the MACs gives 1.1×; moving the whole front-end gives about 22× fewer CPU-active cycles. Both are measured on a board.
 3. **An open X-HEEP CIM endpoint with a hardware MFCC front-end and a layer sequencer** that runs the int8 DS-CNN without the CPU, bit-exact against the golden models and cycle-identical between simulation and FPGA.
-4. **End-to-end CPU-light KWS on one digital CIM**, with an equal-platform comparison against CPU-only and dedicated front-ends. Measured on the board: live microphone to keyword, 263 CPU-active cycles per 20 ms decision, real time down to 5.12 MHz (`EVALUATION.md`).
+4. **End-to-end CPU-light KWS on one digital CIM**, with an equal-platform comparison against CPU-only and dedicated front-ends. Measured on the board: live microphone to keyword, 263 CPU-active cycles per 20 ms decision, real time down to 5.12 MHz with R6b and 4.096 MHz with the baseline S (`EVALUATION.md`).
 
 **Not claimed:**
 - FFT-on-CIM;
@@ -607,6 +641,36 @@ with a digital CIM, and **what has to move into hardware**. The CIM MFCC is one 
 option, not the headline. The remaining research weight shifts to the network side: the layer
 sequencer, depthwise data movement and requantisation on the CIM.
 
+### 13b. After S, B1 and the full reading of the six closest works (2026-11-13)
+
+`NOVELTY_SYSTEM.md` compares HopCIM with the six closest KWS works from their full texts. The claim that holds,
+in the wording proposed for the advisor:
+
+> The published, pretrained int8 MLPerf Tiny KWS model, unchanged and bit-exact to TFLite's reference kernels,
+> together with a standard MFCC computed exactly, both executed on one digital CIM inside a RISC-V microcontroller
+> whose CPU sleeps while a hardware sequencer runs the network; shown live on an FPGA, with the bottleneck measured
+> as it moves.
+
+- Dong et al. (JSSC 2026) are the closest system: the same DS-CNN architecture, retrained for 35 keywords, with
+  a hardware MFCC, but the network runs on a non-CIM accelerator, the CIM serves only voice-activity detection,
+  and exactness is not discussed. Jia et al. (ISCAS 2022) are the closest front-end: mel and DCT on the array, as
+  a reordered, ternary, jointly trained approximation, in simulation.
+- **Not claimed**, in addition to §13: sharing the datapath between front-end and network as new or as a saving
+  (Fu et al. share an FFT core and memory in silicon; B3 found no saving here); exactness as such (Fu et al. state
+  chip = their quantised model; HopCIM's point is equality with an external, unchanged reference); streaming or
+  real-time KWS, RISC-V with CIM for KWS, or a CIM in a KWS SoC; any energy comparison with measured chips.
+
+What the network-side work adds to the evaluation:
+- **The bottleneck keeps moving**, and each step is measured: 47,974,801 cycles per inference on the CPU,
+  13,020,998 with the CPU driving the CIM, 85,420 with the sequencer, 67,909 with S. With S, the depthwise layers
+  (engine-bound) and leakage dominate.
+- **The schedule model is predictive**: it equals the RTL of R6b, S and B1 in every segment and access count, so
+  its numbers for designs that are not built (four-block B, C) rest on a model checked against RTL where their
+  mechanisms first appear.
+- **One block of StreamFuse-B is not worth building for its own sake** (−2.4 % network energy [E]). All four blocks
+  are modelled at 0.837 × S network energy and 0.575 × the storage. Whether that gain justifies building them for a
+  paper is open (§15.3).
+
 ---
 
 ## 14. Limitations
@@ -614,7 +678,8 @@ sequencer, depthwise data movement and requantisation on the CIM.
 - The CIM is emulated on an FPGA: cycle-faithful at the SoC level, with no silicon energy or area. Energy figures are model-based estimates (`ENERGY_ESTIMATE.md`).
 - One model family (MLPerf Tiny DS-CNN), one dataset (GSC v2), one host (CV32E20 at 15 MHz).
 - The per-window peak normalisation of the reference pipeline is kept for fidelity; in streaming it is applied per 1 s window.
-- The live audio path runs at exactly 16 kHz (15.36 or 5.12 MHz system clock); the earlier X-HEEP `pdm2pcm` path gave 15.625 kHz at 15 MHz.
+- StreamFuse-B is built for one block only (B1); the four-block figures come from the schedule model, which equals the RTL of R6b, S and B1.
+- The live audio path runs at exactly 16 kHz (15.36, 5.12 or 4.096 MHz system clock); the earlier X-HEEP `pdm2pcm` path gave 15.625 kHz at 15 MHz.
 - Live accuracy is for one speaker, microphone and room, and is not comparable with the GSC test-set accuracy.
 - False alarms are measured in one room, with whatever was happening in it; the rules compared on GSC streams are synthetic (`SAME_AUDIO.md`).
 - The macro assumptions come from the tools' files; a macro needing more than 10 cycles per pass needs an RTL change (`TIMING_SENSITIVITY.md` §5).
@@ -623,9 +688,10 @@ sequencer, depthwise data movement and requantisation on the CIM.
 
 ## 15. Where we are now and what comes next
 
-### 15.1 Status (2026-11-07)
+### 15.1 Status (2026-11-13)
 
-Every claim here is checked against its evidence by `freeze/freeze.py check` (`freeze/RESULTS.md`).
+Every claim here is checked against its evidence by `freeze/freeze.py check` (`freeze/RESULTS.md`; every thesis
+table and paper figure traced to its command and output in `freeze/RESULTS_FREEZE.md`).
 
 | Component | Status |
 |---|---|
@@ -635,50 +701,76 @@ Every claim here is checked against its evidence by `freeze/freeze.py check` (`f
 | Front-end on the CIM, CPU-orchestrated (R4b) | ✅ Bit-exact on the board; the 1.1× Amdahl result |
 | Hardware front-end, frame path (R5a) | ✅ Bit-exact on the board; 21.8× fewer CPU-active cycles |
 | Dedicated MFCC baseline B3 | ✅ Built, gated (91.60 %), bit-exact; **H4 not supported** (`B3_BASELINE.md`) |
-| Frozen results (2026-11-07) | ✅ Git repository `hopcim/`, tag `freeze-2026-11-07`; bitstreams, ELFs, models and the dataset pinned by hash (`freeze/MANIFEST.json`); X-HEEP changes as a verified patch on its base commit. ⏳ Private remote and off-machine backup (student) |
+| Frozen results and backup | ✅ Git repository `hopcim/`, latest tag `freeze-2026-11-13` (earlier `freeze-2026-11-07`, `-07b`, `-08`, `-08s`, `-08b1`); bitstreams, ELFs, models and the dataset pinned by hash (`freeze/MANIFEST.json`). ✅ 2026-11-13: private GitHub repository with all tags; bitstreams, ELFs, board logs and the accuracy gate packed as release files (`~/APlus_Project/hopcim_backup/`). ⏳ Student: attach them to the release in GitHub's web page. Voice recordings, paper PDFs and earlier directions stay off GitHub by decision |
 | Sleep accounting (`mcountinhibit` around WFI + endpoint `CYCLES`) | ✅ Board = simulation: CPU-active 4,743 vs wall 12,257 cycles per frame, with the CPU asleep in WFI during the front-end |
 | DS-CNN integer reference | ✅ Bit-exact with TFLite reference kernels on all 4,890 clips |
 | DS-CNN on the CIM, CPU-orchestrated (R6a) | ✅ Bit-exact on the board, 20 clips, 20/20 correct; 11.8–13.0 M cycles per inference, depthwise 73–75 % (`NETWORK.md`) |
 | Board runs of the 128-tile builds (`cim_fe`, B3, network, sequencer) | ✅ All 10 runs of `planenest/hw/board_suite.sh` pass on the R6b bitstreams; every per-run cycle count equals simulation for the same code |
-| Manual IEEE Xplore search | ⏳ Open (student) |
 | Hardware layer sequencer + requantisation (R6b) | ✅ Bit-exact in RTL, as a gate netlist, on the SoC and on the board; 85,420 cycles (5.69 ms) per inference with the CPU asleep (`SEQUENCER.md`) |
 | Window path in hardware (R5b) | ✅ Bit-exact in RTL, at gate level, on the SoC and on the board (100 hops, 51 decisions, both front-ends); 600 CPU-active cycles per decision beyond copying samples (`WINDOW_PATH.md`) |
 | Live audio path (R7): on-board PDM microphone, decimator, hop controller | ✅ Bit-exact in RTL end to end (101 decisions from PDM bits, both front-ends, at 15.36 and 5.12 MHz). ✅ On the board: 500 decisions per 10 s, no overrun, 263 CPU-active cycles per decision; on real microphone audio, the logits equal the golden model's (25 of 25). ✅ At 5.12 MHz on the board: no overrun. ✅ Spoken keywords detected live. ✅ Scripted accuracy test with one speaker: 48 of 50 keywords (`LIVE_AUDIO.md` §9) |
 | End-to-end evaluation | ✅ Tables A–E (`EVALUATION.md`). The CPU-active time per hop goes from 48.1 M cycles (CPU only) to 263 (E). The lowest real-time clock is 5.12 MHz |
 | A decision every k hops (2026-11-05) | ✅ Bit-exact in RTL and on the board at 20, 40 and 80 ms; 18 LUT; 50–75 % fewer CIM passes. ✅ One speaker: 48, 47 and 42 of 50 keywords at 20, 40 and 80 ms, so 40 ms is the operating point (`LIVE_AUDIO.md` §9) |
 | Exact activation reuse (2026-11-05) | ✅ Evaluated in software, not built: exact on 174,216 decisions, 45.5–51.3 % fewer passes, about +72 KB of memory, the worst case unchanged (`REUSE_EVALUATION.md`) |
-| Energy estimate (2026-11-07) | ✅ **[E]** 28 nm, exact activity with published tools: about 1.39 µJ per inference; 110, 75 and 58 µW at 20, 40 and 80 ms; reuse saves a net 13 µW at 40 ms. ✅ ZigZag-IMC run: ratio 1.000 on the pointwise layers, 1.029 overall at the measured activity. ⏳ The digital logic is still coarse: the ASIC flow needs permission to install (`ENERGY_ESTIMATE.md` §11) |
-| CIM timing sensitivity (2026-11-07) | ✅ 5.12 MHz for every assumption with D ≤ 9; 8.19, 15.36 and 60.42 MHz at D = 18, 36 and 153, bit-exact, in simulation. ⏳ Assumptions to check against the papers (`TIMING_SENSITIVITY.md`) |
+| Baseline S (2026-11-08) | ✅ Built behind a parameter; RTL = schedule model in all ten layers and every access count; all 4,890 clips bit-exact; on the board 67,909 cycles go to interrupt, real time down to **4.096 MHz**; [E] 1,120.8 nJ per inference (`BASELINE_S.md`) |
+| B1: one StreamFuse-B block (2026-11-08) | ✅ RTL = schedule model (67,817 cycles, every segment and access count); all 4,890 clips bit-exact; board exact, no overrun; +635 LUT, +202 FF against S; [E] −2.4 % network energy, nothing at 40 ms (`STREAMFUSE_B1.md`). ⏳ All four blocks only on the advisor's decision (§15.3) |
+| X-HEEP as a patch series (2026-11-08) | ✅ 4 patches on upstream X-HEEP, built by `xheep/setup.sh`, checked by `xheep/check.sh`; a clean clone gives the S bitstream bit for bit apart from the 4 bytes of its build time (`INTEGRATION.md`) |
+| Energy estimate (2026-11-07, extended 2026-11-08) | ✅ **[E]** 28 nm, exact activity with published tools: 1,389.3 nJ per inference for R6b, 1,120.8 nJ for S and 1,094.1 nJ for B1 from the RTL's counters; 110, 75 and 58 µW at 20, 40 and 80 ms for R6b, 97.0, 68.8 and 54.7 µW for S; reuse saves a net 13 µW at 40 ms (R6b). ✅ ZigZag-IMC run: ratio 1.000 on the pointwise layers, 1.029 overall at the measured activity. ⏳ The digital logic is still coarse: the ASIC flow needs permission to install (`ENERGY_ESTIMATE.md` §11) |
+| CIM timing sensitivity (2026-11-07, extended 2026-11-08) | ✅ R6b: 5.12 MHz for every assumption with D ≤ 9; 8.19, 15.36 and 60.42 MHz at D = 18, 36 and 153. ✅ S: 4.096 MHz at max(8, b) and with a macro on its own clock, 8.192 MHz at 2b, 11.264 MHz at 2b + 8; bit-exact in simulation. ⏳ Assumptions to check against Chih et al. and Colonnade, whose full texts the student is to add (`TIMING_SENSITIVITY.md` §6a, §7) |
+| Novelty against the six closest KWS works (2026-11-13) | ✅ Read in full (`NOVELTY_SYSTEM.md`): the claim of §13b holds; Dong et al. are the closest system. ⏳ Manual IEEE Xplore search (student) |
 | Same-audio logger (2026-11-07) | ✅ Audio and logits of every decision streamed at 921,600 baud; 2,850 of 2,850 decisions equal the golden model. ⏳ The spoken runs (`SAME_AUDIO.md`) |
 | False alarms (2026-11-07) | ✅ Ambient room run and GSC streams, over rates and rules. ⏳ Rule to choose on spoken runs (`SAME_AUDIO.md` §5, §6) |
-| Verification polish (2026-11-07) | ✅ 28 benches, 47 assertions, all active with no failure; 16 of 16 mutants caught; extreme input exact; no RTL defect found (`VERIFICATION.md`) |
+| Verification (2026-11-07, extended 2026-11-08) | ✅ 46 of 46 benches pass in the main tree and from a clean clone (R6b, S, B1); 57 assertions, all exercised, none failing over 45 benches; 33 of 33 mutants caught (16 of R6b, 11 of S, 6 of B1), 3 more shown equivalent; extreme input exact; no RTL defect found (`VERIFICATION.md`) |
+| Paper figures (2026-11-13) | ✅ Four figures drawn from the frozen evidence (`figures/`): CPU-active cycles per hop A–E, network cycles per inference, energy by component [E], B1 against S. The freeze check fails if a plotted number no longer equals its evidence |
 
 ### 15.2 Next steps, in order
 
-The project has moved from building to making its claims defensible, so new RTL is no longer the default next step. Order set on 2026-11-07:
+The project has moved from building to making its claims defensible and writing them up, so new RTL is no longer
+the default next step. Order set on 2026-11-13:
 
-1. **Freeze and version.** ✅ Done 2026-11-07 (`freeze/`). Run `freeze/freeze.py` again after any step that changes a claim. ⏳ Student: add a private remote and back up `planenest/hw/bitstreams/`, because the repository pins bitstreams by hash and everything is on one disk so far.
-2. **Novelty audit and repositioning (student, the search about 1 hour).** This decides whether the core system is enough novelty or another contribution is needed. Run the IEEE Xplore search, and discuss §13a with the advisor. The two search strings:
+1. **Freeze, version, back up.** ✅ Freezes since 2026-11-07 (`freeze/`), on GitHub since 2026-11-13. After any step
+   that changes a claim: `freeze/freeze.py manifest`, `freeze/freeze.py check`, `freeze/selftest.py`, commit, tag,
+   `git push origin main --tags`, and attach the release files.
+2. **Advisor meeting (student).** Bring `EVALUATION.md` §11–12, `STREAMFUSE_B1.md` §6, `NOVELTY_SYSTEM.md` §4 and
+   the figures in `figures/out/`. The decisions are listed in §15.3.
+3. **Novelty audit (student, about 1 hour).** The manual IEEE Xplore search, with the two search strings:
    ```
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing" OR "computing-on-memory" OR "processing-in-memory") AND (FFT OR "Fourier" OR MFCC OR "Mel" OR spectrogram) AND ("keyword spotting" OR speech OR audio)
    ("compute-in-memory" OR "computing-in-memory" OR "in-memory computing") AND ("FFT" OR "fast Fourier transform" OR "DFT")
    ```
-3. **The same-audio experiment at 20, 40 and 80 ms.** ✅ Logger, capture and analysis built and verified on the board; GSC streams scored (`SAME_AUDIO.md`). ⏳ Student: one spoken run of about 5 minutes. One run at 20 ms holds the audio and every decision's logits, so every rate, phase and confirmation rule is scored on identical speech. This decides whether 80 ms is viable.
-4. **CIM timing sensitivity.** ✅ Issue interval and result latency swept over 40 timings and 9 macro assumptions, with the real benches (`TIMING_SENSITIVITY.md`). ⏳ Student: check cycle counts, clock and macro size against Chih et al. and Colonnade; public sources do not give them.
-5. **Energy validation.** ✅ ZigZag-IMC itself run and compared with the transcribed equations (`ENERGY_ESTIMATE.md` §11). ⏳ A scoped open ASIC flow can replace the coarse digital logic; it does not validate a 28-nm macro. Its download was refused by the session's permission system, so it needs the student's approval. Everything keeps its estimate label.
-6. **More live evidence.** ✅ False alarms per hour in the room, over rates and rules, and the tools for pooling speakers (`SAME_AUDIO.md` §4, §6). ⏳ Student: several speakers, one spoken run each; every rate comes from the same run.
-7. **Verification polish.** ✅ Assertions, Verilator coverage, mutation and extreme-input tests, and a post-synthesis smoke test of the full endpoint (`VERIFICATION.md`).
-8. **Only then, an optional architecture extension:** activation reuse (`REUSE_EVALUATION.md` §8), a dataflow optimisation, or none. Choose from the evidence, not because the thesis needs more RTL.
+4. **Spoken runs with several speakers (student; the analysis then takes under an hour).** One spoken run of about
+   5 minutes per speaker with the same-audio logger on the S bitstream (`SAME_AUDIO.md`), with consent and coded
+   names; recordings stay outside the repository and off GitHub. This decides between 20, 40 and 80 ms and the
+   confirmation rule, and gives live accuracy beyond one speaker.
+5. **Macro timing against the papers.** ✅ Sweeps for R6b and S (`TIMING_SENSITIVITY.md`). ⏳ Student: add Chih et
+   al. (ISSCC 2021) and Colonnade (JSSC 2021) to the literature folder; then their bits per cycle, pipeline stages,
+   clock and array size are checked against the assumptions.
+6. **Energy validation.** ✅ ZigZag-IMC itself run (`ENERGY_ESTIMATE.md` §11). ⏳ A scoped open ASIC flow can replace
+   the coarse digital logic; its download needs the student's approval. Everything keeps its estimate label.
+7. **Verification.** ✅ Assertions, coverage, mutation and extreme-input tests, a post-synthesis smoke test of the
+   endpoint, and the regression from a clean clone (`VERIFICATION.md`).
+8. **Architecture extension.** ✅ The baseline S, built from the StreamFuse study's main finding. ✅ B1, one block
+   of StreamFuse-B, equal to its model. ⏳ All four blocks of StreamFuse-B only if the advisor decides so. StreamFuse
+   A and C and activation reuse in RTL are not planned (`STREAMFUSE_STUDY.md`, `REUSE_EVALUATION.md`).
+9. **Writing.** ✅ Paper figures from the freeze (`figures/`). ⏳ The paper once the venue is chosen; the thesis
+   chapters from the same tables and figures.
 
-Writing (Phase 6) runs alongside steps 4–8.
+Optional: measure the 4.096 and 1.024 MHz clocks with an instrument.
 
 ### 15.3 Points to discuss with the advisor
 
-- Is the narrowed claim (§4.5) the right thesis claim, and how does it relate to the group's earlier CIM KWS work?
-- Energy estimates are preferred if a published tool can do them, as an additional result (2026-11-07). Is the estimate in `ENERGY_ESTIMATE.md`, with its stated limits, the form that is wanted?
-- Is the core system enough novelty for the thesis, or does it need an architecture extension (§15.2 step 8)?
+- Is the claim of §13b the right thesis and paper claim, and how does it relate to the group's earlier CIM KWS
+  work (CIMR-V and others)?
+- Is the network-side evaluation (the bottleneck measured at each step, the baseline S, a schedule model checked
+  against RTL) enough architecture contribution for a conference paper, or should all four blocks of StreamFuse-B be
+  built? The model gives 0.837 × S network energy, about −7 % total power at 40 ms [E], and 0.575 × the activation
+  storage; one block measured +420 LUT and +197 FF of control.
+- Which venue and deadline? The paper's scope and figures follow from it.
+- Energy estimates are preferred if a published tool can do them, as an additional result (2026-11-07). Is the
+  estimate in `ENERGY_ESTIMATE.md`, with its stated limits, the form that is wanted?
 - H1 and H3 did not come out as written (§7). How should the thesis present them?
-- Which baselines does the committee expect: a dedicated FFT block (built, B3), a learned front-end (optional), or others?
+- Which baselines does the committee expect: a dedicated FFT block (built, B3), a learned front-end (optional), or
+  others?
 
 ---
 
@@ -740,18 +832,23 @@ Writing (Phase 6) runs alongside steps 4–8.
 
 ## Appendix A — Repository map
 
+`hopcim/` is a git repository, kept in a private GitHub repository with its freeze tags.
+
 | Path | Content |
 |---|---|
-| `hopcim/rtl/` | `cim_engine.sv`, `cim_endpoint.sv`, `cim_fe.sv`, `fe_tables.svh` (generated) |
-| `hopcim/tb/`, `hopcim/sim/` | Testbenches (engine, endpoint, front-end + vectors); run scripts (`run_*_tb.sh`, `run_soc.sh`) |
-| `hopcim/syn/` | Out-of-context Vivado script (`ooc.tcl`) and reports |
-| `hopcim/model/` | Golden models (`mfcc_int.py`, `cim_map.py`), table and vector generators, accuracy re-gate (`gate2_int.py`) |
-| `hopcim/sw/` | Driver `cim.h`, generated `mfcc_tables.h` |
-| `hopcim/docs/` | This proposal and the specifications; `SAME_AUDIO.md`, `TIMING_SENSITIVITY.md`, `VERIFICATION.md` for the checks of the claims |
-| `hopcim/freeze/` | Frozen results: claims and evidence (`RESULTS.md`), hashes (`MANIFEST.json`), `freeze.py`; snapshots of the X-HEEP changes, board scripts and logs, the accuracy gate, novelty documents, tool versions |
-| `kws_gate/` | Gate scripts, pretrained MLPerf Tiny models, GSC test set, novelty searches |
-| `planenest/hw/x-heep/` | X-HEEP with the HopCIM integration (flag `use_cim`, symlink `hw/ip/hopcim`); apps `cim_smoke`, `hopcim_mfcc`, `hopcim_fe`; local BSCANE2 fix |
-| `planenest/hw/bitstreams/` | Bitstreams with SHA-256 sums; current: `xheep_nexys_bscan_cim128k.bit` |
+| `hopcim/rtl/` | CIM engine `cim_engine.sv`, endpoint `cim_endpoint.sv`, front-ends `cim_fe.sv` (on the CIM) and `mfcc_ded.sv` (B3), layer sequencer `cim_seq.sv` (R6b, S, B1 by parameter), audio path `cim_audio.sv` and `pdm_dec.sv`, generated tables (`*_tables.svh`) |
+| `hopcim/tb/`, `hopcim/sim/` | Testbenches, assertions (`tb/cim_assertions.sv`), activity counters; run scripts (`sim/run_*_tb.sh`), the regression `sim/run_all.sh` (46 benches) and its logs |
+| `hopcim/syn/` | Out-of-context Vivado script (`ooc.tcl`) and reports; the Vivado miscompile reproduction |
+| `hopcim/model/` | Golden models (`mfcc_int.py`, `dscnn_int.py`, `stream_int.py`), mapping, generators, accuracy re-gate (`gate2_int.py`), schedule model (`streamfuse_sched.py`), energy (`energy_est.py`), timing sweeps, mutation tests, results (`*.json`, `*.log`) |
+| `hopcim/sw/` | Driver `cim.h`, generated tables; the 19 board apps in `sw/applications/`, linked into X-HEEP by `xheep/setup.sh` |
+| `hopcim/xheep/` | X-HEEP as a patch series on upstream (`patches/`, `base.env`), `setup.sh` (build a tree), `check.sh` (verify one), `build.sh` (bitstreams, Verilator models, firmware) |
+| `hopcim/figures/` | Paper figures: `figdata.py` reads every plotted number from the frozen evidence, `make_figures.py` draws `out/*.pdf` and `out/*.png` |
+| `hopcim/docs/` | This proposal and the specifications; `EVALUATION.md` for the results tables; `SAME_AUDIO.md`, `TIMING_SENSITIVITY.md`, `VERIFICATION.md` for the checks of the claims; `NOVELTY_SYSTEM.md` for the closest works |
+| `hopcim/freeze/` | Frozen results: claims and evidence (`RESULTS.md`), the index by thesis table and figure (`RESULTS_FREEZE.md`), hashes (`MANIFEST.json`), `freeze.py`, `selftest.py`; snapshots of the board scripts and logs, the accuracy gate, novelty documents, tool versions |
+| `kws_gate/` | Gate scripts, pretrained MLPerf Tiny models, GSC test set |
+| `planenest/hw/x-heep/` | The working X-HEEP tree, built from `hopcim/xheep/` by `setup.sh`; never edited by hand (`xheep/check.sh` reports any other change) |
+| `planenest/hw/bitstreams/` | Bitstreams with SHA-256 sums, pinned in `freeze/MANIFEST.json`; current: `xheep_nexys_bscan_cim128ks.bit` (S) and `xheep_nexys_bscan_cim128kb1.bit` (B1) |
+| `planenest/hw/` | Board scripts (`board_run.sh`, `board_khop.sh`, `board_kwlog.sh`, `board_suite.sh`), ELFs, UART logs |
 
 ## Appendix B — How to reproduce
 
@@ -760,16 +857,17 @@ cd ~/APlus_Project
 # accuracy re-gate and mapping self-test
 ~/venvs/kwsgate/bin/python hopcim/model/gate2_int.py
 ~/venvs/planenest/bin/python -c "import sys; sys.path.insert(0,'hopcim/model'); import cim_map; cim_map.self_test(4890)"
-# all frozen claims against their evidence, then the RTL regression (Verilator, about 10 min)
-python3 hopcim/freeze/freeze.py check
-hopcim/sim/run_all.sh
-# assertions and coverage (about 20 min), mutants (about 8 min), timing sweeps, ZigZag-IMC: see VERIFICATION.md, TIMING_SENSITIVITY.md, ENERGY_ESTIMATE.md
-# SoC simulation
-cd planenest/hw/x-heep && source .venv/bin/activate && make verilator-build FUSESOC_FLAGS=--flag=use_cim
-~/APlus_Project/hopcim/sim/run_soc.sh hopcim_fe          # also: cim_smoke, hopcim_mfcc
-# FPGA bitstream and board run
-make vivado-fpga FPGA_BOARD=nexys-a7-100t "FUSESOC_FLAGS=--flag=use_bscane_xilinx --flag=use_cim --flag=use_cim_mic"
-cd .. && ./board_run.sh hopcim_live_nexys.elf bitstreams/xheep_nexys_bscan_cim128k.bit
+# all frozen claims and figures against their evidence, the self-test of that check, then the RTL regression
+python3 hopcim/freeze/freeze.py check && python3 hopcim/freeze/selftest.py
+hopcim/sim/run_all.sh                                   # 46 benches, about 15 min
+# paper figures from the evidence
+~/venvs/defines/bin/python hopcim/figures/make_figures.py
+# an X-HEEP tree from upstream and the patch series, then the S bitstream, a Verilator SoC model, firmware
+XHEEP_VENV=~/APlus_Project/planenest/hw/x-heep/.venv hopcim/xheep/setup.sh ~/xheep-hopcim
+hopcim/xheep/build.sh ~/xheep-hopcim s                  # also b1, sim-s, sim-b1 (hopcim/xheep/README.md)
+hopcim/xheep/build.sh ~/xheep-hopcim app hopcim_seq_nexys_15m36 hopcim_seq -DREFERENCE_CLOCK_Hz=15360000
+# board run
+cd planenest/hw && ./board_run.sh hopcim_seq_nexys_15m36.elf bitstreams/xheep_nexys_bscan_cim128ks.bit
 ```
 
 ## Appendix C — Engineering lessons

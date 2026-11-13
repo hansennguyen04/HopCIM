@@ -1,0 +1,420 @@
+{
+ "generated_by": "figures/figdata.py; figures/make_figures.py draws them",
+ "figures": {
+  "fig1_cpu_active_per_hop": {
+   "title": "CPU-active cycles per 20-ms hop, one decision every hop",
+   "unit": "CPU-active cycles per hop",
+   "scale": "log",
+   "rows": [
+    {
+     "id": "A",
+     "label": "CPU only",
+     "basis": "board: network; front-end from the CPU census",
+     "parts": [
+      {
+       "name": "front-end: FFT",
+       "value": 145142,
+       "source": "freeze/board/logs/census_microbench_nexys_board_20261027_003600.uart.log",
+       "find": "fft512_cplx_q15\\s+(\\d+) cyc"
+      },
+      {
+       "name": "front-end: power, mel, log, DCT",
+       "value": 15632,
+       "source": "freeze/board/logs/census_microbench_nexys_board_20261027_003600.uart.log",
+       "find": "pwr_mel_log_dct\\s+(\\d+) cyc"
+      },
+      {
+       "name": "network",
+       "value": 47974801,
+       "source": "freeze/board/logs/hopcim_cpu_nexys_board_20261028_092050.uart.log",
+       "find": "total (\\d+) cycles"
+      }
+     ],
+     "total": 48135575
+    },
+    {
+     "id": "B",
+     "label": "CPU drives the CIM",
+     "basis": "board",
+     "parts": [
+      {
+       "name": "front-end",
+       "value": 146364,
+       "source": "freeze/board/logs/hopcim_mfcc_nexys_board_20261028_090817.uart.log",
+       "find": "total\\s+(\\d+) cyc/frame"
+      },
+      {
+       "name": "network",
+       "value": 13020998,
+       "source": "freeze/board/logs/hopcim_net1_nexys_board_20261028_090921.uart.log",
+       "find": "clip 0: label \\d+ predicted \\d+, (\\d+) cycles"
+      }
+     ],
+     "total": 13167362
+    },
+    {
+     "id": "C",
+     "label": "hardware front-end and sequencer",
+     "basis": "composed from board measurements",
+     "parts": [
+      {
+       "name": "front-end input and readback",
+       "value": 4743,
+       "source": "freeze/board/logs/hopcim_fe_irq_nexys_board_20261028_090841.uart.log",
+       "find": "CPU-active (\\d+) \\(max"
+      },
+      {
+       "name": "window path on the CPU",
+       "value": 2120,
+       "source": "freeze/board/logs/hopcim_fe_irq_nexys_board_20261028_090841.uart.log",
+       "find": "window path \\(finish\\) (\\d+) CPU cycles/frame"
+      },
+      {
+       "name": "network control",
+       "value": 459,
+       "source": "freeze/board/logs/hopcim_seq_nexys_board_20261028_090933.uart.log",
+       "find": "streaming step \\([^)]*\\): (\\d+)\\.\\.\\d+ cycles"
+      }
+     ],
+     "total": 7322
+    },
+    {
+     "id": "D",
+     "label": "+ window path in hardware",
+     "basis": "board",
+     "parts": [
+      {
+       "name": "copying 320 samples",
+       "value": 3847,
+       "source": "freeze/board/logs/hopcim_stream_nexys_board_20261028_091143.uart.log",
+       "find": "copying 320 samples (\\d+) cycles"
+      },
+      {
+       "name": "everything else",
+       "value": 600,
+       "source": "freeze/board/logs/hopcim_stream_nexys_board_20261028_091143.uart.log",
+       "find": "everything else \\d+\\.\\.\\d+ \\(mean (\\d+)\\)"
+      }
+     ],
+     "total": 4447
+    },
+    {
+     "id": "E",
+     "label": "+ live microphone path",
+     "basis": "board, 15.36 MHz",
+     "parts": [
+      {
+       "name": "interrupt, decision, keyword logic",
+       "value": 263,
+       "source": "freeze/board/logs/hopcim_live_nexys_board_20261105_231010.uart.log",
+       "find": "CPU-active per decision (\\d+) cycles"
+      }
+     ],
+     "total": 263
+    }
+   ]
+  },
+  "fig2_network_cycles": {
+   "title": "Network cycles per inference, measured on the board",
+   "unit": "cycles per inference",
+   "scale": "log",
+   "rows": [
+    {
+     "label": "CPU only, plain C",
+     "value": 47974801,
+     "source": "freeze/board/logs/hopcim_cpu_nexys_board_20261028_092050.uart.log",
+     "find": "total (\\d+) cycles"
+    },
+    {
+     "label": "CPU drives the CIM",
+     "value": 13020998,
+     "source": "freeze/board/logs/hopcim_net1_nexys_board_20261028_090921.uart.log",
+     "find": "clip 0: label \\d+ predicted \\d+, (\\d+) cycles"
+    },
+    {
+     "label": "hardware sequencer (R6b)",
+     "value": 85420,
+     "source": "freeze/board/logs/hopcim_seq_nexys_board_20261028_090933.uart.log",
+     "find": "sequencer (\\d+) cycles"
+    },
+    {
+     "label": "baseline S",
+     "value": 67909,
+     "source": "freeze/board/logs/hopcim_seq_nexys_15m36_board_20261108_151228.uart.log",
+     "find": "go -> interrupt\\): (\\d+)\\.\\.\\d+ cycles"
+    },
+    {
+     "label": "B1: StreamFuse-B in block 1",
+     "value": 67885,
+     "source": "freeze/board/logs/hopcim_seq_nexys_15m36_board_20261108_204404.uart.log",
+     "find": "go -> interrupt\\): (\\d+)\\.\\.\\d+ cycles"
+    }
+   ]
+  },
+  "fig3_energy_breakdown": {
+   "title": "Network energy per inference [E], 28 nm, by component",
+   "unit": "nJ per inference [E]",
+   "note": "An estimate from exact activity counts, not a measurement; B is the schedule model's, not built",
+   "rows": [
+    {
+     "label": "R6b",
+     "basis": "RTL = model",
+     "source": "model/streamfuse_energy.json",
+     "find": "baseline/B0/network_pJ",
+     "parts_pJ": {
+      "CIM array": 134202.6528817457,
+      "tile select": 169059.115008,
+      "ACT memory": 298241.13888000004,
+      "FEAT memory": 368.26426999999995,
+      "requant parameters": 152023.05245324998,
+      "requant arithmetic": 435856.28808635485,
+      "input and result registers": 3896.8651259999997,
+      "sequencer logic": 195630.26636159996
+     },
+     "groups": [
+      {
+       "name": "CIM array and tile select",
+       "nJ": 303.26176788974567
+      },
+      {
+       "name": "activation memory",
+       "nJ": 298.60940315000005
+      },
+      {
+       "name": "requantisation",
+       "nJ": 587.8793405396049
+      },
+      {
+       "name": "sequencer logic and registers",
+       "nJ": 199.52713148759995
+      }
+     ],
+     "total_nJ": 1389.2776430669505
+    },
+    {
+     "label": "S",
+     "basis": "RTL counters",
+     "source": "model/energy_b1_rtl.json",
+     "find": "variants/baseline/parts_S_pJ",
+     "parts_pJ": {
+      "CIM array": 134202.6528817457,
+      "tile select": 169059.115008,
+      "ACT memory": 285768.08288,
+      "FEAT memory": 368.26426999999995,
+      "requant parameters": 152023.05245324998,
+      "requant arithmetic": 219975.4474499715,
+      "input and result registers": 3896.8651259999997,
+      "sequencer logic": 155494.33991279997
+     },
+     "groups": [
+      {
+       "name": "CIM array and tile select",
+       "nJ": 303.26176788974567
+      },
+      {
+       "name": "activation memory",
+       "nJ": 286.13634715
+      },
+      {
+       "name": "requantisation",
+       "nJ": 371.9984999032215
+      },
+      {
+       "name": "sequencer logic and registers",
+       "nJ": 159.39120503879997
+      }
+     ],
+     "total_nJ": 1120.7878199817671
+    },
+    {
+     "label": "B1",
+     "basis": "RTL counters",
+     "source": "model/energy_b1_rtl.json",
+     "find": "variants/baseline/parts_B1_pJ",
+     "parts_pJ": {
+      "CIM array": 134202.6528817457,
+      "tile select": 169059.115008,
+      "ACT memory": 239589.40471,
+      "FEAT memory": 368.26426999999995,
+      "requant parameters": 152023.05245324998,
+      "requant arithmetic": 219975.4474499715,
+      "input and result registers": 3896.8651259999997,
+      "sequencer logic": 174976.91356949997
+     },
+     "groups": [
+      {
+       "name": "CIM array and tile select",
+       "nJ": 303.26176788974567
+      },
+      {
+       "name": "activation memory",
+       "nJ": 239.95766898000002
+      },
+      {
+       "name": "requantisation",
+       "nJ": 371.9984999032215
+      },
+      {
+       "name": "sequencer logic and registers",
+       "nJ": 178.87377869549996
+      }
+     ],
+     "total_nJ": 1094.091715468467
+    },
+    {
+     "label": "B, four blocks",
+     "basis": "model only, not built",
+     "source": "model/streamfuse_energy.json",
+     "find": "baseline/B/network_pJ",
+     "parts_pJ": {
+      "CIM array": 134202.6528817457,
+      "tile select": 169059.115008,
+      "ACT memory": 85791.98152799999,
+      "FEAT memory": 368.26426999999995,
+      "requant parameters": 152023.05245324998,
+      "requant arithmetic": 219006.26764983337,
+      "input and result registers": 3896.8651259999997,
+      "sequencer logic": 173210.51423024997
+     },
+     "groups": [
+      {
+       "name": "CIM array and tile select",
+       "nJ": 303.26176788974567
+      },
+      {
+       "name": "activation memory",
+       "nJ": 86.16024579799999
+      },
+      {
+       "name": "requantisation",
+       "nJ": 371.02932010308336
+      },
+      {
+       "name": "sequencer logic and registers",
+       "nJ": 177.10737935624996
+      }
+     ],
+     "total_nJ": 937.5587131470788
+    }
+   ]
+  },
+  "fig4_b1_vs_s": {
+   "title": "B1 against S, same source",
+   "unit": "B1 / S",
+   "rows": [
+    {
+     "metric": "network cycles (RTL)",
+     "b1": {
+      "value": 67817,
+      "source": "model/streamfuse_results.json",
+      "find": "B1/B1/total"
+     },
+     "s": {
+      "value": 67841,
+      "source": "model/streamfuse_results.json",
+      "find": "B1/S/total"
+     },
+     "ratio": 0.9996462316298403
+    },
+    {
+     "metric": "activation-memory word reads",
+     "b1": {
+      "value": 33470,
+      "source": "model/streamfuse_results.json",
+      "find": "B1/B1/reads/act"
+     },
+     "s": {
+      "value": 42960,
+      "source": "model/streamfuse_results.json",
+      "find": "cycles/S/counts/reads/act"
+     },
+     "ratio": 0.779096834264432
+    },
+    {
+     "metric": "activation-memory byte writes",
+     "b1": {
+      "value": 56000,
+      "source": "model/streamfuse_results.json",
+      "find": "B1/B1/byte_writes/act"
+     },
+     "s": {
+      "value": 64000,
+      "source": "model/streamfuse_results.json",
+      "find": "cycles/S/counts/byte_writes/act"
+     },
+     "ratio": 0.875
+    },
+    {
+     "metric": "activation storage, bits",
+     "b1": {
+      "value": 148192,
+      "source": "model/streamfuse_results.json",
+      "find": "B1/B1/storage_bits"
+     },
+     "s": {
+      "value": 140000,
+      "source": "model/streamfuse_results.json",
+      "find": "cycles/S/storage_bits"
+     },
+     "ratio": 1.0585142857142857
+    },
+    {
+     "metric": "network energy [E], nJ",
+     "b1": {
+      "value": 1094.091715468467,
+      "source": "model/energy_b1_rtl.json",
+      "find": "variants/baseline/B1_nJ"
+     },
+     "s": {
+      "value": 1120.7878199817671,
+      "source": "model/energy_b1_rtl.json",
+      "find": "variants/baseline/S_nJ"
+     },
+     "ratio": 0.976180946975553
+    },
+    {
+     "metric": "total power at 40 ms [E], µW",
+     "b1": {
+      "value": 68.74566036814876,
+      "source": "model/energy_b1_rtl.json",
+      "find": "variants/baseline/power_B1_uW/2"
+     },
+     "s": {
+      "value": 68.78451186098127,
+      "source": "model/energy_b1_rtl.json",
+      "find": "variants/baseline/power_S_uW/2"
+     },
+     "ratio": 0.9994351709159319
+    },
+    {
+     "metric": "endpoint LUT",
+     "b1": {
+      "value": 8761,
+      "source": "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1_SEQ_B11/utilization.rpt",
+      "find": "\\| Slice LUTs\\s+\\|\\s+(\\d+) \\|"
+     },
+     "s": {
+      "value": 8126,
+      "source": "syn/ooc_cim_endpoint_S_same_source_as_B1/utilization.rpt",
+      "find": "\\| Slice LUTs\\s+\\|\\s+(\\d+) \\|"
+     },
+     "ratio": 1.0781442284026581
+    },
+    {
+     "metric": "endpoint flip-flops",
+     "b1": {
+      "value": 6182,
+      "source": "syn/ooc_cim_endpoint_FE_DED0_PDM_CLKDIV15_SEQ_S1_SEQ_B11/utilization.rpt",
+      "find": "\\| Slice Registers\\s+\\|\\s+(\\d+) \\|"
+     },
+     "s": {
+      "value": 5980,
+      "source": "syn/ooc_cim_endpoint_S_same_source_as_B1/utilization.rpt",
+      "find": "\\| Slice Registers\\s+\\|\\s+(\\d+) \\|"
+     },
+     "ratio": 1.0337792642140469
+    }
+   ]
+  }
+ }
+}

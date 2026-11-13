@@ -30,7 +30,7 @@ XHEEP = HW / "x-heep"
 GATE = PROJECT / "kws_gate"
 DISCOVERY = PROJECT / "research_discovery" / "20261026_application_driven"
 PILOT = PROJECT / "recim-rv" / "accelforge_pilot"
-TAG = "freeze-2026-11-08b1"
+TAG = "freeze-2026-11-13"
 
 BOARD_SCRIPTS = ["board_run.sh", "board_suite.sh", "board_khop.sh", "board_kwlog.sh", "xheep_env.sh"]
 GATE_FILES = ["GATE_RESULTS.md", "GATE2_MANIFEST.md", "gate2_eval.py", "gate2_frozen.sha256", "gate2_results.json", "gate2_run.log"]
@@ -67,6 +67,10 @@ STALE = [  # statements that were true once and must not come back
     ("docs/ENERGY_ESTIMATE.md", "**ZigZag-IMC itself has not been run.**"),
     ("docs/HOPCIM_PROPOSAL.md", "the tool itself has not been run"),
     ("docs/LIVE_AUDIO.md", "covers a restart, and the firmware enables the path once"),
+    ("docs/HOPCIM_PROPOSAL.md", "### 15.1 Status (2026-11-07)"),
+    ("docs/HOPCIM_PROPOSAL.md", "Private remote and off-machine backup (student)"),
+    ("docs/HOPCIM_PROPOSAL.md", "add a private remote and back up"),
+    ("docs/HOPCIM_PROPOSAL.md", "Version 1.2, 2026-11-07"),
 ]
 
 
@@ -450,12 +454,12 @@ def claims():
              and all(has(KHOP_S_LOG, p) for p in (r"\[40 s\] 2000 decisions .*overrun 0", r"\[40 s\] 1000 decisions .*overrun 0", r"\[40 s\] 500 decisions .*overrun 0",
                                                    r"25 with the window inside the recording: 0 differ", r"13 with the window inside the recording: 0 differ",
                                                    r"7 with the window inside the recording: 0 differ", r"recordings all exact")),
-             docs=[("docs/BASELINE_S.md", "67,909")], how="`board_run.sh hopcim_seq_nexys_15m36.elf bitstreams/xheep_nexys_bscan_cim128ks.bit`; `board/board_khop.sh 42 bitstreams/xheep_nexys_bscan_cim128ks.bit`"),
+             docs=[("docs/BASELINE_S.md", "67,909"), ("docs/HOPCIM_PROPOSAL.md", "67,909")], how="`board_run.sh hopcim_seq_nexys_15m36.elf bitstreams/xheep_nexys_bscan_cim128ks.bit`; `board/board_khop.sh 42 bitstreams/xheep_nexys_bscan_cim128ks.bit`"),
         dict(id="S8", label="[M]", text="Lowest real-time clock with S, 4.096 MHz, on the board: 6,000 decisions in 120 s with no overrun, 263 CPU-active cycles per decision; real-microphone logits exact at 25 of 25 decisions",
              evidence=LIVE4_LOG,
              check=lambda: has(LIVE4_LOG, r"system clock 4096000 Hz") and has(LIVE4_LOG, r"\[120 s\] 6000 decisions .*overrun 0; CPU-active per decision 263 cycles")
              and has(MICREC4_CHECK, r"at 4096000 Hz, overrun 0") and has(MICREC4_CHECK, r"25 with the window inside the recording: 0 differ from the golden model"),
-             docs=[("docs/BASELINE_S.md", "**6,000 decisions in 120 s, 500 per 10 s, overrun 0**"), ("docs/LIVE_AUDIO.md", "6,000 decisions in 120 s")],
+             docs=[("docs/BASELINE_S.md", "**6,000 decisions in 120 s, 500 per 10 s, overrun 0**"), ("docs/LIVE_AUDIO.md", "6,000 decisions in 120 s"), ("docs/HOPCIM_PROPOSAL.md", "**4.096 MHz**")],
              how="`board_run.sh hopcim_live_nexys_4m096.elf bitstreams/xheep_nexys_bscan_cim128mic4s.bit 130`; hopcim_micrec_nexys_4m096.elf, then `model/check_micrec.py --k 1 <log>`"),
         dict(id="H3", label="[M]", text="Timing sweep with S: lowest real-time clock 4.096 MHz at max(8, b) and with a macro on its own clock, 8.192 MHz at max(8, 2b), 11.264 MHz at max(8, 2b + 8); 28 grid points bit-exact; the engine is busy 99.5 % at today's timing",
              evidence="model/timing_results.json", check=timing_s_check,
@@ -464,10 +468,10 @@ def claims():
              evidence="xheep/cleanclone_s.log",
              check=lambda: has("xheep/cleanclone_s.log", r"differing bytes: 4, at offsets 115 117 120 121") and has("xheep/cleanclone_s.log", r"identical after the header: yes")
              and has("xheep/cleanclone_s.log", "original   : " + jget("freeze/MANIFEST.json", "bitstreams", "xheep_nexys_bscan_cim128ks.bit", "sha256")),
-             docs=[("docs/INTEGRATION.md", "apart from the 4 bytes of the build time")], how="`xheep/setup.sh <dir>; xheep/build.sh <dir> s`, about 40 min"),
+             docs=[("docs/INTEGRATION.md", "apart from the 4 bytes of the build time"), ("docs/HOPCIM_PROPOSAL.md", "bit for bit apart from")], how="`xheep/setup.sh <dir>; xheep/build.sh <dir> s`, about 40 min"),
         dict(id="U1", label="[M]", text="B1 (StreamFuse B in block 1) in RTL equals its schedule model: 67,817 cycles (S 67,841), every segment and every access count; all 4,890 test clips bit-exact",
              evidence="sim/seq_allclips_b1.log", check=b1_check,
-             docs=[("docs/STREAMFUSE_B1.md", "**67,817**"), ("docs/STREAMFUSE_B1.md", "**4,890 clips, 0 logit or class errors**")],
+             docs=[("docs/STREAMFUSE_B1.md", "**67,817**"), ("docs/STREAMFUSE_B1.md", "**4,890 clips, 0 logit or class errors**"), ("docs/HOPCIM_PROPOSAL.md", "67,817")],
              how=f"{py} model/streamfuse_sched.py b1; `sim/run_seq_tb.sh cim b1`; `sim/run_seq_allclips.sh b1`; `sim/run_energy_counts.sh cim 5 1 b1`"),
         dict(id="U2", label="[E]", text="Estimate: B1 priced from its RTL counters, 1,094.1 nJ per inference (2.4 % below S), 68.7 µW at 40 ms (S 68.8); equal to its model",
              evidence="model/energy_b1_rtl.json",
@@ -553,8 +557,11 @@ def results_freeze_md(m):
          "Generated by `freeze/freeze.py manifest`; `freeze/freeze.py check` fails if it is out of date. Every thesis table "
          "is traceable to the commit that tag `" + TAG + "` names, a command, and an output file.", "",
          "## 1. Freeze point", "",
-         f"- Git tag `{TAG}` in `hopcim/` (local; no remote). Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`, "
-         "`freeze-2026-11-08` (before S), `freeze-2026-11-08s` (S; X-HEEP still as one patch and an overlay).",
+         f"- Git tag `{TAG}` in `hopcim/`. The repository and its tags are kept in the private GitHub remote `origin`; "
+         "the bitstreams, ELFs and board logs, which git does not hold, are attached to each freeze's release there, "
+         "and `freeze/MANIFEST.json` pins them by hash. Earlier freezes: `freeze-2026-11-07`, `freeze-2026-11-07b`, "
+         "`freeze-2026-11-08` (before S), `freeze-2026-11-08s` (S; X-HEEP still as one patch and an overlay), "
+         "`freeze-2026-11-08b1` (B1).",
          f"- X-HEEP base commit `{m['sources']['xheep_base_commit']}` with the patch series `xheep/patches` "
          f"({len(m['sources']['xheep_patches'])} patches, result tree `{m['sources']['xheep_series_tree'][:12]}`), built by "
          "`xheep/setup.sh` and checked by `xheep/check.sh`; firmware in `sw/applications` "
@@ -587,6 +594,13 @@ def results_freeze_md(m):
             L.append(f"| {title} | {i} | {c['label']} | {c['text']} | {c['how']} | `{c['evidence']}` |")
     L += ["", "## 8. The final baseline table (advice §18) at this freeze", "", "| Configuration | Claims | State |", "|---|---|---|"]
     L += [f"| {a} | {b} | {s} |" for a, b, s in FINAL_TABLE]
+    L += ["", "## 9. Paper figures", "",
+          "Drawn by `figures/make_figures.py` from `figures/figures_data.json`, which `figures/figdata.py` reads from the "
+          "evidence below; `freeze.py check` fails if the data no longer equal the evidence (`figures/README.md`).", "",
+          "| Figure | Shows | Read from |", "|---|---|---|"]
+    for name, f in json.loads((ROOT / "figures" / "figures_data.json").read_text())["figures"].items():
+        src = sorted({v for v in re.findall(r"'source': '([^']+)'", repr(f))})
+        L.append(f"| `figures/out/{name}.pdf` | {f['title']} | " + ", ".join(f"`{x}`" for x in src) + " |")
     return "\n".join(L) + "\n"
 
 
@@ -626,6 +640,15 @@ def check():
             print(f"        {c['id']}: {e}")
         docs_ok = all(q in (ROOT / d).read_text() for d, q in c["docs"])
         say(ok and docs_ok, f"{c['id']} {c['label']} {c['text'][:88]}" + ("" if docs_ok else "  (a document does not quote it)"))
+
+    print("Paper figures against the evidence")
+    sys.path.insert(0, str(ROOT / "figures"))
+    try:
+        import figdata
+        fig_ok, fig_err = figdata.current(), ""
+    except Exception as e:                                         # a cross-check inside figdata.py failed
+        fig_ok, fig_err = False, f" ({e})"
+    say(fig_ok, "figures: figures/figures_data.json equals what figdata.py reads from the evidence" + fig_err)
 
     print("Stale statements")
     for d, q in STALE:

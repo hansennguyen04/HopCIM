@@ -196,3 +196,9 @@ The one-block prototype the gates allow (`STREAMFUSE_B1.md`): L1 → line buffer
 
 B1 is not worth keeping for its own gain; it shows that the schedule model behind the four-block numbers (B: 0.837 × S,
 0.575 × the storage) predicts B's mechanisms in RTL exactly, and that their control costs +420 LUT, +197 FF.
+
+## 13. Figures (2026-11-13)
+
+`figures/out/` holds four paper figures drawn from the frozen evidence by `figures/make_figures.py`: the CPU-active
+cycles per hop of §2 (A–E), the network cycles of §3, §11 and §12, the estimated energy by component [E], and B1
+against S. `freeze/freeze.py check` fails if a plotted number no longer equals its evidence (`figures/README.md`).

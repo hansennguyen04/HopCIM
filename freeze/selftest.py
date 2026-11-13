@@ -60,6 +60,9 @@ BREAKS = [
                                         "[120 s] 6000 decisions (66 missed while printing), 0 keywords, overrun 1"), r"FAIL\s+S8"),
     ("S's worst hop changes", replace("sim/mic_tb_cim_div4_s_hm.log", "worst 80072 cycles;", "worst 80073 cycles;"), r"FAIL\s+S4"),
     ("the results freeze index is edited by hand", replace("freeze/RESULTS_FREEZE.md", "## 7. Thesis tables", "## 7. Thesis table"), r"FAIL\s+RESULTS_FREEZE"),
+    ("a figure's number changes in its evidence", replace(B + "census_microbench_nexys_board_20261027_003600.uart.log", "15632 cyc", "15633 cyc"), r"FAIL\s+figures"),
+    ("a figure's data is edited by hand", replace("figures/figures_data.json", '"value": 263,', '"value": 262,', 1), r"FAIL\s+figures"),
+    ("an energy part no longer sums to its total", replace("model/energy_b1_rtl.json", '"sequencer logic": 174976.91356949997', '"sequencer logic": 174977.91356949997', 1), r"FAIL\s+figures"),
 ]
 
 

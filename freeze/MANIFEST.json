@@ -1,5 +1,5 @@
 {
- "tag": "freeze-2026-11-08b1",
+ "tag": "freeze-2026-11-13",
  "note": "Hashes of everything the frozen results depend on that is not in this repository.",
  "tools": [
   "Verilator: Verilator 5.040 2025-08-30 rev v5.040",
