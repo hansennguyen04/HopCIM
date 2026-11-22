@@ -226,8 +226,14 @@ bitstream. Only the firmware changes. Details are in `LIVE_AUDIO.md` §9.
 - CPU-active 875 cycles per decision, which makes U 44.16 µW [E] instead of 44.11;
 - details in `LIVE_AUDIO.md` §9.
 
-**Still to do:** the complete scripted test (`hopcim_kwtest_u`). The first attempt stopped at prompt 29: the board
-script's default timeout is 120 s.
+**The complete scripted test** of the live build (`hopcim_kwtest_u`, 65 prompts; new speech, not paired):
+- 48 of 50 keywords correct, against 48 / 47 / 42 for the earlier 20 / 40 / 80-ms runs;
+- 1 of 10 non-keywords and 0 of 5 quiet trials had a report;
+- 9 extra reports, against 32 / 35 / 28;
+- the median from prompt to report was 1.28 s, against 1.24 s at 40 ms;
+- overrun 0. Table in `LIVE_AUDIO.md` §9.
+
+The first attempt stopped at prompt 29: the board script's default timeout is 120 s.
 
 ## Files
 

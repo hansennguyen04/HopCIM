@@ -437,6 +437,32 @@ timeout (default 120 s; the test needs about 265 s). On those 28 trials:
 
 A complete run needs `board_run.sh … 330`.
 
+**The complete scripted test** (2026-11-22, `hopcim_kwtest_u_nexys_board_20261122_163007.uart.log`, timeout 330 s):
+829 decisions, 0 missed, overrun 0, CPU-active 825 cycles per decision (max 834). All four runs below are scored by
+`score_kwtest.py`, with one speaker in the same room:
+
+| | 20 ms, 5 in a row | 40 ms, 3 in a row | 80 ms, 2 in a row | **U**: 320 ms, sum of 2 |
+|---|---:|---:|---:|---:|
+| Keywords correct, of 50 | 48 | 47 | 42 | **48** |
+| Wrong keyword only, or nothing | 2, 0 | 2, 1 | 2, 6 | 1, 1 |
+| Non-keywords with a report, of 10 | 3 | 2 | 1 | 1 |
+| Quiet trials with a report, of 5 | 0 | 0 | 0 | 0 |
+| Reports other than the first of the prompted word | 32 | 35 | 28 | **9** |
+| Prompt to report, median (correct trials) | 1.23 s | 1.24 s | 1.20 s | 1.28 s |
+| Network runs per second | 50 | 25 | 12.5 | 3.1 |
+| Power [E] (`WHOLEWORD_STUDY.md`) | 97.0 µW | 68.8 µW | 54.7 µW | 44.2 µW |
+
+Each run is new speech, so these four are not paired. The paired comparison, the same speech scored for every design,
+is in `WHOLEWORD_STUDY.md`: U 93.1 against F40's 93.5 of 100 keywords.
+
+The 9 extra reports of U are of two kinds:
+- "no" just before "go" (3 times);
+- "up" just after "stop" or "off" (4 times);
+- plus "down" and "stop" on "dog".
+
+Both are confusions of the network that a single summed decision reports at once. The hold rules repeat a keyword
+more often instead.
+
 ## 10. The baseline S at 4.096 MHz (2026-11-08)
 
 With the baseline S in the sequencer (`BASELINE_S.md`), the worst hop falls from 97,583 to 80,072 cycles, under the
