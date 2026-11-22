@@ -1,0 +1,124 @@
+V1: S's schedule model 67841 cycles, layers [4533, 11273, 4531, 11273, 4531, 11273, 4531, 11273, 4531, 92] against the RTL's 67841, [4533, 11273, 4531, 11273, 4531, 11273, 4531, 11273, 4531, 92]: pass
+V4 (schedule): V's program with its order and tiles switched off gives S's events exactly: pass
+V: 67841 cycles, layers [4533, 11273, 4531, 11273, 4531, 11273, 4531, 11273, 4531, 92]; ACT hazards 0, working-tile hazards 0; 2304 row writes and store reads per inference; smallest slack of a group's last write before its first pass 1056 cycles (by layer {1: 1056, 3: 1056, 5: 1056, 7: 1056}); access counts as S: True
+G6: network 67841 <= 69198, worst hop 80072 - 67841 + 67841 = 80072 <= 81920: pass
+  broken 'tile in use': 5096 working-tile hazards (t4543: pass L1 g0 p0 on working tile 0: 63 rows hold another group), 2304 row writes
+  broken 'write skipped': 125 working-tile hazards (t24847: pass L3 g4 p0 on working tile 0: 63 rows hold another group), 2241 row writes
+  broken 'early write': 76 working-tile hazards (t5650: pass L1 g0 p123 on working tile 0: 5 writes land before it is done), 2304 row writes
+  500 of 4890 clips, 44 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 500, broken: write skipped 500, broken: early write 500
+  1000 of 4890 clips, 88 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 1000, broken: write skipped 1000, broken: early write 1000
+  1500 of 4890 clips, 132 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 1500, broken: write skipped 1500, broken: early write 1500
+  2000 of 4890 clips, 171 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 2000, broken: write skipped 2000, broken: early write 2000
+  2500 of 4890 clips, 211 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 2500, broken: write skipped 2500, broken: early write 2500
+  3000 of 4890 clips, 253 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 3000, broken: write skipped 3000, broken: early write 3000
+  3500 of 4890 clips, 291 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 3500, broken: write skipped 3500, broken: early write 3500
+  4000 of 4890 clips, 333 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 4000, broken: write skipped 4000, broken: early write 4000
+  4500 of 4890 clips, 374 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 4500, broken: write skipped 4500, broken: early write 4500
+  4890 of 4890 clips, 405 s: S 0, V 0, V, adversarial unused rows 0, S, adversarial unused rows 0, broken: tile in use 4890, broken: write skipped 4890, broken: early write 4890
+exactness: {"S": {"clips": 4890, "bad_clips": 0, "bad_values": 0, "bad_logit_clips": 0, "bit_plane_passes": 0}, "V": {"clips": 4890, "bad_clips": 0, "bad_values": 0, "bad_logit_clips": 0, "bit_plane_passes": 0}, "V, adversarial unused rows": {"clips": 4890, "bad_clips": 0, "bad_values": 0, "bad_logit_clips": 0, "bit_plane_passes": 0}, "S, adversarial unused rows": {"clips": 4890, "bad_clips": 0, "bad_values": 0, "bad_logit_clips": 0, "bit_plane_passes": 0}, "broken: tile in use": {"clips": 4890, "bad_clips": 4890, "bad_values": 200583187, "bad_logit_clips": 4890, "bit_plane_passes": 256}, "broken: write skipped": {"clips": 4890, "bad_clips": 4890, "bad_values": 98962592, "bad_logit_clips": 4890, "bit_plane_passes": 0}, "broken: early write": {"clips": 4890, "bad_clips": 4890, "bad_values": 2662419, "bad_logit_clips": 2955, "bit_plane_passes": 38}}
+V2: S through this replay, 4890 clips, 0 wrong values -> pass
+G1: V 0 wrong values on 4890 clips (0 with adversarial unused rows); broken variants caught {'tile in use': True, 'write skipped': True, 'early write': True} -> pass
+V3: S at U 44.106 uW, at 40 ms 68.785 uW (gate: 44.11, 68.78): pass
+V4: V, N7, FS, DIG with their change switched off against S, 19 variants, both rates: largest difference 0.0e+00 uW -> pass
+
+By part, baseline variant: leakage, uW, and energy of one inference, nJ:
+  part                      S       V       N7      FS      DIG   
+  weight cells                5.88    2.81    3.96    2.81    2.47
+  other SRAM                  4.07    4.34    4.07    4.34    4.34
+  CIM macro logic            22.20    8.88   14.71    8.88    8.88
+  digital logic               4.18    4.20    4.18    4.18    4.57
+  leakage total              36.33   20.23   26.92   20.22   20.26
+  energy per inference, nJ  1119.8  1157.8  1119.8  1275.1  1016.5
+
+Energy of one inference by part, nJ, baseline variant:
+  part                        S       V       N7      FS      DIG   
+  CIM array                   134.20  134.20  134.20  129.49   94.90
+  tile select                 169.06  169.06  169.06  102.43   91.33
+  ACT memory                  285.77  285.77  285.77  121.43  285.77
+  FEAT memory                   0.37    0.37    0.37    0.37    0.37
+  requant parameters          152.02  152.02  152.02  152.02  152.02
+  requant arithmetic          219.01  219.01  219.01  219.01  219.01
+  input and result registers    3.90    3.90    3.90    1.83    3.90
+  sequencer logic             155.49  155.49  155.49   94.60  155.49
+  gathers                       0.00    0.00    0.00  150.25    0.00
+  rewrites                      0.00   33.10    0.00  264.78    0.00
+  store reads                   0.00    4.86    0.00   38.91    4.86
+  digital unit                  0.00    0.00    0.00    0.00    8.89
+
+Total power, uW [E], baseline variant:
+  rate        S      V      N7     FS     DIG  
+  U (k = 16)  44.11  28.13  34.70  28.48  27.72
+  40 ms       68.78  53.63  59.37  56.55  50.14
+
+G2: V 28.13 against S 44.11 uW at U = 0.638 x (<= 0.80), 0.477..0.717 x over the variants, below S in all: True -> pass
+G3: V against N7 34.70 uW = 0.811 x (<= 0.90) -> pass
+G4: V against FS 28.48 uW: -0.352 uW (<= 0) -> pass
+G5: V against DIG 27.72 uW: +0.409 uW (<= 0) -> FAIL
+G7: V's cells and store 272384 bits against S's 565248 = 0.482 (<= 0.50) -> pass
+
+Every variant at U, uW [E] (V / S in the last column):
+  variant                    S       V       N7      FS      DIG     V / S
+  baseline                    44.11   28.13   34.70   28.48   27.72  0.638
+  alpha 0.25 (validated)      45.25   29.27   35.84   29.24   28.50  0.647
+  Colonnade array, 0.8 V      50.23   34.25   40.82   31.49   30.32  0.682
+  multipliers: Horowitz       42.97   26.99   33.56   27.34   26.66  0.628
+  logic activity 0.05         43.45   27.47   34.04   27.87   27.06  0.632
+  logic activity 0.2          45.42   29.44   36.01   29.69   29.03  0.648
+  6 -> 4 GE per LUT           43.37   27.39   33.96   27.76   26.98  0.632
+  6 -> 10 GE per LUT          45.58   29.60   36.17   29.91   29.19  0.649
+  logic leak 20 pW/GE         28.28   20.28   23.36   20.64   19.65  0.717
+  logic leak 100 pW/GE        70.49   41.20   53.59   41.54   41.17  0.585
+  SRAM 7.4 pW/bit (silicon)   40.46   25.23   31.60   25.58   24.92  0.624
+  SRAM 25 pW/bit              55.45   35.35   43.35   35.70   34.46  0.638
+  tiles per macro 1          327.68  156.30  225.86  156.86  147.25  0.477
+  tiles per macro 4          101.41   54.35   74.52   54.85   54.11  0.536
+  tiles per macro 8           61.59   36.73   47.18   37.18   36.43  0.596
+  tiles per macro 32          35.78   24.24   28.87   24.40   23.61  0.677
+  reuse: flat array           44.11   28.13   34.70   28.48   27.72  0.638
+  5.12 MHz clock              43.05   27.07   33.64   27.42   26.66  0.629
+  4.096 MHz clock             42.94   26.96   33.53   27.31   26.55  0.628
+
+Every variant at 40 ms, uW [E]:
+  variant                    S       V       N7      FS      DIG   
+  baseline                    68.78   53.63   59.37   56.55   50.14
+  alpha 0.25 (validated)      75.93   60.78   66.52   60.65   54.45
+  Colonnade array, 0.8 V     110.42   95.27  101.01   73.31   63.59
+  multipliers: Horowitz       64.35   49.20   54.94   52.12   46.39
+  logic activity 0.05         67.26   52.11   57.85   55.42   48.61
+  logic activity 0.2          71.83   56.68   62.42   58.82   53.18
+  6 -> 4 GE per LUT           67.63   52.48   58.22   55.59   48.99
+  6 -> 10 GE per LUT          71.08   55.93   61.67   58.48   52.43
+  logic leak 20 pW/GE         52.95   45.79   48.04   48.72   42.06
+  logic leak 100 pW/GE        95.17   66.71   78.26   69.62   63.59
+  SRAM 7.4 pW/bit (silicon)   65.14   50.74   56.28   53.65   47.34
+  SRAM 25 pW/bit              80.13   60.86   68.02   63.78   56.88
+  tiles per macro 1          348.66  178.11  246.84  182.69  167.67
+  tiles per macro 4          123.48   77.25   96.58   81.34   75.12
+  tiles per macro 8           84.53   60.49   70.12   64.20   57.91
+  tiles per macro 32          63.94   53.23   57.03   54.58   47.91
+  reuse: flat array           68.78   53.63   59.37   56.55   50.14
+  5.12 MHz clock              67.73   52.58   58.32   55.50   49.08
+  4.096 MHz clock             67.62   52.47   58.21   55.39   48.97
+
+Readings of the costing rules, baseline variant at U (not gated; V's readings against the frozen FS and DIG):
+  reading                                                 uW     V minus it  it minus FS / DIG
+  V, working-tile cells at 1 x                            27.95                -0.522 / +0.239
+  V, working-tile cells at 3 x                            28.30                -0.181 / +0.580
+  V, rewrites and store reads free                        28.01                -0.470 / +0.291
+  V, both kind readings at once                           27.84                -0.641 / +0.120
+  FS, tile select not scaled (narrow reading)             28.69      -0.560                   
+  FS, 8-bit passes                                        28.46      -0.336                   
+  FS, free gathers (lower bound)                          28.01      +0.118                   
+  FS, S's cycles (sequencer not credited)                 28.67      -0.542                   
+  FS, with V's 300 GE of control                          28.49      -0.367                   
+  FS, all kind readings at once                           27.99      +0.134                   
+  DIG, AND gates at 1.33 GE                               27.73      +0.398                   
+  DIG, a 63-byte weight register                          27.87      +0.258                   
+  DIG, weights from the store every cycle (32,000 reads)  27.91      +0.214                   
+  DIG, all unkind readings at once                        28.07      +0.051                   
+
+Over the 19 variants at U: V minus FS -0.56..+2.76 uW (FS lower in ['alpha 0.25 (validated)', 'Colonnade array, 0.8 V']); V minus DIG +0.04..+9.05 uW (DIG lower in 19 of 19)
+
+Network cycles per inference: S 67841, V 67841, N7 67841, FS 41273, DIG 67841 (FS: 4631 a depthwise layer, 9 cycles a pass; DIG: gather-bound, 9 ACT words per 7 channels as S)
+CIM storage area, mm^2 at 28 nm (cells and store; 1R1W cells at 2 x area): S 0.0965, V 0.0493, N7 0.0651, FS 0.0493, DIG 0.0437
+DIG size 7756 GE; FS: 2048 passes, 18432 row writes, 242944 gather bytes per inference
