@@ -28,6 +28,11 @@
 // in decisions keeps its duration: the keyword hold spans at least the same 80 ms (1 + ceil(4 / k)
 // decisions: 5, 3, 3, 2, 2 for k = 1 .. 5, then 2), the statistics, the LED times and the test's prompts
 // stay in seconds, and the test's @n stays in 20-ms units (hops).
+//
+// KW_SUM (default 0; COMPILER_FLAGS=-DKW_SUM=<n>): instead of the class of each decision, the rule uses the top
+// class of the last n decisions' logits summed (hopcim/sw/kw_rule.h), and reports a keyword as soon as it is that
+// top class (a hold of 1). The low-power mode U of docs/WHOLEWORD_STUDY.md is -DNET_K=16 -DKW_SUM=2: the network
+// every 320 ms, the sum of the last 2 decisions. LD14 still shows each decision's own class.
 
 #include <stdio.h>
 #include <stdint.h>
@@ -47,7 +52,15 @@
 #if (NET_K) < 1 || (NET_K) > 16
 #error "NET_K must be 1..16"
 #endif
+#ifndef KW_SUM
+#define KW_SUM 0                                     // > 0: decide on the last KW_SUM decisions' summed logits
+#endif
+#if (KW_SUM) > 0
+#include "../../../hw/ip/hopcim/sw/kw_rule.h"
+#define KW_HOLD   1                                  // the summed class reports a keyword at once
+#else
 #define KW_HOLD   (1 + (3 + (NET_K)) / (NET_K))      // decisions in a row (spanning >= 80 ms) to report a keyword
+#endif
 #define STAT_DEC  (500 / (NET_K))                    // statistics every 10 s
 #define LED_HOLD  (50 / (NET_K))                     // decisions a keyword stays on the LEDs (1 s)
 #define LED_BLINK (25 / (NET_K))                     // decisions per half period of LD0
@@ -184,7 +197,10 @@ int main(void) {
 
     CIM_REG(CIM_AUD_CTRL) = 0x3u | ((uint32_t)DS_T_CONV1 << 8) | ((uint32_t)((NET_K) - 1) << 16);   // microphone on, network on
     printf("HopCIM live: listening at 16 kHz (system clock %u Hz)\n", (unsigned)REFERENCE_CLOCK_Hz);
-#if (NET_K) > 1
+#if (KW_SUM) > 0
+    printf("network every %u hops (%u ms); a keyword is the top class of the last %u decisions' summed logits\n",
+           (unsigned)(NET_K), 20u * (NET_K), (unsigned)(KW_SUM));
+#elif (NET_K) > 1
     printf("network every %u hops (%u ms); a keyword needs %u decisions in a row\n", (unsigned)(NET_K), 20u * (NET_K), (unsigned)KW_HOLD);
 #endif
     printf("LEDs: LD10-LD13 keyword 1 (down) .. 10 (yes), LD14 not silence, LD0 blinks at 1 Hz\n");
@@ -215,6 +231,10 @@ int main(void) {
 #endif
 
     int last = -1, run = 0, said = -1, printed = 1;
+#if (KW_SUM) > 0
+    static kw_rule_t rule;
+    kw_rule_init(&rule);
+#endif
     uint32_t n_dec = 0, n_kw = 0, c_sum = 0, c_max = 0, c_n = 0, missed = 0, t_prev = 0;
     uint32_t hist[12] = {0}, kw_led = 0, kw_left = 0, blink = LED_BLINK, hb = 0;
     uint16_t prev_cnt = (uint16_t)(CIM_REG(CIM_AUD_STATUS) >> 16);
@@ -239,10 +259,21 @@ int main(void) {
         prev_cnt = cnt;
         int cls = (int)((st >> 4) & 0xFu);
         if (cls < 12) hist[cls]++;
+#if (KW_SUM) > 0
+        int8_t lg[12];
+        for (int c = 0; c < 12; c++) lg[c] = (int8_t)CIM_REG(CIM_LOGIT(c));
+        int kw = kw_rule_step(&rule, lg, KW_HOLD);   // the keyword to report, or -1
+        int say = kw >= 0;
+        (void)last;
+        (void)run;
+        (void)said;
+#else
         run = (cls == last) ? run + 1 : 1;
         last = cls;
         int say = (cls < 10) && (run == KW_HOLD) && (cls != said);
         if (cls >= 10) said = -1;
+        int kw = cls;
+#endif
         n_dec++;
         if (kw_left && --kw_left == 0) kw_led = 0;
         if (--blink == 0) {
@@ -250,16 +281,18 @@ int main(void) {
             hb ^= 1u;
         }
         if (say) {
+#if (KW_SUM) == 0
             said = cls;
+#endif
             n_kw++;
-            kw_led = (uint32_t)cls + 1u;
+            kw_led = (uint32_t)kw + 1u;
             kw_left = LED_HOLD;
         }
         leds(kw_led << 5 | (uint32_t)(cls != 10) << 9 | hb << 10);
 #ifdef KW_TEST
         uint32_t now = (n_dec + missed) * (NET_K);   // decisions since the start, in 20-ms units
         if (say) {
-            printf(">> %s @%u\n", LABEL[cls], (unsigned)now);
+            printf(">> %s @%u\n", LABEL[kw], (unsigned)now);
             printed = 1;
         }
         if (now >= next) {
@@ -288,7 +321,7 @@ int main(void) {
         }
 #else
         if (say) {
-            printf(">> %s\n", LABEL[cls]);
+            printf(">> %s\n", LABEL[kw]);
             printed = 1;
         }
         if (n_dec % STAT_DEC == 0) {

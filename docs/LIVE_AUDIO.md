@@ -394,6 +394,49 @@ keywords missed, nothing reported in the 3 other trials, and 0 false alarms.
 Bitstream `xheep_nexys_bscan_cim128k.bit` (FuseSoC build root `build_mick/core`, flags as in §6): 42,306
 LUT, 40,221 FF, 82 block RAM tiles, 146 DSP; system clock setup +15.10 ns, hold +0.229 ns.
 
+### The low-power mode U: the summed-logit rule (2026-11-22)
+
+`hopcim_live` and `hopcim_kwtest` also take `-DKW_SUM=<n>`.
+
+**The rule.** The firmware reads each decision's 12 logits and sums those of the last n decisions. It takes the top class
+of that sum, ties going to the lower class, and reports a keyword as soon as it becomes that class (a hold of 1). The
+code is `sw/kw_rule.h`. LD14 still shows each decision's own class.
+
+**Mode U** is `-DNET_K=16 -DKW_SUM=2`: the network every 320 ms, the sum of the last 2 decisions. It was chosen and
+tested in `WHOLEWORD_STUDY.md`, including 100 spoken keywords.
+
+**Checks:**
+- **The rule equals the scored one.** `model/test_kw_rule.py` compiles `sw/kw_rule.h` on the host and compares it with
+  `kwlog_analyse.apply_rule(("smooth", n, hold))`. It covers 479 cases (the spoken runs, the study's 21 test streams,
+  200,000 synthetic decisions with ties) with 0 differing, and catches all 3 of its broken copies.
+- **The default is unchanged.** The default builds (`KW_SUM` = 0; k = 1 and 2; live and test) give loadable images
+  identical to those before the change.
+
+**ELFs** in `planenest/hw`, for `xheep_nexys_bscan_cim128ks.bit` at 15.36 MHz:
+- `hopcim_live_u_nexys.elf` (sha256 `7c142486…`);
+- `hopcim_kwtest_u_nexys.elf` (sha256 `ac9cef7e…`).
+
+**At k = 16 the LEDs' integer timing rounds:**
+- LD0 toggles every decision, so it blinks at about 1.6 Hz;
+- a keyword stays on LD10–LD13 for 3 decisions (0.96 s).
+
+**Board** (2026-11-22; `xheep_nexys_bscan_cim128ks.bit`, 15.36 MHz; `hopcim_live_u_nexys_board_20261122_162128.uart.log`).
+This was the first board run at k = 16:
+- **Rate:** 31 decisions per 10 s (500 / 16 = 31.25) over 120 s, 0 missed, overrun 0.
+- **Keywords:** reported as spoken.
+- **CPU-active per decision:** 875 cycles (max 883), against 263 with the hold rule. The extra 610 cycles are the 12 logit
+  reads and the two 12-step loops of `kw_rule.h`, about 360 instructions. Per second that is 2,734 CPU-active cycles,
+  against 6,575 at 40 ms. Priced with the measured cycles, U is 44.16 µW [E] instead of 44.11.
+
+**The scripted test** `hopcim_kwtest_u_nexys.elf` stopped at prompt 29, because `board_run.sh` was started without a
+timeout (default 120 s; the test needs about 265 s). On those 28 trials:
+- 18 of 21 keywords were correct;
+- 1 of 5 non-keywords and 0 of 2 quiet trials had a report;
+- the median from prompt to report was 1.60 s, against 1.24 s at 40 ms in the run of 2026-11-07. That is other speech,
+  so it is not paired.
+
+A complete run needs `board_run.sh … 330`.
+
 ## 10. The baseline S at 4.096 MHz (2026-11-08)
 
 With the baseline S in the sequencer (`BASELINE_S.md`), the worst hop falls from 97,583 to 80,072 cycles, under the

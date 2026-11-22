@@ -212,6 +212,23 @@ when the word was said.
 
 Choosing between k = 15 and k = 16 needs a new frozen test.
 
+## U in the live firmware (2026-11-22)
+
+**How to build it.** `hopcim_live` (and `hopcim_kwtest`) built with `-DNET_K=16 -DKW_SUM=2` runs mode U on the S
+bitstream. Only the firmware changes. Details are in `LIVE_AUDIO.md` §9.
+
+**Checks:**
+- the rule in `sw/kw_rule.h` equals the one scored here: `model/test_kw_rule.py`, 479 cases, 0 differ, 3 of 3 broken copies caught;
+- the default builds are byte-identical to those before the change.
+
+**Board demo** (2026-11-22, the first run at k = 16):
+- 31 decisions per 10 s, 0 missed, overrun 0, keywords reported as spoken;
+- CPU-active 875 cycles per decision, which makes U 44.16 µW [E] instead of 44.11;
+- details in `LIVE_AUDIO.md` §9.
+
+**Still to do:** the complete scripted test (`hopcim_kwtest_u`). The first attempt stopped at prompt 29: the board
+script's default timeout is 120 s.
+
 ## Files
 
 | File | What it is |
@@ -220,6 +237,8 @@ Choosing between k = 15 and k = 16 needs a new frozen test.
 | `model/wholeword_report.txt`, `model/wholeword_results.json` | the report and every number above, including all 315 firmware-only options |
 | `model/energy_est.py wholeword` | the pricing (`ww_parts`, `ww_power`, `ww_check`); the default run of `energy_est.py` is unchanged (`energy_results.json` byte-identical) |
 | `model/wholeword_energy.txt`, `model/wholeword_energy.json` | power of every design in every variant |
+| `sw/kw_rule.h`, `sw/applications/hopcim_live/main.c` (`KW_SUM`) | U's rule in the firmware |
+| `model/test_kw_rule.py` | the firmware rule against the scored rule, on the host |
 
 **Reproduce** (about 50 core-minutes, then 10 minutes):
 
