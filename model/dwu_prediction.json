@@ -1,0 +1,97 @@
+{
+ "S": {
+  "cycles": 67841,
+  "segments": [
+   4533,
+   11273,
+   4531,
+   11273,
+   4531,
+   11273,
+   4531,
+   11273,
+   4531,
+   92
+  ]
+ },
+ "size_GE": {
+  "parts": {
+   "multipliers": 3998.4000000000005,
+   "adders": 1092.0,
+   "accumulators": 2426.2,
+   "weight_register": 4067.84,
+   "loader_and_control": 640.0
+  },
+  "total": 12224.44
+ },
+ "D1": {
+  "cycles": 67828,
+  "segments": [
+   4533,
+   11260,
+   4531,
+   11273,
+   4531,
+   11273,
+   4531,
+   11273,
+   4531,
+   92
+  ],
+  "dwu_passes": 1250,
+  "dwu_chunks": 11250,
+  "dwu_macs": 72000,
+  "store_reads": 99,
+  "wreg_writes": 99,
+  "engine_passes": 6251,
+  "act_reads": 42960,
+  "act_byte_writes": 64000,
+  "x_rows": 253064,
+  "requant": 72012,
+  "worst_hop": 80059,
+  "power_U_uW": 39.641181811395484,
+  "power_40_uW": 63.731205125370444,
+  "power_U_range": [
+   26.108864611395482,
+   283.31677867181196
+  ],
+  "leak_uW": 31.948960141711957,
+  "energy_nJ": 1092.9250288387182,
+  "break_even_GE_vs_V": null
+ },
+ "D4": {
+  "cycles": 67789,
+  "segments": [
+   4533,
+   11260,
+   4531,
+   11260,
+   4531,
+   11260,
+   4531,
+   11260,
+   4531,
+   92
+  ],
+  "dwu_passes": 5000,
+  "dwu_chunks": 45000,
+  "dwu_macs": 288000,
+  "store_reads": 369,
+  "wreg_writes": 369,
+  "engine_passes": 2501,
+  "act_reads": 42960,
+  "act_byte_writes": 64000,
+  "x_rows": 37064,
+  "requant": 72012,
+  "worst_hop": 80020,
+  "power_U_uW": 27.951375542376535,
+  "power_40_uW": 50.27523062539267,
+  "power_U_range": [
+   19.747250342376518,
+   147.484669502793
+  ],
+  "leak_uW": 20.51146361997283,
+  "energy_nJ": 1012.1859097091722,
+  "break_even_GE_vs_V": 15842.929152469309
+ }
+}
