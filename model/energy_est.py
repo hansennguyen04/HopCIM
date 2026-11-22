@@ -811,7 +811,68 @@ def main():
     return 0
 
 
+# ---------------------------------------------------------------- whole-word decisions (docs/WHOLEWORD_GATES.md)
+WW_LOGIC_GE = 600                                    # the whole-word test and run state, assumed by the gates
+
+
+def ww_parts():
+    """Per variant, from S priced by its RTL counters (energy_s_rtl.json): S's power with no inference P0 (uW) and its
+    energy per decision E (pJ, network + CPU) from P(k) = P0 + E / (20 ms k); the CPU's part is 263 cycles x 28 pJ."""
+    s = json.load(open(os.path.join(HERE, "energy_s_rtl.json")))
+    e_cpu = CPU_CYCLES_PER_DECISION * CPU_PJ_PER_CYCLE
+    over = dict(VARIANTS)
+    out = {}
+    for name, v in s["variants"].items():
+        p = {int(k): x for k, x in v["power_S_rtl_uW"].items()}
+        e = (p[1] - p[2]) * 2 * HOP_S * 1e6
+        p0 = p[1] - e / HOP_S * 1e-6
+        out[name] = dict(p0_uW=p0, e_net_pJ=e - e_cpu, e_cpu_pJ=e_cpu, s_uW=p,
+                         leak_pw_per_ge=over.get(name, {}).get("leak_pw_per_ge", ASSUME["leak_pw_per_ge"]))
+    return out
+
+
+def ww_power(parts, net_per_s, cpu_per_s, added_ge=0):
+    """Average power (uW) with this many network runs and CPU wakes per second, everything else as S."""
+    return (parts["p0_uW"] + (parts["e_net_pJ"] * net_per_s + parts["e_cpu_pJ"] * cpu_per_s) * 1e-6
+            + added_ge * parts["leak_pw_per_ge"] * 1e-6)
+
+
+def ww_check(parts):
+    """V4: the uniform rates k = 1, 2, 4 give S's own powers back, in every variant (k = 4 is the independent check)."""
+    return max(abs(ww_power(q, 1 / (HOP_S * k), 1 / (HOP_S * k)) - q["s_uW"][k]) for q in parts.values() for k in (1, 2, 4))
+
+
+def wholeword(out=print):
+    """Price the network runs and CPU wakes that model/wholeword.py measured (model/wholeword_results.json), in every
+    variant; writes model/wholeword_energy.json."""
+    parts = ww_parts()
+    err = ww_check(parts)
+    b = parts["baseline"]
+    out(f"V4: S's power at 20 / 40 / 80 ms from P0 = {b['p0_uW']:.2f} uW and E = {(b['e_net_pJ'] + b['e_cpu_pJ']) / 1000:.2f} nJ "
+        f"per decision: {' / '.join(f'{ww_power(b, 50 / k, 50 / k):.1f}' for k in (1, 2, 4))} uW; largest error over all "
+        f"variants {err:.2e} uW -> {'pass' if err < 1e-6 else 'FAIL'}")
+    res = json.load(open(os.path.join(HERE, "wholeword_results.json")))
+    table = {}
+    for vname, q in parts.items():
+        table[vname] = {}
+        for cand, sets in res["rates"].items():
+            ge = WW_LOGIC_GE if cand in ("A", "B") else 0
+            table[vname][cand] = {s: ww_power(q, r["net_per_hop"] / HOP_S, r["cpu_per_hop"] / HOP_S, ge) for s, r in sets.items()}
+    kinds = list(next(iter(res["rates"].values())))
+    out(f"\nAverage power, uW [E], baseline variant ({', '.join(kinds)}):")
+    tab([[c] + [f"{v:.1f}" for v in table["baseline"][c].values()] for c in res["rates"]], ["design"] + kinds)
+    out("\nEvery variant, on the word streams:")
+    cands = list(res["rates"])
+    tab([[vn] + [f"{table[vn][c]['words']:.1f}" for c in cands] for vn in table], ["variant"] + cands)
+    with open(os.path.join(HERE, "wholeword_energy.json"), "w") as f:
+        json.dump(dict(v4_err_uW=err, parts=parts, power_uW=table), f, indent=1, default=float)
+    return table
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "wholeword":
+        wholeword()
+        sys.exit(0)
     if len(sys.argv) > 1 and sys.argv[1] == "streamfuse":
         streamfuse()
         sys.exit(0)

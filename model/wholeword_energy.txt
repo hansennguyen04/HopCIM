@@ -1,0 +1,32 @@
+V4: S's power at 20 / 40 / 80 ms from P0 = 40.58 uW and E = 1128.15 nJ per decision: 97.0 / 68.8 / 54.7 uW; largest error over all variants 5.68e-14 uW -> pass
+
+Average power, uW [E], baseline variant (words, speech, noise, room):
+  design  words  speech  noise  room
+  F20      97.0    97.0   97.0  97.0
+  F40      68.8    68.8   68.8  68.8
+  F80      54.7    54.7   54.7  54.7
+  A        97.0    97.0   97.0  97.0
+  B        42.4    43.3   41.6  40.6
+  U        44.1    44.1   44.1  44.1
+
+Every variant, on the word streams:
+  variant                    F20    F40    F80    A      B      U    
+  baseline                    97.0   68.8   54.7   97.0   42.4   44.1
+  alpha 0.25 (validated)     111.0   75.9   58.4  111.0   43.2   45.2
+  Colonnade array, 0.8 V     179.2  110.4   76.0  179.2   46.1   50.2
+  multipliers: Horowitz       88.8   64.3   52.1   88.8   41.5   43.0
+  logic activity 0.05         94.5   67.3   53.7   94.5   41.8   43.5
+  logic activity 0.2         102.0   71.8   56.7  102.0   43.6   45.4
+  6 -> 4 GE per LUT           95.4   67.6   53.8   95.4   41.7   43.4
+  6 -> 10 GE per LUT         100.2   71.1   56.5  100.3   43.9   45.6
+  logic leak 20 pW/GE         81.2   53.0   38.9   81.2   26.6   28.3
+  logic leak 100 pW/GE       123.4   95.2   81.1  123.4   68.9   70.5
+  SRAM 7.4 pW/bit (silicon)   93.3   65.1   51.0   93.4   38.8   40.5
+  SRAM 25 pW/bit             108.3   80.1   66.0  108.4   53.8   55.4
+  tiles per macro 1          372.6  348.7  336.7  372.7  326.3  327.7
+  tiles per macro 4          148.7  123.5  110.9  148.7   99.9  101.4
+  tiles per macro 8          110.7   84.5   71.4  110.8   60.0   61.6
+  tiles per macro 32          96.1   63.9   47.9   96.2   33.9   35.8
+  reuse: flat array           97.0   68.8   54.7   97.0   42.4   44.1
+  5.12 MHz clock              95.9   67.7   53.6   96.0   41.4   43.0
+  4.096 MHz clock             95.8   67.6   53.5   95.9   41.3   42.9

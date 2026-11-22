@@ -1,0 +1,6369 @@
+{
+ "gate_doc_sha256": null,
+ "V1": {
+  "F20": {
+   "got": [
+    86.0,
+    430,
+    3
+   ],
+   "want": [
+    86.0,
+    430,
+    3
+   ],
+   "same": true
+  },
+  "F40": {
+   "got": [
+    87.0,
+    439,
+    8
+   ],
+   "want": [
+    87.0,
+    439,
+    8
+   ],
+   "same": true
+  },
+  "F80": {
+   "got": [
+    86.5,
+    362,
+    7
+   ],
+   "want": [
+    86.5,
+    362,
+    7
+   ],
+   "same": true
+  }
+ },
+ "V2": {
+  "checked": 210,
+  "differ": 0
+ },
+ "V3": {
+  "far_ambient_20261107": {
+   "problems": [],
+   "hop_max_every_hop": true,
+   "decisions_contiguous": true,
+   "firmware_rule_same": true,
+   "board_reports": 22
+  },
+  "far_ambient_20261107b": {
+   "problems": [],
+   "hop_max_every_hop": true,
+   "decisions_contiguous": true,
+   "firmware_rule_same": true,
+   "board_reports": 8
+  }
+ },
+ "V4": {
+  "max_err_uW": 5.684341886080802e-14,
+  "s_uW": {
+   "1": 96.98830736052545,
+   "2": 68.78451186098127,
+   "4": 54.68261411120919
+  }
+ },
+ "designs": {
+  "F20": {
+   "streams": {
+    "words": {
+     "recall": 0.8706777316735823,
+     "wrong": 0.05255878284923928,
+     "per_hour": 2.5,
+     "keywords": 1446,
+     "reports": 5.0,
+     "hours": 2.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": -20.0,
+     "lat_p10": -31.0,
+     "lat_p90": -6.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 482.0,
+     "keywords": 0,
+     "reports": 482.0,
+     "hours": 1.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "keywords": 0,
+     "reports": 2.0,
+     "hours": 1.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 30.0,
+    "hours": 8.382972222222222,
+    "per_hour": 3.578682978392045,
+    "per_hour_ci": [
+     2.41452237760789,
+     5.10879247354285
+    ],
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "power_uW": {
+    "words": 96.98830736052545,
+    "speech": 96.98830736052545,
+    "noise": 96.98830736052545,
+    "room": 96.98830736052545
+   }
+  },
+  "F40": {
+   "streams": {
+    "words": {
+     "recall": 0.8824343015214384,
+     "wrong": 0.050484094052558784,
+     "per_hour": 3.5,
+     "keywords": 1446,
+     "reports": 7.0,
+     "hours": 2.0,
+     "net_per_hop": 0.5,
+     "cpu_per_hop": 0.5,
+     "lat_med": -19.0,
+     "lat_p10": -31.0,
+     "lat_p90": -5.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 476.50000000000006,
+     "keywords": 0,
+     "reports": 476.5,
+     "hours": 1.0,
+     "net_per_hop": 0.5,
+     "cpu_per_hop": 0.5,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "keywords": 0,
+     "reports": 6.0,
+     "hours": 1.0,
+     "net_per_hop": 0.5,
+     "cpu_per_hop": 0.5,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 34.5,
+    "hours": 8.382972222222222,
+    "per_hour": 4.115485425150852,
+    "per_hour_ci": [
+     2.808787594709521,
+     5.66763086358031
+    ],
+    "net_per_hop": 0.5,
+    "cpu_per_hop": 0.5
+   },
+   "power_uW": {
+    "words": 68.78451186098127,
+    "speech": 68.78451186098127,
+    "noise": 68.78451186098127,
+    "room": 68.78451186098127
+   }
+  },
+  "F80": {
+   "streams": {
+    "words": {
+     "recall": 0.8781120331950207,
+     "wrong": 0.05186721991701245,
+     "per_hour": 2.875,
+     "keywords": 1446,
+     "reports": 5.75,
+     "hours": 2.0,
+     "net_per_hop": 0.25,
+     "cpu_per_hop": 0.25,
+     "lat_med": -18.0,
+     "lat_p10": -30.0,
+     "lat_p90": -4.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 386.25,
+     "keywords": 0,
+     "reports": 386.25,
+     "hours": 1.0,
+     "net_per_hop": 0.25,
+     "cpu_per_hop": 0.25,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 6.0,
+     "keywords": 0,
+     "reports": 6.0,
+     "hours": 1.0,
+     "net_per_hop": 0.25,
+     "cpu_per_hop": 0.25,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 30.75,
+    "hours": 8.382972222222222,
+    "per_hour": 3.6681500528518463,
+    "per_hour_ci": [
+     2.512592839483167,
+     5.2489766561083
+    ],
+    "net_per_hop": 0.25,
+    "cpu_per_hop": 0.25
+   },
+   "power_uW": {
+    "words": 54.68261411120919,
+    "speech": 54.68261411120919,
+    "noise": 54.68261411120919,
+    "room": 54.68261411120919
+   }
+  },
+  "A": {
+   "streams": {
+    "words": {
+     "recall": 0.838865836791148,
+     "wrong": 0.06016597510373444,
+     "per_hour": 1.0,
+     "keywords": 1446,
+     "reports": 2.0,
+     "hours": 2.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": 14.0,
+     "lat_p10": 1.0,
+     "lat_p90": 27.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 118.99999999999999,
+     "keywords": 0,
+     "reports": 119.0,
+     "hours": 1.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 2.0,
+     "keywords": 0,
+     "reports": 2.0,
+     "hours": 1.0,
+     "net_per_hop": 1.0,
+     "cpu_per_hop": 1.0,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 9.0,
+    "hours": 8.382972222222222,
+    "per_hour": 1.0736048935176135,
+    "per_hour_ci": [
+     0.4909205217773455,
+     2.0380365100255813
+    ],
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "power_uW": {
+    "words": 97.01830736052545,
+    "speech": 97.01830736052545,
+    "noise": 97.01830736052545,
+    "room": 97.01830736052545
+   }
+  },
+  "B": {
+   "streams": {
+    "words": {
+     "recall": 0.8291839557399724,
+     "wrong": 0.059474412171507604,
+     "per_hour": 0.5,
+     "keywords": 1446,
+     "reports": 1.0,
+     "hours": 2.0,
+     "net_per_hop": 0.032536476244532736,
+     "cpu_per_hop": 0.032536476244532736,
+     "lat_med": 14.0,
+     "lat_p10": 1.0,
+     "lat_p90": 27.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 110.0,
+     "keywords": 0,
+     "reports": 110.0,
+     "hours": 1.0,
+     "net_per_hop": 0.048295549397349,
+     "cpu_per_hop": 0.048295549397349,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 5.0,
+     "keywords": 0,
+     "reports": 5.0,
+     "hours": 1.0,
+     "net_per_hop": 0.016696969191506397,
+     "cpu_per_hop": 0.016696969191506397,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 11.0,
+    "hours": 8.382972222222222,
+    "per_hour": 1.31218375874375,
+    "per_hour_ci": [
+     0.655037404595049,
+     2.347859206920346
+    ],
+    "net_per_hop": 0.00022466176475461168,
+    "cpu_per_hop": 0.00022466176475461168
+   },
+   "power_uW": {
+    "words": 42.44602060599026,
+    "speech": 43.334951958919035,
+    "noise": 41.55255217051598,
+    "room": 40.62338899037652
+   }
+  },
+  "U": {
+   "streams": {
+    "words": {
+     "recall": 0.8562845781466113,
+     "wrong": 0.05294778699861687,
+     "per_hour": 1.5,
+     "keywords": 1446,
+     "reports": 3.0,
+     "hours": 2.0,
+     "net_per_hop": 0.0625,
+     "cpu_per_hop": 0.0625,
+     "lat_med": -11.0,
+     "lat_p10": -25.0,
+     "lat_p90": 6.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 121.0,
+     "keywords": 0,
+     "reports": 121.0,
+     "hours": 1.0,
+     "net_per_hop": 0.0625,
+     "cpu_per_hop": 0.0625,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    },
+    "noise": {
+     "recall": 0.0,
+     "wrong": 0.0,
+     "per_hour": 1.8125,
+     "keywords": 0,
+     "reports": 1.8125,
+     "hours": 1.0,
+     "net_per_hop": 0.0625,
+     "cpu_per_hop": 0.0625,
+     "lat_med": null,
+     "lat_p10": null,
+     "lat_p90": null
+    }
+   },
+   "room": {
+    "reports": 18.5,
+    "hours": 8.382972222222222,
+    "per_hour": 2.206854503341761,
+    "per_hour_ci": [
+     1.272572602843671,
+     3.393517181425998
+    ],
+    "net_per_hop": 0.0625,
+    "cpu_per_hop": 0.0625
+   },
+   "power_uW": {
+    "words": 44.10619079888013,
+    "speech": 44.10619079888013,
+    "noise": 44.10619079888013,
+    "room": 44.10619079888013
+   }
+  }
+ },
+ "rates": {
+  "F20": {
+   "words": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "speech": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "noise": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "room": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   }
+  },
+  "F40": {
+   "words": {
+    "net_per_hop": 0.5,
+    "cpu_per_hop": 0.5
+   },
+   "speech": {
+    "net_per_hop": 0.5,
+    "cpu_per_hop": 0.5
+   },
+   "noise": {
+    "net_per_hop": 0.5,
+    "cpu_per_hop": 0.5
+   },
+   "room": {
+    "net_per_hop": 0.5,
+    "cpu_per_hop": 0.5
+   }
+  },
+  "F80": {
+   "words": {
+    "net_per_hop": 0.25,
+    "cpu_per_hop": 0.25
+   },
+   "speech": {
+    "net_per_hop": 0.25,
+    "cpu_per_hop": 0.25
+   },
+   "noise": {
+    "net_per_hop": 0.25,
+    "cpu_per_hop": 0.25
+   },
+   "room": {
+    "net_per_hop": 0.25,
+    "cpu_per_hop": 0.25
+   }
+  },
+  "A": {
+   "words": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "speech": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "noise": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   },
+   "room": {
+    "net_per_hop": 1.0,
+    "cpu_per_hop": 1.0
+   }
+  },
+  "B": {
+   "words": {
+    "net_per_hop": 0.032536476244532736,
+    "cpu_per_hop": 0.032536476244532736
+   },
+   "speech": {
+    "net_per_hop": 0.048295549397349,
+    "cpu_per_hop": 0.048295549397349
+   },
+   "noise": {
+    "net_per_hop": 0.016696969191506397,
+    "cpu_per_hop": 0.016696969191506397
+   },
+   "room": {
+    "net_per_hop": 0.00022466176475461168,
+    "cpu_per_hop": 0.00022466176475461168
+   }
+  },
+  "U": {
+   "words": {
+    "net_per_hop": 0.0625,
+    "cpu_per_hop": 0.0625
+   },
+   "speech": {
+    "net_per_hop": 0.0625,
+    "cpu_per_hop": 0.0625
+   },
+   "noise": {
+    "net_per_hop": 0.0625,
+    "cpu_per_hop": 0.0625
+   },
+   "room": {
+    "net_per_hop": 0.0625,
+    "cpu_per_hop": 0.0625
+   }
+  }
+ },
+ "firmware_only": [
+  {
+   "rule": "1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9363762102351314,
+    "per_hour": 29.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2330.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 61.00000000000001
+   }
+  },
+  {
+   "rule": "1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9201244813278008,
+    "per_hour": 9.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1229.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 17.5
+   }
+  },
+  {
+   "rule": "1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.9100968188105117,
+    "per_hour": 7.625000000000001
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 974.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 11.75
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.901106500691563,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 942.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.0
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8993775933609959,
+    "per_hour": 6.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 766.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.5
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8781120331950207,
+    "per_hour": 2.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 386.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 791.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.0
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8824343015214384,
+    "per_hour": 3.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 476.50000000000006
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8559820193637621,
+    "per_hour": 1.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 161.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "4 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8803596127247579,
+    "per_hour": 2.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 603.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "4 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8696403872752421,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 283.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.5
+   }
+  },
+  {
+   "rule": "4 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8405947441217151,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 98.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8706777316735823,
+    "per_hour": 2.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 482.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8585753803596127,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 178.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8302213001383126,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 71.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "6 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.863762102351314,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 360.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "6 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8482019363762102,
+    "per_hour": 1.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 133.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "6 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8231327800829875,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 60.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "8 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8478561549100968,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 212.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "8 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.834716459197787,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 85.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "8 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8051521438450899,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 44.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "2 of last 3",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9197786998616874,
+    "per_hour": 16.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1585.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 35.0
+   }
+  },
+  {
+   "rule": "2 of last 3",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9004149377593361,
+    "per_hour": 6.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 783.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 9.0
+   }
+  },
+  {
+   "rule": "2 of last 3",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8798409405255878,
+    "per_hour": 3.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 400.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.75
+   }
+  },
+  {
+   "rule": "3 of last 4",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8948824343015215,
+    "per_hour": 5.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 891.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "3 of last 4",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8845089903181189,
+    "per_hour": 4.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 495.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.0
+   }
+  },
+  {
+   "rule": "3 of last 4",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8594398340248963,
+    "per_hour": 1.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 174.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "3 of last 5",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9100968188105117,
+    "per_hour": 9.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1275.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 23.0
+   }
+  },
+  {
+   "rule": "3 of last 5",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8855463347164592,
+    "per_hour": 4.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 505.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.5
+   }
+  },
+  {
+   "rule": "3 of last 5",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8606500691562933,
+    "per_hour": 1.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 180.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "4 of last 6",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8879668049792531,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 766.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 9.0
+   }
+  },
+  {
+   "rule": "4 of last 6",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8724066390041494,
+    "per_hour": 2.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 308.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.5
+   }
+  },
+  {
+   "rule": "4 of last 6",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8478561549100968,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 114.00000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "margin >= 10, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8125864453665284,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 324.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8167358229598893,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 245.99999999999997
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "margin >= 10, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7892461964038727,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 110.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6998616874135546,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 98.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.706777316735823,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 64.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6820539419087137,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 21.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.42531120331950206,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.4287690179806362,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.4026625172890733,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.029737206085753802,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.029391424619640387,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.02731673582295989,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8035961272475796,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 265.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7966804979253111,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 142.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7679806362378977,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 39.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.69432918395574,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 77.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6874135546334716,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 26.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6592323651452282,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 11.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.41286307053941906,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.4090594744121715,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.37655601659751037,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.027662517289073305,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.027662517289073305,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.023686030428769017,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.7842323651452282,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 148.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7683264177040111,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 44.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 10, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7430843706777317,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 21.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6666666666666666,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 29.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.661134163208852,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 11.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 20, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6312240663900415,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.37828492392807744,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.37586445366528354,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 40, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.3452627939142462,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.02351313969571231,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.024204702627939143,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "margin >= 80, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.017461964038727525,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9114799446749654,
+    "per_hour": 6.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 992.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 9.0
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.896957123098202,
+    "per_hour": 5.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 705.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8770746887966805,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 346.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.75
+   }
+  },
+  {
+   "rule": "sum of 2, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9004149377593361,
+    "per_hour": 3.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 817.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.0
+   }
+  },
+  {
+   "rule": "sum of 2, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8831258644536653,
+    "per_hour": 3.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 459.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "sum of 2, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8561549100968188,
+    "per_hour": 1.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 161.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.75
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9038727524204703,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 896.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 9.0
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8948824343015215,
+    "per_hour": 4.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 616.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8741355463347165,
+    "per_hour": 1.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 267.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.75
+   }
+  },
+  {
+   "rule": "sum of 3, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8990318118948825,
+    "per_hour": 4.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 778.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "sum of 3, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.882088520055325,
+    "per_hour": 3.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 422.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.5
+   }
+  },
+  {
+   "rule": "sum of 3, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8573651452282157,
+    "per_hour": 1.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 158.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.75
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9052558782849239,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 850.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.0
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8893499308437067,
+    "per_hour": 3.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 517.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8694674965421854,
+    "per_hour": 1.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 206.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "sum of 4, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8976486860304288,
+    "per_hour": 3.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 753.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.0
+   }
+  },
+  {
+   "rule": "sum of 4, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8807053941908713,
+    "per_hour": 2.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 386.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.5
+   }
+  },
+  {
+   "rule": "sum of 4, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8556362378976486,
+    "per_hour": 1.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 140.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 8, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 3.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 588.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "sum of 8, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8775933609958506,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 247.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.5
+   }
+  },
+  {
+   "rule": "sum of 8, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8535615491009682,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 94.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.25
+   }
+  },
+  {
+   "rule": "sum of 8, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8907330567081605,
+    "per_hour": 2.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 532.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.0
+   }
+  },
+  {
+   "rule": "sum of 8, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8727524204702628,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 214.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 8, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8464730290456431,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 87.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.25
+   }
+  },
+  {
+   "rule": "sum of 12, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8886583679114799,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 396.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.0
+   }
+  },
+  {
+   "rule": "sum of 12, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.867911479944675,
+    "per_hour": 1.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 141.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 12, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8333333333333334,
+    "per_hour": 1.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 62.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 12, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8858921161825726,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 373.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "sum of 12, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8634163208852006,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 127.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 12, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.825207468879668,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 56.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "sum of 16, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8817427385892116,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 261.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "sum of 16, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8582295988934993,
+    "per_hour": 2.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 99.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 16, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7786998616874136,
+    "per_hour": 4.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 28.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8782849239280774,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 251.00000000000003
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "sum of 16, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8540802213001383,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 96.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 16, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7717842323651453,
+    "per_hour": 3.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 26.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8658367911479945,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 498.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8454356846473029,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 280.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.825207468879668,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 107.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8603042876901799,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 422.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8378284923928078,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 205.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8137966804979253,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 74.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.822268326417704,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 272.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8001383125864454,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 147.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.77783540802213,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 50.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8125864453665284,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 222.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7904564315352697,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 103.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7657330567081605,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 36.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.710926694329184,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 73.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6915629322268326,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 27.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6666666666666666,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 12.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.7012448132780082,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 59.00000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6825726141078838,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 22.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 20, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.65283540802213,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 10.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8568464730290456,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 319.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8333333333333334,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 132.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8103388658367912,
+    "per_hour": 0.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 54.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8520055325034578,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 289.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8278008298755186,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 110.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 5, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8013485477178424,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 48.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8077455048409405,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 165.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7845781466113416,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 62.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7598547717842323,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 28.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8029045643153527,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 148.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7776625172890733,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 54.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 10, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7505186721991701,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 25.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6908713692946058,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 31.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6732365145228216,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 14.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6390041493775933,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 7.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6832641770401107,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 29.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6687413554633471,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 14.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, margin >= 20, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6296680497925311,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 5.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8416320885200553,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 134.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8153526970954357,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 56.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7083333333333334,
+    "per_hour": 1.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 10.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8409405255878285,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 129.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8136237897648686,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 53.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 5, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7021092669432918,
+    "per_hour": 1.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 9.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.7821576763485477,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 66.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7648686030428768,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 30.500000000000004
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6251728907330567,
+    "per_hour": 1.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 3.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.780774550484094,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 60.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.7617565698478561,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 30.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 10, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.6158367911479945,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6721991701244814,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 15.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6455739972337483,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.4216804979253112,
+    "per_hour": 1.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.6701244813278008,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 13.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.6414246196403873,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 7.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, margin >= 20, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.4116528354080221,
+    "per_hour": 0.875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 500, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.901106500691563,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 937.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.0
+   }
+  },
+  {
+   "rule": "level >= 500, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8993775933609959,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 762.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.5
+   }
+  },
+  {
+   "rule": "level >= 500, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8781120331950207,
+    "per_hour": 0.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 383.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.75
+   }
+  },
+  {
+   "rule": "level >= 500, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 786.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "level >= 500, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8824343015214384,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 473.99999999999994
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.0
+   }
+  },
+  {
+   "rule": "level >= 500, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8559820193637621,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 159.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 500, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8706777316735823,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 480.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 500, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8585753803596127,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 176.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 500, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8302213001383126,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 70.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.901106500691563,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 930.0000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8993775933609959,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 752.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.5
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8781120331950207,
+    "per_hour": 0.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 379.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.75
+   }
+  },
+  {
+   "rule": "level >= 1000, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 777.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8824343015214384,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 467.50000000000006
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8559820193637621,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 159.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8706777316735823,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 473.99999999999994
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8585753803596127,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 175.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8302213001383126,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 70.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8997233748271093,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 887.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8979944674965422,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 720.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8767289073305671,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 365.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8914246196403873,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 744.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8810511756569848,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 451.50000000000006
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8545988934993084,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 151.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8692946058091287,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 459.99999999999994
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.857192254495159,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 167.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.828838174273859,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 66.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8526970954356846,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 779.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.851313969571231,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 626.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 4000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8310857538035962,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 324.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 4000, 3 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8443983402489627,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 641.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 3 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8357538035961273,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 402.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 4000, 3 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.811030428769018,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 134.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 5 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8236514522821576,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 411.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 5 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8136237897648686,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 148.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 4000, 5 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7871715076071922,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 61.00000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 500, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 583.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 500, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8772475795297372,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 240.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.5
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 500, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8535615491009682,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 90.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 1000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.892807745504841,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 571.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 1000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8772475795297372,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 232.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 1000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8532157676348547,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 89.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 2000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8914246196403873,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 546.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 2000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8758644536652835,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 210.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 2000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8511410788381742,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 83.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 4000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8450899031811895,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 481.00000000000006
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 4000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8309128630705395,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 173.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 8, level >= 4000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8082641770401107,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 78.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 500, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8810511756569848,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 252.00000000000003
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 500, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8582295988934993,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 96.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 500, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7773167358229599,
+    "per_hour": 10.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 28.500000000000004
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 1000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8810511756569848,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 244.00000000000003
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 1000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.857192254495159,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 93.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 1000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7750691562932227,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 28.749999999999996
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 2000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8796680497925311,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 228.99999999999997
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 2000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8551175656984785,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 89.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 2000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7684993084370678,
+    "per_hour": 4.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 27.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 4000, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8333333333333334,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 185.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 4000, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8118948824343015,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 82.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 16, level >= 4000, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.7235477178423236,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 22.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8954011065006916,
+    "per_hour": 5.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 665.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.25
+   }
+  },
+  {
+   "rule": "1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8837021668971876,
+    "per_hour": 3.7916666666666665
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 495.33333333333337
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.083333333333333
+   }
+  },
+  {
+   "rule": "1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.874524550484094,
+    "per_hour": 3.09375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 394.9375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.875
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.851313969571231,
+    "per_hour": 1.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 136.125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.75
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8365029967727063,
+    "per_hour": 0.7916666666666666
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 80.91666666666667
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.8333333333333334
+   }
+  },
+  {
+   "rule": "2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8258990318118948,
+    "per_hour": 0.34375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 63.125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.25
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8299619640387276,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 67.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.375
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8106270170585523,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 51.666666666666664
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "3 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.6571576763485477,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 24.125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0625
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.921161825726141,
+    "per_hour": 7.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1193.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 13.0
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9107883817427386,
+    "per_hour": 7.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 962.0000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 13.0
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8960926694329184,
+    "per_hour": 4.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 625.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8795816044260027,
+    "per_hour": 2.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 291.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.0
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8661249423697557,
+    "per_hour": 2.291666666666667
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 170.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.0833333333333335
+   }
+  },
+  {
+   "rule": "sum of 2, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8562845781466113,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 121.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.8125
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8525242047026279,
+    "per_hour": 1.1875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 127.25000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8352351313969572,
+    "per_hour": 0.16666666666666666
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 83.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.75
+   }
+  },
+  {
+   "rule": "sum of 2, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8046334716459198,
+    "per_hour": 0.0625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 54.9375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.3125
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9190871369294605,
+    "per_hour": 8.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1234.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 16.0
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9038727524204703,
+    "per_hour": 5.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 774.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 8.0
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8872752420470262,
+    "per_hour": 3.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 418.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.5
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8677385892116183,
+    "per_hour": 2.3125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 152.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.375
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.854022591055786,
+    "per_hour": 1.6666666666666667
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 98.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 3, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.832252766251729,
+    "per_hour": 1.71875
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 69.0625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.875
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8479426002766252,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 98.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.25
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8215191332411249,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 60.833333333333336
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.25
+   }
+  },
+  {
+   "rule": "sum of 3, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7746369294605809,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 32.625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0625
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9107883817427386,
+    "per_hour": 5.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 953.0000000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 9.0
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8966113416320886,
+    "per_hour": 4.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 631.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 7.5
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8803596127247579,
+    "per_hour": 2.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 275.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 4.5
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8600449515905948,
+    "per_hour": 1.9375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 101.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.625
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8360419548178885,
+    "per_hour": 1.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 67.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.75
+   }
+  },
+  {
+   "rule": "sum of 4, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7825899031811895,
+    "per_hour": 2.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 33.5625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0625
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8446576763485477,
+    "per_hour": 0.5625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 82.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.75
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8011180267404334,
+    "per_hour": 0.7916666666666666
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 44.08333333333333
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7405342323651453,
+    "per_hour": 4.5625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 22.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8796680497925311,
+    "per_hour": 2.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 705.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8724066390041494,
+    "per_hour": 1.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 558.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.5
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8563278008298755,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 350.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.75
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8371369294605809,
+    "per_hour": 0.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 151.875
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.375
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8253803596127247,
+    "per_hour": 0.3333333333333333
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 88.83333333333334
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.16666666666666666
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8154823651452282,
+    "per_hour": 0.09375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 64.9375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.1875
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8748271092669433,
+    "per_hour": 1.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 596.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8568464730290456,
+    "per_hour": 1.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 402.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8333333333333334,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 185.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8104253112033195,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 71.125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7927616413093591,
+    "per_hour": 0.041666666666666664
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 46.666666666666664
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 5, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7469744121715076,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 26.375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8367911479944675,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 393.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8295297372060858,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 319.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8096473029045643,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 184.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.25
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.7881224066390041,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 74.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7764522821576764,
+    "per_hour": 0.041666666666666664
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 43.41666666666667
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7651279391424619,
+    "per_hour": 0.03125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 33.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8298755186721992,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 338.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.813969571230982,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 218.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.786134163208852,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 89.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.7626210235131397,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 33.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7425656984785616,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 23.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 2, margin >= 10, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.6846040802213001,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 11.8125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8713692946058091,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 569.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8561549100968188,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 353.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.8374827109266944,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 146.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8178596127247579,
+    "per_hour": 0.0625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 59.375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7840018441678193,
+    "per_hour": 0.2916666666666667
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 35.916666666666664
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.7104944674965422,
+    "per_hour": 1.375
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 13.5625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.7974585062240664,
+    "per_hour": 0.0625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 46.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7380705394190872,
+    "per_hour": 0.625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 19.666666666666668
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 5, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.6639004149377593,
+    "per_hour": 3.9375000000000004
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 8.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.8291839557399724,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 309.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.8115491009681881,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 186.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.789073305670816,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 69.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.7665110650069157,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 31.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.7226256339326879,
+    "per_hour": 0.20833333333333334
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 17.083333333333332
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.6299273858921162,
+    "per_hour": 0.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 4.4375
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.7460235131396957,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 23.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.6712194559704933,
+    "per_hour": 0.2916666666666667
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 8.666666666666668
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "sum of 4, margin >= 10, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.5739107883817427,
+    "per_hour": 3.40625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2.125
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9363762102351314,
+    "per_hour": 7.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2292.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 31.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9201244813278008,
+    "per_hour": 2.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1211.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 6.5
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.9100968188105117,
+    "per_hour": 1.75
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 959.2500000000001
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.0
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8954011065006916,
+    "per_hour": 1.0625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 654.875
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 3.875
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8837021668971876,
+    "per_hour": 0.7083333333333334
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 487.58333333333337
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.9166666666666665
+   }
+  },
+  {
+   "rule": "level >= 1000, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.874524550484094,
+    "per_hour": 0.53125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 388.5625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 2.3125
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.851313969571231,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 133.75
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.875
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8365029967727063,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 79.66666666666667
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.4166666666666667
+   }
+  },
+  {
+   "rule": "level >= 1000, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8258990318118948,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 62.68749999999999
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.125
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 1,
+   "power_uW": 96.98830736052545,
+   "words": {
+    "recall": 0.9343015214384509,
+    "per_hour": 0.5
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 2184.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 5.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 2,
+   "power_uW": 68.78451186098127,
+   "words": {
+    "recall": 0.9183955739972337,
+    "per_hour": 0.25
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 1152.0
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 4,
+   "power_uW": 54.68261411120919,
+   "words": {
+    "recall": 0.9085408022130014,
+    "per_hour": 0.125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 914.7499999999999
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 1.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8939315352697096,
+    "per_hour": 0.0625
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 626.875
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.75
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8822614107883817,
+    "per_hour": 0.041666666666666664
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 466.58333333333337
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.5
+   }
+  },
+  {
+   "rule": "level >= 2000, 1 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8730982019363762,
+    "per_hour": 0.03125
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 371.5625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.375
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 8,
+   "power_uW": 47.631665236323144,
+   "words": {
+    "recall": 0.8499308437067773,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 126.25
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 12,
+   "power_uW": 45.281348944694464,
+   "words": {
+    "recall": 0.8351198709082527,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 75.5
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  },
+  {
+   "rule": "level >= 2000, 2 in a row",
+   "k": 16,
+   "power_uW": 44.10619079888013,
+   "words": {
+    "recall": 0.8245159059474412,
+    "per_hour": 0.0
+   },
+   "speech": {
+    "recall": 0.0,
+    "per_hour": 60.625
+   },
+   "noise": {
+    "recall": 0.0,
+    "per_hour": 0.0
+   }
+  }
+ ],
+ "gates": {
+  "A": {
+   "G1": {
+    "value": 118.99999999999999,
+    "limit": 192.8,
+    "pass": true
+   },
+   "G2": {
+    "value": 83.8865836791148,
+    "limit": 83.06777316735823,
+    "pass": true
+   },
+   "G3": {
+    "value": 2.0,
+    "limit": 2.0,
+    "pass": true
+   },
+   "G4": {
+    "value": 1.0736048935176135,
+    "limit": 3.578682978392045,
+    "pass": true
+   },
+   "G6": {
+    "value": 83.8865836791148,
+    "r_star": 86.00449515905947,
+    "limit": 88.00449515905947,
+    "best": {
+     "rule": "sum of 4, 1 in a row",
+     "k": 8,
+     "recall": 86.00449515905947,
+     "speech": 101.25,
+     "noise": 1.625,
+     "power_uW": 47.631665236323144
+    },
+    "qualifying": 148,
+    "pass": false
+   }
+  },
+  "B": {
+   "G1": {
+    "value": 110.0,
+    "limit": 190.60000000000002,
+    "pass": true
+   },
+   "G2": {
+    "value": 82.91839557399724,
+    "limit": 84.24343015214384,
+    "pass": false
+   },
+   "G3": {
+    "value": 5.0,
+    "limit": 6.0,
+    "pass": true
+   },
+   "G4": {
+    "value": 1.31218375874375,
+    "limit": 4.115485425150852,
+    "pass": true
+   },
+   "G5": {
+    "value": 43.334951958919035,
+    "limit": 51.58838389573595,
+    "by_set": {
+     "words": 42.44602060599026,
+     "speech": 43.334951958919035,
+     "noise": 41.55255217051598,
+     "room": 40.62338899037652
+    },
+    "pass": true
+   },
+   "G6": {
+    "value": 82.91839557399724,
+    "r_star": 83.2252766251729,
+    "limit": 85.2252766251729,
+    "best": {
+     "rule": "sum of 3, 1 in a row",
+     "k": 16,
+     "recall": 83.2252766251729,
+     "speech": 69.0625,
+     "noise": 0.875,
+     "power_uW": 44.10619079888013
+    },
+    "qualifying": 17,
+    "pass": false
+   }
+  },
+  "U": {
+   "G1": {
+    "value": 121.0,
+    "limit": 190.60000000000002,
+    "pass": true
+   },
+   "G2": {
+    "value": 85.62845781466113,
+    "limit": 84.24343015214384,
+    "pass": true
+   },
+   "G3": {
+    "value": 1.8125,
+    "limit": 6.0,
+    "pass": true
+   },
+   "G4": {
+    "value": 2.206854503341761,
+    "limit": 4.115485425150852,
+    "pass": true
+   },
+   "G5": {
+    "value": 44.10619079888013,
+    "limit": 51.58838389573595,
+    "by_set": {
+     "words": 44.10619079888013,
+     "speech": 44.10619079888013,
+     "noise": 44.10619079888013,
+     "room": 44.10619079888013
+    },
+    "pass": true
+   }
+  }
+ },
+ "by_noise": {
+  "30": {
+   "F20": {
+    "words": {
+     "recall": 0.9163179916317992,
+     "per_hour": 7.5
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 525.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 3.0
+    }
+   },
+   "F40": {
+    "words": {
+     "recall": 0.9246861924686193,
+     "per_hour": 8.25
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 523.5
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 6.0
+    }
+   },
+   "F80": {
+    "words": {
+     "recall": 0.9236401673640168,
+     "per_hour": 7.5
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 416.25
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 6.75
+    }
+   },
+   "A": {
+    "words": {
+     "recall": 0.893305439330544,
+     "per_hour": 3.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 96.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 0.0
+    }
+   },
+   "B": {
+    "words": {
+     "recall": 0.8807531380753139,
+     "per_hour": 1.5
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 102.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 3.0
+    }
+   },
+   "U": {
+    "words": {
+     "recall": 0.9040271966527197,
+     "per_hour": 3.9375000000000004
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 104.8125
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 1.875
+    }
+   }
+  },
+  "100": {
+   "F20": {
+    "words": {
+     "recall": 0.8775510204081632,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 471.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 3.0
+    }
+   },
+   "F40": {
+    "words": {
+     "recall": 0.8918367346938776,
+     "per_hour": 2.25
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 468.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 7.5
+    }
+   },
+   "F80": {
+    "words": {
+     "recall": 0.8857142857142857,
+     "per_hour": 1.125
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 385.5
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 6.75
+    }
+   },
+   "A": {
+    "words": {
+     "recall": 0.8367346938775511,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 111.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 6.0
+    }
+   },
+   "B": {
+    "words": {
+     "recall": 0.8285714285714286,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 105.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 12.0
+    }
+   },
+   "U": {
+    "words": {
+     "recall": 0.8610969387755102,
+     "per_hour": 0.375
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 120.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 2.25
+    }
+   }
+  },
+  "300": {
+   "F20": {
+    "words": {
+     "recall": 0.8179916317991632,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 450.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 0.0
+    }
+   },
+   "F40": {
+    "words": {
+     "recall": 0.8305439330543933,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 438.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 4.5
+    }
+   },
+   "F80": {
+    "words": {
+     "recall": 0.8247907949790795,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 357.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 4.5
+    }
+   },
+   "A": {
+    "words": {
+     "recall": 0.7866108786610879,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 150.0
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 0.0
+    }
+   },
+   "B": {
+    "words": {
+     "recall": 0.7782426778242678,
+     "per_hour": 0.0
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 122.99999999999999
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 0.0
+    }
+   },
+   "U": {
+    "words": {
+     "recall": 0.8036087866108786,
+     "per_hour": 0.1875
+    },
+    "speech": {
+     "recall": 0.0,
+     "per_hour": 138.1875
+    },
+    "noise": {
+     "recall": 0.0,
+     "per_hour": 1.3125
+    }
+   }
+  }
+ },
+ "held_out": {
+  "F20": {
+   "recall": 0.8700084961767205,
+   "keywords": 1177
+  },
+  "F40": {
+   "recall": 0.8806287170773152,
+   "keywords": 1177
+  },
+  "F80": {
+   "recall": 0.877230246389125,
+   "keywords": 1177
+  },
+  "A": {
+   "recall": 0.8385726423109601,
+   "keywords": 1177
+  },
+  "B": {
+   "recall": 0.8292268479184367,
+   "keywords": 1177
+  },
+  "U": {
+   "recall": 0.856892523364486,
+   "keywords": 1177
+  }
+ },
+ "paired": {
+  "A vs F20": {
+   "only_first": 8,
+   "only_second": 54,
+   "p": 1.709326186236787e-09
+  },
+  "B vs F20": {
+   "only_first": 9,
+   "only_second": 69,
+   "p": 1.3812783597891096e-12
+  },
+  "B vs F40 phase 0": {
+   "only_first": 6,
+   "only_second": 80,
+   "p": 1.311109746589136e-17
+  },
+  "B vs F40 phase 1": {
+   "only_first": 5,
+   "only_second": 85,
+   "p": 7.532842063484042e-20
+  },
+  "U (each phase) vs F40 phase 0": {
+   "p_min": 1.312585595769633e-10,
+   "p_max": 0.0015503169494868645,
+   "only_U": [
+    3,
+    20,
+    3,
+    18,
+    3,
+    19,
+    4,
+    21,
+    6,
+    19,
+    9,
+    15,
+    7,
+    18,
+    6,
+    18
+   ],
+   "only_F40": [
+    45,
+    62,
+    38,
+    57,
+    41,
+    47,
+    42,
+    48,
+    41,
+    49,
+    38,
+    56,
+    38,
+    51,
+    37,
+    56
+   ]
+  }
+ }
+}

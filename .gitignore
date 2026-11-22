@@ -26,6 +26,7 @@ vivado*.log
 /syn/netlist/
 sim/regression.log
 /model/rule_sweep/
+/model/wholeword/
 /sim/cov/
 /sim/endpoint_nl.out
 /model/defines_run/pickles/
