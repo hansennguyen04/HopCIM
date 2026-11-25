@@ -1,0 +1,27 @@
+clip 0: class 0 (label 0), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 1: class 0 (label 0), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 2: class 1 (label 1), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 3: class 1 (label 1), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 4: class 2 (label 2), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 5: class 3 (label 3), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 6: class 3 (label 3), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 7: class 4 (label 4), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 8: class 4 (label 4), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 9: class 5 (label 5), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 10: class 6 (label 6), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 11: class 6 (label 6), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 12: class 7 (label 7), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 13: class 7 (label 7), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 14: class 8 (label 8), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 15: class 9 (label 9), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 16: class 9 (label 9), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 17: class 10 (label 10), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 18: class 10 (label 10), logits exact, sequencer 67909 cycles, CPU-active 9677
+clip 19: class 11 (label 11), logits exact, sequencer 67909 cycles, CPU-active 9677
+setup (61 tiles built and loaded, 640 parameter entries): 443532 cycles, once
+sequencer per inference (go -> interrupt): 67909..67909 cycles
+CPU-active per decision, whole window (147 FEAT words, go, wake, class and logits): 9677..9679 cycles, mean 9678
+CPU-active per decision, streaming step (3 FEAT words, go, wake, class and logits): 459..459 cycles
+wall per decision, whole window: max 77529 cycles
+60 runs (20 clips: FEAT in order, as a ring, streaming step): 0 with wrong logits or class; predictions = golden 20/20, = label 20/20
+HopCIM seq: 60 runs bit-exact -> PASS

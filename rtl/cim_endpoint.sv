@@ -47,13 +47,15 @@
 //   0x0_4000 FEAT      RW int8 features: row r (0..48) = off[9:4], word w = off[3:2] holds bytes
 //                         4w .. 4w+3 of the row (10 per row)
 //   0x0_5000 LOGITS    R  12 words: int8 logits of the last full run, sign-extended
+//   0x0_6000 DWSTORE   W  SEQ_DWU only: the digital depthwise unit's weight store, word w (0..359) bits [31:0]
+//                         at 0x6000 + 8w, bits [55:32] at 0x6004 + 8w (docs/DWU_GATES.md)
 //   0x0_8000 PARAMS    W  entry 64 L + c = off[13:4], field off[3:2]: 0 bias, 1 qm, 2 e = -shift
 //   0x1_0000 ACT       R  debug: activation of buffer off[15], position off[14:8], channel off[7:2]
 //   0x2_0000 WEIGHTS   W  128 KiB: tile = off[16:10], row = off[9:4], word = off[3:2]; 4 int8 per word
 // X and WEIGHTS writes are held for 10 cycles after a pass starts (the engine reads them then).
 // While cim_fe runs, CPU go, X and WEIGHTS writes are held; SAMPLES writes and all reads are
 // served (the front-end reads only the 480 samples of its frame). cim_fe uses tiles 0..5.
-// While the sequencer runs, CPU go, X, WEIGHTS, FEAT and PARAMS writes, ACT, FEAT and LRAW reads
+// While the sequencer runs, CPU go, X, WEIGHTS, FEAT, PARAMS and DWSTORE writes, ACT, FEAT and LRAW reads
 // and (with cim_fe) a front-end go are held; it overwrites both X banks. mfcc_ded (FE_DED) may run
 // meanwhile. Every SAMPLES write also updates the hop maximum, which a window path takes (R5b).
 
@@ -65,7 +67,9 @@ module cim_endpoint
     parameter int unsigned PDM_CLKDIV = 15,            // PDM clock = clk / 15 (1.024 MHz at 15.36 MHz)
     parameter bit          SEQ_S  = 1'b0,              // baseline S in the sequencer: sign-gated requantisation,
                                                        //   a second requantisation lane, no L8 write to ACT
-    parameter bit          SEQ_B1 = 1'b0               // with SEQ_S: StreamFuse B in block 1 (docs/STREAMFUSE_B1.md)
+    parameter bit          SEQ_B1 = 1'b0,              // with SEQ_S: StreamFuse B in block 1 (docs/STREAMFUSE_B1.md)
+    parameter int unsigned SEQ_DWU = 0                 // with SEQ_S: digital depthwise unit, 1 = L1, 4 = every
+                                                       //   depthwise layer (docs/DWU_GATES.md)
 ) (
     input  logic           clk_i,
     input  logic           rst_ni,
@@ -84,7 +88,7 @@ module cim_endpoint
 
   // ------------------------------------------------------------------ decode
   logic [17:0] off;
-  logic        is_w, is_x, is_reg, is_samp, is_lraw, is_feat, is_logit, is_prm, is_act;
+  logic        is_w, is_x, is_reg, is_samp, is_lraw, is_feat, is_logit, is_prm, is_act, is_dws;
   assign off      = obi_req_i.addr[17:0];
   assign is_w     = off[17];
   assign is_x     = (off[17:12] == 6'h01);
@@ -95,6 +99,7 @@ module cim_endpoint
   assign is_logit = (off[17:12] == 6'h05);
   assign is_prm   = (off[17:14] == 4'b0010);
   assign is_act   = (off[17:16] == 2'b01);
+  assign is_dws   = (off[17:12] == 6'h06);
 
   logic wr, go, fe_go, seq_go, data_wr, seq_mem, samp_rd, gnt;
   // live audio path (R7): AUD_CTRL and cim_audio's outputs
@@ -117,7 +122,7 @@ module cim_endpoint
   assign fe_go   = wr && is_reg && (off[7:0] == 8'h10) && obi_req_i.wdata[31];
   assign seq_go  = wr && is_reg && (off[7:0] == 8'h20) && obi_req_i.wdata[31];
   assign data_wr = wr && (is_x || is_w);
-  assign seq_mem = obi_req_i.req && (obi_req_i.we ? (is_feat || is_prm) : (is_act || is_feat || is_lraw));
+  assign seq_mem = obi_req_i.req && (obi_req_i.we ? (is_feat || is_prm || is_dws) : (is_act || is_feat || is_lraw));
   assign samp_rd = obi_req_i.req && !obi_req_i.we && is_samp;
   always_comb begin
     if (go)           gnt = obi_req_i.req && eng_ready && !fe_owns && !seq_busy;
@@ -248,7 +253,8 @@ module cim_endpoint
       .nhop_o     (aud_nhop)
   );
 
-  cim_seq #(.TW(TW), .XB(24), .RQ_SG(SEQ_S), .RQ_2L(SEQ_S), .NO_L8A(SEQ_S), .FUSE1(SEQ_S && SEQ_B1)) i_seq (
+  cim_seq #(.TW(TW), .XB(24), .RQ_SG(SEQ_S), .RQ_2L(SEQ_S), .NO_L8A(SEQ_S), .FUSE1(SEQ_S && SEQ_B1),
+            .DWU(SEQ_S ? SEQ_DWU : 0)) i_seq (
       .clk_i,
       .rst_ni,
       .start_i     ((gnt && seq_go && !aud_en) || aud_seq_go),
@@ -282,6 +288,10 @@ module cim_endpoint
       .prm_addr_i  (off[13:4]),
       .prm_field_i (off[3:2]),
       .prm_data_i  (obi_req_i.wdata),
+      .dws_we_i    (gnt && wr && is_dws),
+      .dws_word_i  (off[11:3]),
+      .dws_half_i  (off[2]),
+      .dws_data_i  (obi_req_i.wdata),
       .feat_rdata_o(feat_rdata),
       .act_re_i    (gnt && !obi_req_i.we && is_act),
       .act_buf_i   (off[15]),

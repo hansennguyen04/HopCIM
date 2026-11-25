@@ -70,6 +70,13 @@ M = [
      "  assign act_we  = q4_v && (lay != 4'd9) && l8_act;", ["seq", "cim", "b1"], "seq.b1_dw_not_to_act"),
     ("B1: L2 written to map 0", "cim_seq", "  assign act_wa  = {fz ? 1'b1 : wbuf, q4_d.p, q4_d.cg};", "  assign act_wa  = {fz ? 1'b0 : wbuf, q4_d.p, q4_d.cg};",
      ["seq", "cim", "b1"], "bench"),
+    # DWU (SEQ_DWU = 4): the digital depthwise unit (docs/DWU_GATES.md, R1)
+    ("DWU: the next group's taps loaded during the group's second-to-last vector", "cim_seq", "      g1_plast <= (g_p == 7'd124);",
+     "      g1_plast <= (g_p == 7'd123);", ["seq", "cim", "d4"], "bench"),
+    ("DWU: the two banks' accumulators swapped at the issue", "cim_seq", "      assign dwu_res[i] = acc[gb_q][i];",
+     "      assign dwu_res[i] = acc[!gb_q][i];", ["seq", "cim", "d4"], "bench"),
+    ("DWU: after group 9, group 0 of the same layer loaded", "cim_seq",
+     "    assign n_l  = (g1_g != 4'd9) ? blk : ((DWU == 4) ? blk + 2'd1 : 2'd0);", "    assign n_l  = blk;", ["seq", "cim", "d4"], "bench"),
 ]
 
 

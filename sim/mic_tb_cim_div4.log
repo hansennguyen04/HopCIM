@@ -109,7 +109,7 @@ ERROR: only -31332 ring samples left to check
 decisions: 100 of 101 wrong, 0 at a wrong hop; ring: 0 of -31332 samples wrong; 150 hops; last decision at cycle 20609820
 RESULT: 202 errors
 FAIL
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:188: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:208: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 206ms; walltime 49.522 s; speed 4.162 ms/s
-- Verilator: cpu 49.516 s on 1 threads; alloced 130 MB
+- Verilator: $finish at 206ms; walltime 49.244 s; speed 4.186 ms/s
+- Verilator: cpu 49.237 s on 1 threads; alloced 130 MB

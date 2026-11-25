@@ -1,0 +1,7 @@
+build: sim-dwu -> Vtestharness_cim_dwu (use_cim use_cim_s use_cim_dwu), log /home/hansen0411/APlus_Project/planenest/hw/x-heep-dwu/sim-dwu.build.log
+build: /home/hansen0411/APlus_Project/hopcim/sim/bin/Vtestharness_cim_dwu  sha256 7562d54d0dca19fe
+build: sim-dwu done in 281 s
+hardware s, firmware s: sequencer per inference (go -> interrupt): 67909..67909 cycles | HopCIM seq: 60 runs bit-exact -> PASS
+hardware s, firmware dwu: sequencer per inference (go -> interrupt): 67908..67908 cycles | HopCIM seq: 60 of 60 runs wrong -> FAIL
+hardware dwu, firmware s: sequencer per inference (go -> interrupt): 67857..67857 cycles | HopCIM seq: 60 of 60 runs wrong -> FAIL
+hardware dwu, firmware dwu: sequencer per inference (go -> interrupt): 67856..67856 cycles | HopCIM seq: 60 runs bit-exact -> PASS

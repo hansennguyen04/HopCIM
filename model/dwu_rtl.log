@@ -1,0 +1,26 @@
+D1: RTL 67828 cycles, layers [4533, 11260, 4531, 11273, 4531, 11273, 4531, 11273, 4531, 92]; model 67828, [4533, 11260, 4531, 11273, 4531, 11273, 4531, 11273, 4531, 92] -> equal
+D4: RTL 67789 cycles, layers [4533, 11260, 4531, 11260, 4531, 11260, 4531, 11260, 4531, 92]; model 67789, [4533, 11260, 4531, 11260, 4531, 11260, 4531, 11260, 4531, 92] -> equal
+counters per inference (RTL / model): dwu_passes 5000/5000, dwu_chunks 45000/45000, dwu_macs 288000/288000, store_reads 369/369, engine_passes 2501/2501, act_reads 42960/42960, act_byte_writes 64000/64000, x_rows 37064/37064, requant 72012/72012; engine passes on depthwise tiles: 0; run cycles saved against S 52 (benches 52) -> equal
+R2: pass (network 67789 <= 69198, equal to the model)
+R4: Vivado out of context, D4 against S on the same source: +1254 logic LUT, +0 LUTRAM, +0 SRL, +815 FF, +0 DSP, +0 RAMB36, +2 RAMB18 -> 12414 GE; by construction with the synthesised flip-flops 12170 GE -> 12414 <= 15,900: pass
+R5: D4 from its RTL counters, 12414 GE: 27.96 uW at U (S 44.11, swap-in 28.13; 0.634 x S), 50.28 at 40 ms (S 68.78); 19.75..147.49 over the variants; energy 1013.2 nJ (S 1120.8), leakage 20.52 uW (S 36.33) -> pass
+  variant                    S at U  D4 at U  D4 / S  S at 40 ms  D4 at 40 ms
+  baseline                    44.11    27.96   0.634       68.78        50.28
+  alpha 0.25 (validated)      45.25    28.77   0.636       75.93        54.77
+  Colonnade array, 0.8 V      50.23    30.56   0.608      110.42        63.74
+  multipliers: Horowitz       42.97    26.92   0.626       64.35        46.62
+  logic activity 0.05         43.45    27.30   0.628       67.26        48.76
+  logic activity 0.2          45.42    29.27   0.645       71.83        53.33
+  6 -> 4 GE per LUT           43.37    27.22   0.628       67.63        49.14
+  6 -> 10 GE per LUT          45.58    29.44   0.646       71.08        52.58
+  logic leak 20 pW/GE         28.28    19.75   0.698       52.95        42.07
+  logic leak 100 pW/GE        70.49    41.64   0.591       95.17        63.97
+  SRAM 7.4 pW/bit (silicon)   40.46    25.15   0.622       65.14        47.47
+  SRAM 25 pW/bit              55.45    34.72   0.626       80.13        57.05
+  tiles per macro 1          327.68   147.49   0.450      348.66       167.82
+  tiles per macro 4          101.41    54.35   0.536      123.48        75.27
+  tiles per macro 8           61.59    36.68   0.596       84.53        58.06
+  tiles per macro 32          35.78    23.85   0.667       63.94        48.06
+  reuse: flat array           44.11    27.96   0.634       68.78        50.28
+  5.12 MHz clock              43.05    26.90   0.625       67.73        49.23
+  4.096 MHz clock             42.94    26.80   0.624       67.62        49.12

@@ -41,6 +41,9 @@ static void load_net_tiles(void) {
     }
     for (int l = 0; l < 4; l++) {
         for (int g = 0; g < 10; g++) {                  // depthwise: block diagonal, 7 channels per tile, tap-major
+#if CIM_DWU
+            if (CIM_DWU == 4 || l == 0) continue;      // on the digital depthwise unit: from its store, below
+#endif
             for (int r = 0; r < 64; r++)
                 for (int n = 0; n < 16; n++) tbuf[r][n] = 0;
             for (int n = 0; n < 7 && 7 * g + n < 64; n++)
@@ -56,6 +59,9 @@ static void load_net_tiles(void) {
     for (int r = 0; r < 64; r++)                        // fully connected: rows = input, 12 columns
         for (int n = 0; n < 16; n++) tbuf[r][n] = n < 12 ? DS_W_FC[n][r] : 0;
     put_tile(DS_T_FC);
+#if CIM_DWU
+    cim_load_dwstore(DS_W_DW);
+#endif
 }
 
 // ---------------------------------------------------------------- sequencer parameters

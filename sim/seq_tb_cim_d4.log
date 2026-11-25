@@ -1,0 +1,59 @@
+loaded 61 network tiles and 640 parameter entries (FE_DED = 0, SEQ_S = 1, SEQ_B1 = 0, SEQ_DWU = 4)
+layer L0 (stop after it): 0 / 8000 mismatches, 4533 cycles from go
+layer L1 (stop after it): 0 / 8000 mismatches, 15793 cycles from go
+layer L2 (stop after it): 0 / 8000 mismatches, 20324 cycles from go
+layer L3 (stop after it): 0 / 8000 mismatches, 31584 cycles from go
+layer L4 (stop after it): 0 / 8000 mismatches, 36115 cycles from go
+layer L5 (stop after it): 0 / 8000 mismatches, 47375 cycles from go
+layer L6 (stop after it): 0 / 8000 mismatches, 51906 cycles from go
+layer L7 (stop after it): 0 / 8000 mismatches, 63166 cycles from go
+layer L8 (stop after it): 0 / 8000 mismatches, 67697 cycles from go
+  full clip  0: class  0 (golden  0), 67789 cycles go -> interrupt
+  full clip  1: class  0 (golden  0), 67789 cycles go -> interrupt
+  full clip  2: class  1 (golden  1), 67789 cycles go -> interrupt
+  full clip  3: class  1 (golden  1), 67789 cycles go -> interrupt
+  full clip  4: class  2 (golden  2), 67789 cycles go -> interrupt
+  full clip  5: class  3 (golden  3), 67789 cycles go -> interrupt
+  full clip  6: class  3 (golden  3), 67789 cycles go -> interrupt
+  full clip  7: class  4 (golden  4), 67789 cycles go -> interrupt
+  full clip  8: class  4 (golden  4), 67789 cycles go -> interrupt
+  full clip  9: class  5 (golden  5), 67789 cycles go -> interrupt
+  full clip 10: class  6 (golden  6), 67789 cycles go -> interrupt
+  full clip 11: class  6 (golden  6), 67789 cycles go -> interrupt
+  full clip 12: class  7 (golden  7), 67789 cycles go -> interrupt
+  full clip 13: class  7 (golden  7), 67789 cycles go -> interrupt
+  full clip 14: class  8 (golden  8), 67789 cycles go -> interrupt
+  full clip 15: class  9 (golden  9), 67789 cycles go -> interrupt
+  full clip 16: class  9 (golden  9), 67789 cycles go -> interrupt
+  full clip 17: class 10 (golden 10), 67789 cycles go -> interrupt
+  full clip 18: class 10 (golden 10), 67789 cycles go -> interrupt
+  full clip 19: class 11 (golden 11), 67789 cycles go -> interrupt
+  ring frame0@17 clip  1: class  0 (golden  0), 67789 cycles go -> interrupt
+interplay checks done
+synthetic parameters, layer L0: 0 / 8000 mismatches
+synthetic parameters, layer L1: 0 / 8000 mismatches
+synthetic parameters, layer L2: 0 / 8000 mismatches
+synthetic parameters, layer L3: 0 / 8000 mismatches
+synthetic parameters, layer L4: 0 / 8000 mismatches
+synthetic parameters, layer L5: 0 / 8000 mismatches
+synthetic parameters, layer L6: 0 / 8000 mismatches
+synthetic parameters, layer L7: 0 / 8000 mismatches
+synthetic parameters, layer L8: 0 / 8000 mismatches
+synthetic parameters, logits and class: 0 errors
+synthetic parameters 2 (zero point -128), layer L0: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L1: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L2: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L3: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L4: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L5: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L6: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L7: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), layer L8: 0 / 8000 mismatches
+synthetic parameters 2 (zero point -128), logits and class: 0 errors
+engine contract: 0 violations
+RESULT: 0 errors; full inference 67789..67789 cycles (go -> interrupt) = 4.52..4.52 ms at 15 MHz
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv:451: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 35ms; walltime 8.883 s; speed 3.944 ms/s
+- Verilator: cpu 8.881 s on 1 threads; alloced 130 MB

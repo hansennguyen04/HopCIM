@@ -10,7 +10,7 @@ PKG="$HOME/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_ob
 ALLRTL=(rtl/cim_engine.sv rtl/cim_fe.sv rtl/mfcc_ded.sv rtl/cim_log2fix16.sv rtl/cim_seq.sv rtl/pdm_dec.sv rtl/cim_audio.sv rtl/cim_endpoint.sv)
 OUT="${OUT:-$ROOT/sim/cov}"; mkdir -p "$OUT"
 one() {
-  local sq=0 b1=0 a; local args=(); for a in "$@"; do if [ "$a" = s ]; then sq=1; elif [ "$a" = b1 ]; then sq=1; b1=1; else args+=("$a"); fi; done; set -- "${args[@]}"
+  local sq=0 b1=0 dwu=0 a; local args=(); for a in "$@"; do if [ "$a" = s ]; then sq=1; elif [ "$a" = b1 ]; then sq=1; b1=1; elif [ "$a" = d1 ]; then sq=1; dwu=1; elif [ "$a" = d4 ]; then sq=1; dwu=4; else args+=("$a"); fi; done; set -- "${args[@]}"
   local bench="$1" mode="${2:-cim}" div="${3:-15}" k="${4:-1}" tag top
   local ded=0; [ "$mode" = ded ] && ded=1
   local files=() gens=() defs=() tb
@@ -25,6 +25,7 @@ one() {
     *) echo "unknown bench $bench"; return 2 ;;
   esac
   if [ "$b1" = 1 ]; then gens+=(-GS=1 -GB1=1); tag="${tag}_b1"                # S with StreamFuse B in block 1
+  elif [ "$dwu" != 0 ]; then gens+=(-GS=1 -GDWU=$dwu); tag="${tag}_d$dwu"   # S with the digital depthwise unit
   elif [ "$sq" = 1 ]; then gens+=(-GS=1); tag="${tag}_s"; fi               # the baseline S (SEQ_S = 1)
   tag="$tag${TAGSUF:-}"
   [ -n "${EXTRA_RTL:-}" ] && files=($EXTRA_RTL)

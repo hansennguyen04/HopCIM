@@ -13,6 +13,9 @@
 //      multipliers, no ReLU clamp): every layer and the logits of clip 0;
 //   6. the same with zero point -128 (the baseline S's sign gate is active) and acc + bias = -1, 0,
 //      +1 at one position of every channel: every layer and the logits of clip 0.
+// DWU (digital depthwise unit, SEQ_DWU = 1 or 4): the unit's store is written from the depthwise tiles of
+// tiles.hex, and those tiles are then overwritten in the engine with a garbage pattern, so a depthwise
+// layer on the unit is right only if it never uses the engine.
 // B1 (StreamFuse B in block 1, SEQ_B1): L1 never reaches ACT, so its outputs are taken from the
 // sequencer's fusion-vector writes (a monitor; not in NETLIST runs); L2..L8 are in the other map.
 // A monitor checks the engine contract throughout: no wide-port write to an X bank in the 8
@@ -28,7 +31,8 @@
 module tb_cim_seq #(
     parameter bit DED = 1'b0,
     parameter bit S   = 1'b0,                           // the baseline S in the sequencer (SEQ_S)
-    parameter bit B1  = 1'b0                            // with S: StreamFuse B in block 1 (SEQ_B1)
+    parameter bit B1  = 1'b0,                           // with S: StreamFuse B in block 1 (SEQ_B1)
+    parameter int DWU = 0                               // with S: digital depthwise unit (SEQ_DWU)
 );
   import xheep_obi_pkg::*;
   localparam logic [31:0] BASE = 32'hC004_0000;
@@ -46,7 +50,7 @@ module tb_cim_seq #(
       .\obi_rsp_o[gnt] (rsp.gnt), .\obi_rsp_o[rvalid] (rsp.rvalid), .\obi_rsp_o[rdata] (rsp.rdata), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `else
-  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
+  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1), .SEQ_DWU(DWU)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 `endif
 `ifdef QUICK
@@ -269,11 +273,28 @@ module tb_cim_seq #(
           wr(BASE + 32'h2_0000 + (32'(T0 + t) << 10) + (32'(r) << 4) + (32'(q) << 2), tiles[t * 256 + r * 4 + q]);
     for (int e = 0; e < 640; e++)
       for (int f = 0; f < 3; f++) wr(BASE + 32'h8000 + (32'(e) << 4) + (32'(f) << 2), params[e * 3 + f]);
+    if (DWU != 0) begin                               // DWU: the store from the depthwise tiles, then garbage tiles
+      for (int l = 0; l < 4; l++)
+        for (int g = 0; g < 10; g++)
+          for (int k = 0; k < 9; k++) begin
+            logic [55:0] w = '0;
+            for (int i = 0; i < 7; i++)
+              if (7 * g + i < 64) w[8 * i +: 8] = wt(T0 + 4 + 14 * l + g, 7 * k + i, i);
+            wr(BASE + 32'h6000 + 32'(8 * ((10 * l + g) * 9 + k)), w[31:0]);
+            wr(BASE + 32'h6004 + 32'(8 * ((10 * l + g) * 9 + k)), {8'd0, w[55:32]});
+          end
+      for (int l = 0; l < ((DWU == 4) ? 4 : 1); l++)
+        for (int g = 0; g < 10; g++)
+          for (int r = 0; r < 64; r++)
+            for (int q = 0; q < 4; q++)
+              wr(BASE + 32'h2_0000 + (32'(T0 + 4 + 14 * l + g) << 10) + (32'(r) << 4) + (32'(q) << 2),
+                 32'h5A3C_96E1 ^ (32'(r * 4 + q) * 32'h9E37_79B1));
+    end
     wr(BASE + 32'h28, meta[1]);
     wr(BASE + 32'h08, 32'h4);                         // IRQ_EN: sequencer done
     rd(BASE + 32'h28, d);
     if (d !== meta[1]) begin $display("ERROR: SEQ_ZP reads 0x%08h", d); errors++; end
-    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d, SEQ_S = %0d, SEQ_B1 = %0d)", NT, DED, S, B1);
+    $display("loaded %0d network tiles and 640 parameter entries (FE_DED = %0d, SEQ_S = %0d, SEQ_B1 = %0d, SEQ_DWU = %0d)", NT, DED, S, B1, DWU);
 `ifdef ALLCLIPS
     begin
       int bad_clips = 0, e0;

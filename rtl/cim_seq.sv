@@ -56,6 +56,19 @@
 //   waits until the word it replaces (raster word - 128) has had its last read, by comparing the
 //   gather's position with that word's last reader. The fusion vector needs no overwrite check:
 //   PW(p - 2) is gathered before DW(p) is.
+//
+// Option DWU (digital depthwise unit, docs/DWU_GATES.md; built with S, not with FUSE1): the depthwise
+//   layers on the unit (DWU = 1: L1; DWU = 4: L1, L3, L5, L7) run group by group (for g: for p) and
+//   do not use the engine. Each gathered chunk (tap k, the group's 7 channels x = v - zin, 0 for
+//   padding and for lanes beyond the group's channels) is multiplied in stage G1 by the 7 weights of
+//   tap k of the group and added into the 7 accumulators of the chunk's X bank (chunk 0 replaces); the
+//   engine's X bank is not written. A pass goes to the unit, which is always ready and gives done one
+//   cycle after the issue, with the 7 sums of the pass's bank. Weights: a 63-byte register (tap k in
+//   wreg[k], lane i = channel 7 g + i) filled from a 360 x 56-bit store, word (10 l + g) 9 + k = tap k
+//   of group g of depthwise layer l (group 9: byte 0), written by the CPU while the sequencer is
+//   idle. When the network starts, the 9 taps of group 0 of L1 are loaded; when chunk k of a group's
+//   last vector (p = 124) is multiplied, tap k of the next group is read and written the cycle after
+//   (next: g + 1; after g = 9 group 0 of the next layer on the unit, after the last one of L1).
 
 module cim_seq #(
     parameter int unsigned TW = 7,                   // engine tile index width
@@ -63,7 +76,8 @@ module cim_seq #(
     parameter bit          RQ_SG  = 1'b0,
     parameter bit          RQ_2L  = 1'b0,
     parameter bit          NO_L8A = 1'b0,
-    parameter bit          FUSE1  = 1'b0             // B1: L1 -> L2 fused (see above)
+    parameter bit          FUSE1  = 1'b0,            // B1: L1 -> L2 fused (see above)
+    parameter int unsigned DWU    = 0                // digital depthwise unit: 0 off, 1 L1, 4 every depthwise layer
 ) (
     input  logic               clk_i,
     input  logic               rst_ni,
@@ -102,6 +116,10 @@ module cim_seq #(
     input  logic [1:0]         prm_field_i,
     /* verilator lint_off UNUSEDSIGNAL */
     input  logic [31:0]        prm_data_i,           // bias [23:0], qm [30:0], e [3:0]
+    input  logic               dws_we_i,             // DWU: store word dws_word_i, bits [31:0] (half 0) or [55:32]
+    input  logic [8:0]         dws_word_i,
+    input  logic               dws_half_i,
+    input  logic [31:0]        dws_data_i,
     /* verilator lint_on UNUSEDSIGNAL */
     output logic [31:0]        feat_rdata_o,         // FEAT word at feat_addr_i, the cycle after (CPU)
     input  logic               act_re_i,             // ACT read of buffer, position, channel
@@ -193,6 +211,14 @@ module cim_seq #(
   logic          wp_only_q, wp_frame_q;
   logic          fz;                                 // FUSE1: the fused segment (L1 and L2, lay = 1)
   logic          swp;                                // FUSE1: L3..L8 use the maps the other way round
+  logic          du;                                 // DWU: a depthwise layer on the unit
+  /* verilator lint_off UNUSEDSIGNAL */            // DWU only
+  logic          net_start;                          // the network's first layer starts
+  /* verilator lint_on UNUSEDSIGNAL */
+
+  if ((DWU != 0) && (FUSE1 || !RQ_2L || ((DWU != 1) && (DWU != 4)))) begin : g_dwu_cfg
+    $error("cim_seq: DWU is 1 or 4, built with S (RQ_2L) and without FUSE1");
+  end
 
   always_comb begin
     if (lay == 4'd0)      lt = T_CONV1;
@@ -202,6 +228,7 @@ module cim_seq #(
   end
   assign fz   = FUSE1 && (lay == 4'd1);
   assign swp  = FUSE1 && (lay >= 4'd3);
+  assign du   = (DWU != 0) && (lt == T_DW) && ((DWU == 4) || (lay == 4'd1));
   assign blk  = 2'((lay - 4'd1) >> 1);
   assign t14  = TW'({blk, 4'd0}) - TW'({blk, 1'b0});
   assign rbuf = swp ? lay[0] : !lay[0];
@@ -219,6 +246,7 @@ module cim_seq #(
   assign fin       = ((stop_q != 4'd0) && ((lay == stop_q - 4'd1) || (fz && (stop_q == 4'd3)))) || (lay == 4'd9);
   assign lay_end   = net_on && front_done && back_idle;
   assign lay_start = (start_i && !run && !wp_i) || (lay_end && !fin) || (wp_fin && !wp_only_q);
+  assign net_start = (start_i && !run && !wp_i) || (wp_fin && !wp_only_q);
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -596,7 +624,20 @@ module cim_seq #(
         g_fx  <= 2'd0;
         g_b   <= !g_b;
         if (g_lastv) g_on <= 1'b0;
-        if ((gk == T_DW) && (g_g != 4'd9)) g_g <= g_g + 4'd1;
+        if (du) begin                                 // DWU: group by group, DW(124, g) -> DW(0, g + 1)
+          if (g_p == 7'd124) begin
+            g_p  <= 7'd0;
+            g_oy <= 5'd0;
+            g_ox <= 3'd0;
+            g_g  <= g_g + 4'd1;
+          end else begin
+            g_p <= g_p + 7'd1;
+            if (g_ox == 3'd4) begin
+              g_ox <= 3'd0;
+              g_oy <= g_oy + 5'd1;
+            end else g_ox <= g_ox + 3'd1;
+          end
+        end else if ((gk == T_DW) && (g_g != 4'd9)) g_g <= g_g + 4'd1;
         else if (fz && !g_pw && (g_p != 7'd0)) begin  // fused: DW(p, 9) -> PW(p - 1)
           g_g  <= 4'd0;
           g_pw <= 1'b1;
@@ -724,6 +765,10 @@ module cim_seq #(
   logic [1:0]  g1_ix0;
   logic signed [15:0] g1_pool;
   logic signed [8:0]  gx [8];
+  /* verilator lint_off UNUSEDSIGNAL */            // DWU only
+  logic [3:0]  g1_k, g1_g;                           // DWU: the chunk's tap and group,
+  logic        g1_plast;                             //   its vector is the group's last (p = 124)
+  /* verilator lint_on UNUSEDSIGNAL */
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) g1_v <= 1'b0;
@@ -741,6 +786,9 @@ module cim_seq #(
       g1_pool <= pool_rd;
       g1_kind <= gk;
       g1_fz   <= fz;
+      g1_k    <= g_k[3:0];
+      g1_g    <= g_g;
+      g1_plast <= (g_p == 7'd124);
     end
   end
 
@@ -783,7 +831,7 @@ module cim_seq #(
   end
 
   // engine wide port: the window path writes one row per cycle, the network gather up to 8
-  assign xw_we_o   = wp_on ? ld_v : g2_v;
+  assign xw_we_o   = wp_on ? ld_v : (g2_v && !du);   // DWU: the unit's chunks do not go to the engine
   assign xw_bank_o = wp_on ? 1'b0 : g2_b;
   assign xw_row_o  = wp_on ? ld_n : g2_row;
   assign xw_mask_o = wp_on ? (8'd1 << ld_n[2:0]) : g2_mask;
@@ -802,10 +850,10 @@ module cim_seq #(
   tag_t          i_tag;
 
   assign i_full  = bfull[i_b] || (g2_v && g2_last && (g2_b == i_b));
-  assign issue   = i_on && i_full && eng_ready_i && (pace == 5'd0) && (tq_cnt != 3'd4);
+  assign issue   = i_on && i_full && (du || eng_ready_i) && (pace == 5'd0) && (tq_cnt != 3'd4);
   assign i_lastp = (i_j == (fz ? (vm_pw[i_b] ? 2'd3 : 2'd0) : npass_m1));
   logic [TW-1:0] n_tile;                             // the network's pass tile
-  assign go_o    = wp_on ? wp_go : issue;
+  assign go_o    = wp_on ? wp_go : (issue && !du);   // DWU: the unit's passes do not start the engine
   assign tile_o  = wp_on ? wp_tile : n_tile;
   assign xbank_o = wp_on ? 1'b0 : i_b;
   assign xbits_o = wp_on ? 5'(WP_B_DCT) : 5'd9;
@@ -906,7 +954,12 @@ module cim_seq #(
   logic [4:0]  d_ix0, d_ix1;                         // RQ_2L: parameter index (channel / 2), lanes 0, 1
   /* verilator lint_on UNUSEDSIGNAL */
 
-  assign pop   = run && net_on && eng_done_i;
+  logic               dwu_done;                      // DWU: a unit pass is done, with its sums
+  logic signed [19:0] dwu_res [7];
+  /* verilator lint_off UNUSEDSIGNAL */            // read by the energy counters only (tb/energy_counters.sv)
+  logic               dwu_rd, dwu_c;                 // DWU: a store read, a chunk multiplied
+  /* verilator lint_on UNUSEDSIGNAL */
+  assign pop   = run && net_on && (du ? dwu_done : eng_done_i);
   assign t_pop = tq[tq_rp];
   assign d_two = RQ_2L && (d_rem > 5'd1);
   assign d_sw  = RQ_2L && d_c[0];
@@ -965,7 +1018,91 @@ module cim_seq #(
   end
   always_ff @(posedge clk_i) begin
     if (issue) tq[tq_wp] <= i_tag;
-    if (pop) for (int n = 0; n < 16; n++) lat[n] <= AW'(res_i[n]);
+    if (pop) for (int n = 0; n < 16; n++) lat[n] <= du ? ((n < 7) ? AW'(dwu_res[n % 7]) : '0) : AW'(res_i[n]);
+  end
+
+  // ================================================================== DWU: digital depthwise unit
+  if (DWU != 0) begin : g_dwu
+    (* ram_style = "block" *) logic [31:0] st_lo [512];    // store: bits [31:0] and [55:32] of word w
+    (* ram_style = "block" *) logic [23:0] st_hi [512];
+    (* ram_style = "registers" *) logic [55:0] wreg [9];   // the group's taps: wreg[k][8 i +: 8], lane i
+    logic signed [19:0] acc [2][7];                        // per X bank
+    logic        pl_on;                                    // network start: loading group 0 of L1
+    logic [3:0]  pl_k;
+    logic        dl_v, wv_q, gb_q;
+    logic [3:0]  dl_k, wk_q;
+    logic [8:0]  dl_word;
+    logic [55:0] st_rd;
+    logic [1:0]  n_l;                                      // the next group: layer (block) and group
+    logic [3:0]  n_g;
+    logic [5:0]  n_lg;                                     // 10 l + g
+    logic        c_v;
+    logic [55:0] wsel;
+    logic signed [8:0]  cx [7];
+    logic signed [16:0] prod [7];
+
+    assign c_v  = g1_v && du;
+    assign dwu_c  = c_v;
+    assign dwu_rd = dl_v;
+    assign n_g  = (g1_g == 4'd9) ? 4'd0 : g1_g + 4'd1;
+    assign n_l  = (g1_g != 4'd9) ? blk : ((DWU == 4) ? blk + 2'd1 : 2'd0);
+    assign n_lg = {1'b0, n_l, 3'b000} + {3'b000, n_l, 1'b0} + {2'b00, n_g};
+    always_comb begin
+      if (pl_on) begin                                     // word k of group 0 of L1
+        dl_v = 1'b1; dl_word = {5'd0, pl_k}; dl_k = pl_k;
+      end else if (c_v && g1_plast) begin                  // tap k of the next group after the group's last chunk k
+        dl_v = 1'b1; dl_word = {n_lg, 3'b000} + {3'b000, n_lg} + {5'd0, g1_k}; dl_k = g1_k;
+      end else begin
+        dl_v = 1'b0; dl_word = 9'd0; dl_k = 4'd0;
+      end
+    end
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        pl_on    <= 1'b0;
+        pl_k     <= 4'd0;
+        wv_q     <= 1'b0;
+        dwu_done <= 1'b0;
+      end else begin
+        if (net_start) begin
+          pl_on <= 1'b1;
+          pl_k  <= 4'd0;
+        end else if (pl_on) begin
+          if (pl_k == 4'd8) pl_on <= 1'b0;
+          pl_k <= pl_k + 4'd1;
+        end
+        wv_q     <= dl_v;
+        dwu_done <= issue && du;                           // done one cycle after the issue
+      end
+    end
+    always_ff @(posedge clk_i) begin
+      if (dws_we_i && !dws_half_i) st_lo[dws_word_i] <= dws_data_i;
+      if (dws_we_i && dws_half_i)  st_hi[dws_word_i] <= dws_data_i[23:0];
+      if (dl_v) begin                                      // the store read (block RAM with a read enable)
+        st_rd <= {st_hi[dl_word], st_lo[dl_word]};
+        wk_q  <= dl_k;
+      end
+      if (wv_q) wreg[wk_q] <= st_rd;                       // written the cycle after the read
+      if (issue && du) gb_q <= i_b;
+    end
+
+    // the chunk times the 7 weights of its tap, into the accumulators of its X bank
+    assign wsel = wreg[g1_k];
+    for (genvar i = 0; i < 7; i++) begin : g_lane
+      assign cx[i]   = (4'(i) < g1_n) ? gx[i] : 9'sd0;
+      (* use_dsp = "no" *) logic signed [16:0] p;
+      assign p       = 17'(cx[i]) * 17'($signed(wsel[8 * i +: 8]));
+      assign prod[i] = p;
+      always_ff @(posedge clk_i)
+        if (c_v) acc[g1_b][i] <= ((g1_k == 4'd0) ? 20'sd0 : acc[g1_b][i]) + 20'(prod[i]);
+      assign dwu_res[i] = acc[gb_q][i];
+    end
+  end else begin : g_dwu_off
+    assign dwu_done = 1'b0;
+    assign dwu_rd   = 1'b0;
+    assign dwu_c    = 1'b0;
+    for (genvar i = 0; i < 7; i++) begin : g_res0
+      assign dwu_res[i] = 20'sd0;
+    end
   end
 
   // requantisation: Q0 result and parameter address, Q1 + bias, Q2 * qm, Q3 srdhm, Q4 rdbp + zout.

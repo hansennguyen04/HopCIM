@@ -45,6 +45,7 @@
 #define CIM_LOGIT(n)    (CIM_BASE + 0x5000u + 4u * (n))
 #define CIM_PARAM(e, f) (CIM_BASE + 0x8000u + ((uint32_t)(e) << 4) + ((uint32_t)(f) << 2))   // entry 64 L + c; f: 0 bias, 1 qm, 2 e
 #define CIM_ACT(b, p, c) (CIM_BASE + 0x10000u + ((uint32_t)(b) << 15) + ((uint32_t)(p) << 8) + ((uint32_t)(c) << 2))
+#define CIM_DWSTORE(w, h) (CIM_BASE + 0x6000u + ((uint32_t)(w) << 3) + ((uint32_t)(h) << 2))   // DWU store word w, bits 31..0 (h 0) or 55..32 (h 1)
 #define CIM_SEQ_BUSY    0x1u
 #define CIM_SEQ_DONE    0x2u     // sticky; cleared by a sequencer go or by writing 1 (W1C)
 #define CIM_SEQ_ERR     0x4u     // a result was lost (never expected)
@@ -102,6 +103,30 @@ static inline void cim_load_tile(unsigned tile, const int8_t *w) {
 }
 
 // inputs: the low b bits of each word are used (b given with the go)
+// Digital depthwise unit (bitstream with use_cim_dwu, endpoint SEQ_DWU; docs/DWU_GATES.md). Build an app with
+// -DCIM_DWU=4 (every depthwise layer) or 1 (L1 only): it then fills the unit's store instead of those depthwise tiles.
+#ifndef CIM_DWU
+#define CIM_DWU 0
+#endif
+#if CIM_DWU
+// store word (10 l + g) 9 + k = tap k of group g of depthwise layer l; byte i = channel 7 g + i (group 9: byte 0).
+// w[l][c][k] as DS_W_DW (k = 3 fy + fx).
+static inline void cim_load_dwstore(const int8_t (*w)[64][9]) {
+    for (int l = 0; l < 4; l++)
+        for (int g = 0; g < 10; g++)
+            for (int k = 0; k < 9; k++) {
+                uint32_t lo = 0, hi = 0;
+                for (int i = 0; i < 7 && 7 * g + i < 64; i++) {
+                    uint32_t b = (uint8_t)w[l][7 * g + i][k];
+                    if (i < 4) lo |= b << (8 * i); else hi |= b << (8 * (i - 4));
+                }
+                unsigned word = (unsigned)((10 * l + g) * 9 + k);
+                CIM_REG(CIM_DWSTORE(word, 0)) = lo;
+                CIM_REG(CIM_DWSTORE(word, 1)) = hi;
+            }
+}
+#endif
+
 static inline void cim_load_x(const int32_t *x) {
     volatile uint32_t *dst = &CIM_REG(CIM_X(0));
     for (int r = 0; r < CIM_ROWS; r++) dst[r] = (uint32_t)x[r];

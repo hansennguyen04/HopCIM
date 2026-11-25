@@ -1,0 +1,70 @@
+%Error: Command Failed ulimit -s unlimited 2>/dev/null; exec /home/hansen0411/tools/verilator/5.040/bin/verilator_bin --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_endpoint -Mdir /home/hansen0411/APlus_Project/hopcim/sim/obj_endpoint -MAKEFLAGS OBJCACHE= -I/home/hansen0411/APlus_Project/hopcim/rtl /home/hansen0411/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_engine.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_fe.sv /home/hansen0411/APlus_Project/hopcim/rtl/mfcc_ded.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_log2fix16.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_seq.sv /home/hansen0411/APlus_Project/hopcim/rtl/pdm_dec.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_audio.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_endpoint.sv /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_endpoint.sv
+%Error: Command Failed ulimit -s unlimited 2>/dev/null; exec /home/hansen0411/tools/verilator/5.040/bin/verilator_bin --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_fe -GDED=0 -Mdir /home/hansen0411/APlus_Project/hopcim/sim/obj_fe_cim -MAKEFLAGS OBJCACHE= -I/home/hansen0411/APlus_Project/hopcim/rtl /home/hansen0411/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_engine.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_fe.sv /home/hansen0411/APlus_Project/hopcim/rtl/mfcc_ded.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_log2fix16.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_seq.sv /home/hansen0411/APlus_Project/hopcim/rtl/pdm_dec.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_audio.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_endpoint.sv /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_fe.sv
+%Error: Command Failed ulimit -s unlimited 2>/dev/null; exec /home/hansen0411/tools/verilator/5.040/bin/verilator_bin --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_fe -GDED=1 -Mdir /home/hansen0411/APlus_Project/hopcim/sim/obj_fe_ded -MAKEFLAGS OBJCACHE= -I/home/hansen0411/APlus_Project/hopcim/rtl /home/hansen0411/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_engine.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_fe.sv /home/hansen0411/APlus_Project/hopcim/rtl/mfcc_ded.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_log2fix16.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_seq.sv /home/hansen0411/APlus_Project/hopcim/rtl/pdm_dec.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_audio.sv /home/hansen0411/APlus_Project/hopcim/rtl/cim_endpoint.sv /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_fe.sv
+make: *** [/home/hansen0411/tools/verilator/5.040/share/verilator/include/verilated.mk:275: Vtb_cim_endpoint___024root__DepSet_hfa005bdc__2.o] Error 1
+make: *** [/home/hansen0411/tools/verilator/5.040/share/verilator/include/verilated.mk:275: Vtb_cim_fe___024root__DepSet_h52208d8f__0.o] Error 1
+make: *** [/home/hansen0411/tools/verilator/5.040/share/verilator/include/verilated.mk:275: Vtb_cim_fe___024root__DepSet_h52208d8f__0.o] Error 1
+make: Leaving directory '/home/hansen0411/APlus_Project/hopcim/sim/obj_endpoint'
+make: Leaving directory '/home/hansen0411/APlus_Project/hopcim/sim/obj_fe_cim'
+make: Leaving directory '/home/hansen0411/APlus_Project/hopcim/sim/obj_fe_ded'
+%Error: make -C /home/hansen0411/APlus_Project/hopcim/sim/obj_endpoint -f Vtb_cim_endpoint.mk -j 8 OBJCACHE= exited with 2
+%Error: make -C /home/hansen0411/APlus_Project/hopcim/sim/obj_fe_cim -f Vtb_cim_fe.mk -j 8 OBJCACHE= exited with 2
+%Error: make -C /home/hansen0411/APlus_Project/hopcim/sim/obj_fe_ded -f Vtb_cim_fe.mk -j 8 OBJCACHE= exited with 2
+FAIL  run_endpoint_tb.sh  (5 s)
+PASS  run_engine_tb.sh  (1 s)
+FAIL  run_fe_tb.sh cim  (5 s)
+FAIL  run_fe_tb.sh ded  (4 s)
+PASS  run_mic_tb.sh cim 15 1  (143 s)
+PASS  run_mic_tb.sh cim 15 16  (183 s)
+PASS  run_mic_tb.sh cim 15 1 b1  (146 s)
+PASS  run_mic_tb.sh cim 15 1 d4  (115 s)
+PASS  run_mic_tb.sh cim 15 1 s  (148 s)
+PASS  run_mic_tb.sh cim 15 2  (157 s)
+PASS  run_mic_tb.sh cim 15 3  (156 s)
+PASS  run_mic_tb.sh cim 15 4  (160 s)
+PASS  run_mic_tb.sh cim 15 5  (166 s)
+PASS  !run_mic_tb.sh cim 4 1  (61 s)
+PASS  run_mic_tb.sh cim 4 1 b1  (45 s)
+PASS  run_mic_tb.sh cim 4 1 d4  (32 s)
+PASS  run_mic_tb.sh cim 4 1 s  (47 s)
+PASS  run_mic_tb.sh cim 4 2 s  (58 s)
+PASS  run_mic_tb.sh cim 4 4 b1  (59 s)
+PASS  run_mic_tb.sh cim 4 4 d4  (42 s)
+PASS  run_mic_tb.sh cim 4 4 s  (63 s)
+PASS  run_mic_tb.sh cim 5 1  (52 s)
+PASS  run_mic_tb.sh cim 5 1 s  (61 s)
+PASS  run_mic_tb.sh cim 5 2  (67 s)
+PASS  run_mic_tb.sh cim 5 4  (68 s)
+PASS  run_mic_tb.sh ded 15 1  (140 s)
+PASS  run_mic_tb.sh ded 15 2  (182 s)
+PASS  run_mic_tb.sh ded 15 4  (165 s)
+PASS  run_mic_tb.sh ded 4 1 s  (43 s)
+PASS  run_mic_tb.sh ded 5 1  (51 s)
+PASS  run_mic_tb.sh ded 5 4  (71 s)
+PASS  run_seq_tb.sh cim  (114 s)
+PASS  run_seq_tb.sh cim b1  (90 s)
+PASS  run_seq_tb.sh cim d1  (9 s)
+PASS  run_seq_tb.sh cim d4  (10 s)
+PASS  run_seq_tb.sh cim s  (93 s)
+PASS  run_seq_tb.sh ded  (114 s)
+PASS  run_seq_tb.sh ded b1  (84 s)
+PASS  run_seq_tb.sh ded d4  (66 s)
+PASS  run_seq_tb.sh ded s  (88 s)
+PASS  run_stream_tb.sh cim  (66 s)
+PASS  run_stream_tb.sh cim b1  (43 s)
+PASS  run_stream_tb.sh cim d4  (29 s)
+PASS  run_stream_tb.sh cim edge  (49 s)
+PASS  run_stream_tb.sh cim edge s  (47 s)
+PASS  run_stream_tb.sh cim s  (52 s)
+PASS  run_stream_tb.sh ded  (63 s)
+PASS  run_stream_tb.sh ded edge  (48 s)
+PASS  run_stream_tb.sh ded s  (50 s)
+PASS  run_unit_tb.sh audio  (26 s)
+PASS  run_unit_tb.sh log2  (1 s)
+PASS  run_unit_tb.sh pdm  (9 s)
+PASS  run_unit_tb.sh pdm_sat  (9 s)
+        ... See the manual at https://verilator.org/verilator_doc.html?v=5.040 for more assistance.
+        ... See the manual at https://verilator.org/verilator_doc.html?v=5.040 for more assistance.
+        ... See the manual at https://verilator.org/verilator_doc.html?v=5.040 for more assistance.
+50 of 53 benches pass
+rc=1

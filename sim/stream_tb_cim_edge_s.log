@@ -6,7 +6,7 @@ decisions 101: 0 of 49490 features wrong, 0 logit/class errors
 cycles go -> interrupt: window path only 207..207 (new frame), 4678..4719 (all 49 frames); with the network 68046..68046 (new frame), 72558..72558 (all)
 RESULT: 0 errors
 PASS
-- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_stream.sv:192: Verilog $finish
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_stream.sv:212: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 79ms; walltime 25.078 s; speed 3.186 ms/s
-- Verilator: cpu 24.695 s on 1 threads; alloced 128 MB
+- Verilator: $finish at 79ms; walltime 19.163 s; speed 4.105 ms/s
+- Verilator: cpu 19.163 s on 1 threads; alloced 128 MB

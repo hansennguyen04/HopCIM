@@ -1,0 +1,80 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hansen0411 <hansennguyen04@gmail.com>
+Date: Sun, 22 Nov 2026 21:00:00 +0800
+Subject: [PATCH 6/6] HopCIM: the digital depthwise unit behind use_cim_dwu
+
+- core-v-mini-mcu.core: flag use_cim_dwu (define CIM_SEQ_DWU, with use_cim_s) in the sim and Nexys targets.
+- tb/testharness.sv.tpl, hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv: the endpoint's SEQ_DWU = 4 under CIM_SEQ_DWU
+  (docs/DWU_GATES.md: every depthwise layer on the unit; the firmware fills its store, -DCIM_DWU=4).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ core-v-mini-mcu.core                      | 11 +++++++++++
+ hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv |  3 +++
+ tb/testharness.sv.tpl                     |  3 +++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
+index c1116ca..9129f57 100644
+--- a/core-v-mini-mcu.core
++++ b/core-v-mini-mcu.core
+@@ -326,6 +326,15 @@ parameters:
+       depthwise L1 from a line buffer, its results through a fusion vector to pointwise L2. Enable with
+       `--flag use_cim_b1` in addition to `--flag use_cim_s`.
+     default: false
++  CIM_SEQ_DWU:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      With CIM_SEQ_S: the digital depthwise unit in every depthwise layer of the HopCIM sequencer (cim_endpoint
++      SEQ_DWU = 4, docs/DWU_GATES.md): the depthwise layers group by group on 7 multipliers beside the gather, with
++      their weights in a 360 x 56-bit store instead of 40 CIM tiles. Enable with `--flag use_cim_dwu` in addition to
++      `--flag use_cim_s`; the firmware fills the store (-DCIM_DWU=4).
++    default: false
+ 
+ scripts:
+   # Build utils
+@@ -421,6 +430,7 @@ targets:
+     - use_cim_ded ? (CIM_FE_DED=true)
+     - use_cim_s ? (CIM_SEQ_S=true)
+     - use_cim_b1 ? (CIM_SEQ_B1=true)
++    - use_cim_dwu ? (CIM_SEQ_DWU=true)
+     tools:
+       modelsim:
+         vlog_options:
+@@ -548,6 +558,7 @@ targets:
+     - use_cim_s ? (CIM_SEQ_S=true)
+     - use_cim_mic4 ? (CIM_MIC_4M096=true)
+     - use_cim_b1 ? (CIM_SEQ_B1=true)
++    - use_cim_dwu ? (CIM_SEQ_DWU=true)
+     tools:
+       vivado:
+         part: xc7a100tcsg324-1
+diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+index 2a987d4..0ec45cb 100644
+--- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
++++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+@@ -898,6 +898,9 @@ module xilinx_core_v_mini_mcu_wrapper
+ `ifdef CIM_SEQ_B1
+       .SEQ_B1(1'b1),                                  // with S: StreamFuse B in block 1
+ `endif
++`ifdef CIM_SEQ_DWU
++      .SEQ_DWU(4),                                    // with S: the digital depthwise unit, every depthwise layer
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else
+diff --git a/tb/testharness.sv.tpl b/tb/testharness.sv.tpl
+index b798713..78174b3 100644
+--- a/tb/testharness.sv.tpl
++++ b/tb/testharness.sv.tpl
+@@ -447,6 +447,9 @@ module testharness #(
+ `ifdef CIM_SEQ_B1
+       .SEQ_B1(1'b1),                                  // with S: StreamFuse B in block 1 (use_cim_b1)
+ `endif
++`ifdef CIM_SEQ_DWU
++      .SEQ_DWU(4),                                    // with S: the digital depthwise unit (use_cim_dwu)
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else

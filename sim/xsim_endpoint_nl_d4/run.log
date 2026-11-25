@@ -1,0 +1,31 @@
+
+****** xsim v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Sun Nov 22 22:03:17 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tbnl/xsim_script.tcl
+# xsim {tbnl} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+loaded 61 network tiles and 640 parameter entries (FE_DED = 0, SEQ_S = 1, SEQ_B1 = 0, SEQ_DWU = 4)
+layer L0 (stop after it): 0 / 8000 mismatches, 4533 cycles from go
+layer L1 (stop after it): 0 / 8000 mismatches, 15793 cycles from go
+layer L2 (stop after it): 0 / 8000 mismatches, 20324 cycles from go
+layer L3 (stop after it): 0 / 8000 mismatches, 31584 cycles from go
+layer L4 (stop after it): 0 / 8000 mismatches, 36115 cycles from go
+layer L5 (stop after it): 0 / 8000 mismatches, 47375 cycles from go
+layer L6 (stop after it): 0 / 8000 mismatches, 51906 cycles from go
+layer L7 (stop after it): 0 / 8000 mismatches, 63166 cycles from go
+layer L8 (stop after it): 0 / 8000 mismatches, 67697 cycles from go
+  full clip  0: class  0 (golden  0), 67789 cycles go -> interrupt
+RESULT (medium): 0 errors
+PASS
+$finish called at time : 6079566 ns : File "/home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv" Line 352
+run: Time (s): cpu = 00:00:00.77 ; elapsed = 01:13:53 . Memory (MB): peak = 1301.035 ; gain = 0.000 ; free physical = 10034 ; free virtual = 20787
+exit
+INFO: xsimkernel Simulation Memory Usage: 249656 KB (Peak: 304188 KB), Simulation CPU Usage: 4433140 ms
+INFO: [Common 17-206] Exiting xsim at Sun Nov 22 23:17:14 2026...

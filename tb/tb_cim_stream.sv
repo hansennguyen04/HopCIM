@@ -15,7 +15,9 @@
 module tb_cim_stream #(
     parameter bit DED = 1'b0,
     parameter bit S   = 1'b0,                           // the baseline S in the sequencer (SEQ_S)
-    parameter bit B1  = 1'b0                            // with S: StreamFuse B in block 1 (SEQ_B1)
+    parameter bit B1  = 1'b0,                           // with S: StreamFuse B in block 1 (SEQ_B1)
+    parameter int DWU = 0                               // with S: digital depthwise unit (SEQ_DWU, docs/DWU_GATES.md);
+                                                        //   its store is written from the depthwise tiles, which are then garbage
 );
   import xheep_obi_pkg::*;
   localparam logic [31:0] BASE = 32'hC004_0000;
@@ -27,7 +29,7 @@ module tb_cim_stream #(
   xheep_obi_rsp_t rsp;
   logic irq;
 
-  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
+  cim_endpoint #(.TILES(128), .FE_DED(DED), .SEQ_S(S), .SEQ_B1(B1), .SEQ_DWU(DWU)) dut (.clk_i(clk), .rst_ni(rst_n), .obi_req_i(req), .obi_rsp_o(rsp), .irq_o(irq),
       .pdm_clk_o(), .pdm_data_i(1'b0));
 
   logic [31:0] fe_tiles [8 * 256];
@@ -100,6 +102,24 @@ module tb_cim_stream #(
       for (int i = 0; i < 256; i++) wr(BASE + 32'h2_0000 + (32'(t) << 10) + (32'(i) << 2), fe_tiles[t * 256 + i]);
     for (int t = 0; t < NT; t++)
       for (int i = 0; i < 256; i++) wr(BASE + 32'h2_0000 + (32'(T0 + t) << 10) + (32'(i) << 2), tiles[t * 256 + i]);
+    if (DWU != 0) begin                               // DWU: the store from the depthwise tiles, then garbage tiles
+      for (int l = 0; l < 4; l++)
+        for (int g = 0; g < 10; g++)
+          for (int k = 0; k < 9; k++) begin
+            logic [55:0] w = '0;
+            for (int i = 0; i < 7; i++)
+              if (7 * g + i < 64) begin
+                logic [31:0] tw = tiles[(4 + 14 * l + g) * 256 + (7 * k + i) * 4 + i / 4];
+                w[8 * i +: 8] = tw[8 * (i % 4) +: 8];
+              end
+            wr(BASE + 32'h6000 + 32'(8 * ((10 * l + g) * 9 + k)), w[31:0]);
+            wr(BASE + 32'h6004 + 32'(8 * ((10 * l + g) * 9 + k)), {8'd0, w[55:32]});
+          end
+      for (int l = 0; l < ((DWU == 4) ? 4 : 1); l++)
+        for (int g = 0; g < 10; g++)
+          for (int i = 0; i < 256; i++)
+            wr(BASE + 32'h2_0000 + (32'(T0 + 4 + 14 * l + g) << 10) + (32'(i) << 2), 32'h5A3C_96E1 ^ (32'(i) * 32'h9E37_79B1));
+    end
     for (int e = 0; e < 640; e++)
       for (int f = 0; f < 3; f++) wr(BASE + 32'h8000 + (32'(e) << 4) + (32'(f) << 2), params[e * 3 + f]);
     wr(BASE + 32'h28, seq_meta[1]);

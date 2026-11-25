@@ -16,6 +16,8 @@ s     | fpga | build_micks | use_bscane_xilinx use_cim use_cim_mic use_cim_s    
 s4    | fpga | build_mic4s | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 | xheep_nexys_bscan_cim128mic4s.bit | baseline S at its lowest real-time clock, 4.096 MHz
 b1    | fpga | build_mickb1 | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_b1  | xheep_nexys_bscan_cim128kb1.bit   | S with StreamFuse B in block 1, live audio, 15.36 MHz
 b1-4  | fpga | build_mic4b1 | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 use_cim_b1 | xheep_nexys_bscan_cim128mic4b1.bit | B1 at 4.096 MHz
+dwu   | fpga | build_mickdwu | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_dwu | xheep_nexys_bscan_cim128kdwu.bit  | S with the digital depthwise unit (docs/DWU_GATES.md), live audio, 15.36 MHz
+dwu-4 | fpga | build_mic4dwu | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 use_cim_dwu | xheep_nexys_bscan_cim128mic4dwu.bit | the same at 4.096 MHz
 s256  | fpga | build_micks256 | use_bscane_xilinx use_cim use_cim_mic use_cim_s           | xheep_nexys_bscan_cim128ks256k.bit | baseline S with 256 KiB of RAM (tree from setup.sh <dest> configs/kws_nexys_256k.py)
 r6b   | fpga | build_mick  | use_bscane_xilinx use_cim use_cim_mic                        | xheep_nexys_bscan_cim128k.bit     | R6b sequencer, live audio, 15.36 MHz
 r6b5  | fpga | build_mic5  | use_bscane_xilinx use_cim use_cim_mic use_cim_mic5           | xheep_nexys_bscan_cim128mic5.bit  | R6b at its lowest real-time clock, 5.12 MHz
@@ -23,6 +25,7 @@ sim   | sim  | -           | use_cim                                            
 sim-ded | sim | -          | use_cim use_cim_ded                                          | Vtestharness_ded                  | Verilator SoC, R6b, dedicated front-end B3
 sim-s | sim  | -           | use_cim use_cim_s                                            | Vtestharness_cim_s                | Verilator SoC, baseline S
 sim-b1 | sim | -           | use_cim use_cim_s use_cim_b1                                 | Vtestharness_cim_b1               | Verilator SoC, S with B in block 1
+sim-dwu | sim | -          | use_cim use_cim_s use_cim_dwu                                | Vtestharness_cim_dwu              | Verilator SoC, S with the digital depthwise unit
 '
 usage() { echo "usage: xheep/build.sh <tree> <variant> | <tree> app <name> <project> [<compiler flags>]"; echo "variants:"; echo "$VARIANTS" | sed '/^$/d; s/|[^|]*|[^|]*|[^|]*|[^|]*|/:/; s/^/  /'; exit 1; }
 

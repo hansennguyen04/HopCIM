@@ -35,13 +35,16 @@ module ec_seq (
     input logic r0_v_i, input logic r4_v_i, input logic act_we1_i, input logic q1_v_i, input logic q1_g_i,
     input logic r1_v_i, input logic r1_g_i,
     // B1 (FUSE1): the fused segment's gather sources, the line-buffer fill, the fusion-vector writes (0 otherwise)
-    input logic fz_i, input logic g_pw_i, input logic f_rd_i, input logic f1_v_i, input logic fv_we0_i, input logic fv_we1_i
+    input logic fz_i, input logic g_pw_i, input logic f_rd_i, input logic f1_v_i, input logic fv_we0_i, input logic fv_we1_i,
+    // DWU (SEQ_DWU): passes on the unit, chunks multiplied and their active lanes, store reads (0 otherwise)
+    input logic dwu_go_i, input logic dwu_c_i, input logic [3:0] dwu_n_i, input logic dwu_rd_i
 );
   longint unsigned ws_cyc[16];
   longint unsigned g_lt[4], g_lt_tv[4];
   longint unsigned run_cyc = 0, q0 = 0, q4 = 0, act_w = 0, pool_up = 0, cp = 0, feat_w = 0, la = 0, ra = 0, prm = 0, passes = 0;
   longint unsigned r0 = 0, mults = 0, gated = 0;
   longint unsigned g_lb = 0, g_fv = 0, f_rd = 0, lb_w = 0, fv_w = 0;
+  longint unsigned du_go = 0, du_c = 0, du_mac = 0, du_rd = 0;
   always_ff @(posedge clk_i) begin
     ws_cyc[ws_i] <= ws_cyc[ws_i] + 1;
     if (run_i) run_cyc <= run_cyc + 1;
@@ -67,6 +70,12 @@ module ec_seq (
     if (f_rd_i) f_rd <= f_rd + 1;                                    // fill: ACT word reads
     if (f1_v_i) lb_w <= lb_w + 1;                                    // fill: line-buffer word writes
     fv_w <= fv_w + longint'(fv_we0_i) + longint'(fv_we1_i);           // fusion-vector byte writes
+    if (dwu_go_i) du_go <= du_go + 1;                                // DWU passes
+    if (dwu_c_i) begin                                               // DWU: chunks, and MACs = their active lanes
+      du_c   <= du_c + 1;
+      du_mac <= du_mac + longint'(dwu_n_i);
+    end
+    if (dwu_rd_i) du_rd <= du_rd + 1;                                // DWU: store reads (= weight register words written)
   end
   final begin
     for (int i = 0; i < 16; i++) if (ws_cyc[i] != 0) $display("EC seq ws%0d %0d", i, ws_cyc[i]);
@@ -95,6 +104,12 @@ module ec_seq (
       $display("EC seq b1_fill_act_reads %0d", f_rd);
       $display("EC seq b1_lb_writes %0d", lb_w);
       $display("EC seq b1_fv_byte_writes %0d", fv_w);
+    end
+    if (du_go != 0) begin                                              // only with the DWU
+      $display("EC seq dwu_passes %0d", du_go);
+      $display("EC seq dwu_chunks %0d", du_c);
+      $display("EC seq dwu_macs %0d", du_mac);
+      $display("EC seq dwu_store_reads %0d", du_rd);
     end
   end
 endmodule
@@ -172,7 +187,8 @@ bind cim_seq ec_seq u_ec (.clk_i(clk_i), .run_i(run), .g_req_i(g_req), .lt_i(2'(
     .q4_v_i(q4_v), .act_we_i(act_we), .lay_i(lay), .cp_v_i(cp_v), .feat_we_i(feat_we), .la_v_i(la_v), .ws_i(4'(ws)),
     .ra_v_i(ra_v), .prm_we_i(prm_we_i), .go_i(go_o), .eng_ready_i(eng_ready_i), .r0_v_i(r0_v), .r4_v_i(r4_v),
     .act_we1_i(act_we1), .q1_v_i(q1_v), .q1_g_i(q1_g), .r1_v_i(r1_v), .r1_g_i(r1_g),
-    .fz_i(fz), .g_pw_i(g_pw), .f_rd_i(f_on && f_free), .f1_v_i(f1_v), .fv_we0_i(fv_we0), .fv_we1_i(fv_we1));
+    .fz_i(fz), .g_pw_i(g_pw), .f_rd_i(f_on && f_free), .f1_v_i(f1_v), .fv_we0_i(fv_we0), .fv_we1_i(fv_we1),
+    .dwu_go_i(issue && du), .dwu_c_i(dwu_c), .dwu_n_i(g1_n), .dwu_rd_i(dwu_rd));
 bind cim_fe ec_fe u_ec (.clk_i(clk_i), .state_i(5'(state)), .sh_issue_i(sh_issue), .sh_zero_i(sh_zero),
     .s1_issue_i(s1_issue), .t2_v_i(t2_v), .g_v_i(g_v), .mph_i(mph), .start_i(start_i));
 bind mfcc_ded ec_ded u_ec (.clk_i(clk_i), .state_i(3'(state)), .we_i(we), .rd_v_i(rd_v), .sh_issue_i(sh_issue),
