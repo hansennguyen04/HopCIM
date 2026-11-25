@@ -1,0 +1,110 @@
+{
+ "ops": [
+  {
+   "op": "c0",
+   "kind": "conv",
+   "cycles": 9252,
+   "passes": 1024,
+   "reads": 9216
+  },
+  {
+   "op": "c1",
+   "kind": "conv",
+   "cycles": 27683,
+   "passes": 3072,
+   "reads": 18432
+  },
+  {
+   "op": "c2",
+   "kind": "conv",
+   "cycles": 27683,
+   "passes": 3072,
+   "reads": 18432
+  },
+  {
+   "op": "a3",
+   "kind": "add",
+   "cycles": 8208,
+   "elements": 16384
+  },
+  {
+   "op": "c4",
+   "kind": "conv",
+   "cycles": 13859,
+   "passes": 1536,
+   "reads": 9216
+  },
+  {
+   "op": "c5",
+   "kind": "conv",
+   "cycles": 23075,
+   "passes": 2560,
+   "reads": 18432
+  },
+  {
+   "op": "c6",
+   "kind": "conv",
+   "cycles": 4637,
+   "passes": 512,
+   "reads": 1024
+  },
+  {
+   "op": "a7",
+   "kind": "add",
+   "cycles": 4112,
+   "elements": 8192
+  },
+  {
+   "op": "c8",
+   "kind": "conv",
+   "cycles": 11555,
+   "passes": 1280,
+   "reads": 9216
+  },
+  {
+   "op": "c9",
+   "kind": "conv",
+   "cycles": 20771,
+   "passes": 2304,
+   "reads": 18432
+  },
+  {
+   "op": "c10",
+   "kind": "conv",
+   "cycles": 2335,
+   "passes": 256,
+   "reads": 1024
+  },
+  {
+   "op": "a11",
+   "kind": "add",
+   "cycles": 2064,
+   "elements": 4096
+  },
+  {
+   "op": "p12",
+   "kind": "pool",
+   "cycles": 526,
+   "words": 512
+  },
+  {
+   "op": "fc",
+   "kind": "fc",
+   "cycles": 51,
+   "passes": 1
+  }
+ ],
+ "total": 155811,
+ "engine_cycles": 140553,
+ "design": {
+  "D": 9,
+  "GAT": 2,
+  "REL": 1,
+  "DONE": 14,
+  "RQ_PER": 2,
+  "RQ_LAT": 6,
+  "WB": 2,
+  "BAR": 4,
+  "ADD_LANES": 2
+ }
+}
