@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 # Check that an X-HEEP tree is exactly what xheep/setup.sh builds:
 #   - every file the patch series touches equals base + xheep/patches/*.patch,
-#   - every generated file equals xheep/generated.sha256 (the output of make mcu-gen in a fresh setup),
+#   - every generated file equals xheep/generated.sha256 (the output of make mcu-gen in a fresh setup), or
+#     xheep/generated.<config name>.sha256 for a tree made with another configuration (<tree>/.hopcim-cfg),
 #   - hw/ip/hopcim and the firmware files are links into this repository (not copies),
 #   - nothing else differs from the base commit (no change that only lives in the X-HEEP tree).
 # usage: xheep/check.sh [<tree>]              default: ~/APlus_Project/planenest/hw/x-heep (the working tree)
-#        xheep/check.sh --record <tree>       write xheep/generated.sha256 from a tree setup.sh just built
+#        xheep/check.sh --record <tree>       write that hash file from a tree setup.sh just built
 set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 RECORD=0
 if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 TREE=$(realpath "${1:-$HOME/APlus_Project/planenest/hw/x-heep}")
-GEN="$XHEEP_HERE/generated.sha256"
+CFG=$(tree_cfg "$TREE")
+GEN=$(generated_file "$CFG")
 cd "$TREE"
 
 # files the generator wrote in this tree (newer than the marker setup.sh leaves just before make mcu-gen)
@@ -53,10 +55,10 @@ done < <(series_files)
 ng=0
 if [ -f "$GEN" ]; then
     ng=$(wc -l < "$GEN")
-    while read -r line; do bad "generated ${line%: FAILED*}: differs from xheep/generated.sha256 (rerun make mcu-gen X_HEEP_CFG=$XHEEP_CFG?)"; done \
+    while read -r line; do bad "generated ${line%: FAILED*}: differs from xheep/$(basename "$GEN") (rerun make mcu-gen X_HEEP_CFG=$CFG?)"; done \
         < <(sha256sum -c --quiet "$GEN" 2>&1 | grep -E 'FAILED|No such' || true)
 else
-    bad "xheep/generated.sha256 is missing (xheep/check.sh --record <tree from setup.sh>)"
+    bad "xheep/$(basename "$GEN") is missing (xheep/check.sh --record <tree from setup.sh>)"
 fi
 
 # links into this repository
@@ -91,7 +93,7 @@ done < <(git ls-files --others --exclude-standard)
 rm -f "$tmpl"
 
 if [ $fail = 0 ]; then
-    echo "check: PASS  $TREE = X-HEEP ${XHEEP_COMMIT:0:12} + series ($ns files) + generator ($ng files); $nl firmware links and hw/ip/hopcim lead to $HOPCIM; no other change"
+    echo "check: PASS  $TREE = X-HEEP ${XHEEP_COMMIT:0:12} + series ($ns files) + generator ($ng files, $CFG); $nl firmware links and hw/ip/hopcim lead to $HOPCIM; no other change"
 else
     echo "check: FAIL  ($TREE)"
 fi

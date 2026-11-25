@@ -8,6 +8,17 @@ HOPCIM=${XHEEP_CHECK_HOPCIM:-$(dirname "$XHEEP_HERE")}
 
 die() { echo "error: $*" >&2; exit 1; }
 
+# The generator configuration a tree was made with: setup.sh records it in <tree>/.hopcim-cfg (a tree made
+# before that file existed has the default).
+tree_cfg() { cat "${1:-.}/.hopcim-cfg" 2> /dev/null || echo "$XHEEP_CFG"; }
+
+# Where the hashes of the generator's output for a configuration are kept: generated.sha256 for the
+# default, generated.<config name>.sha256 for another one.
+generated_file() {
+    if [ "$1" = "$XHEEP_CFG" ]; then echo "$XHEEP_HERE/generated.sha256"
+    else echo "$XHEEP_HERE/generated.$(basename "$1" .py).sha256"; fi
+}
+
 # Tool paths (RISC-V GCC, Verilator, Vivado, verible). XHEEP_ENV names a script to source;
 # the default is the one this project has always used, if it exists.
 xheep_tools() {
@@ -28,6 +39,7 @@ ours_untracked() {
     local a
     echo "hw/ip/hopcim"
     echo ".hopcim-gen-start"
+    echo ".hopcim-cfg"
     echo ".hopcim-build.lock"
     echo ".venv"              # when setup.sh links it (.gitignore only covers a directory)
     for a in "$HOPCIM"/sw/applications/*/; do echo "sw/applications/$(basename "$a")/"; done

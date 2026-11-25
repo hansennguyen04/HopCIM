@@ -16,6 +16,7 @@ s     | fpga | build_micks | use_bscane_xilinx use_cim use_cim_mic use_cim_s    
 s4    | fpga | build_mic4s | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 | xheep_nexys_bscan_cim128mic4s.bit | baseline S at its lowest real-time clock, 4.096 MHz
 b1    | fpga | build_mickb1 | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_b1  | xheep_nexys_bscan_cim128kb1.bit   | S with StreamFuse B in block 1, live audio, 15.36 MHz
 b1-4  | fpga | build_mic4b1 | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 use_cim_b1 | xheep_nexys_bscan_cim128mic4b1.bit | B1 at 4.096 MHz
+s256  | fpga | build_micks256 | use_bscane_xilinx use_cim use_cim_mic use_cim_s           | xheep_nexys_bscan_cim128ks256k.bit | baseline S with 256 KiB of RAM (tree from setup.sh <dest> configs/kws_nexys_256k.py)
 r6b   | fpga | build_mick  | use_bscane_xilinx use_cim use_cim_mic                        | xheep_nexys_bscan_cim128k.bit     | R6b sequencer, live audio, 15.36 MHz
 r6b5  | fpga | build_mic5  | use_bscane_xilinx use_cim use_cim_mic use_cim_mic5           | xheep_nexys_bscan_cim128mic5.bit  | R6b at its lowest real-time clock, 5.12 MHz
 sim   | sim  | -           | use_cim                                                      | Vtestharness_cim                  | Verilator SoC, R6b, CIM front-end
@@ -43,6 +44,7 @@ save() {  # source, destination
 if [ "$V" = app ]; then
     name=${3:?app needs <name> <project>}; project=${4:?app needs <name> <project>}; flags=${5:-}
     out=${OUT:-$(dirname "$TREE")}
+    echo "build: app $name for a tree made with $(tree_cfg "$TREE")"
     make app PROJECT="$project" TARGET=nexys-a7-100t COMPILER_FLAGS="$flags" > "$out/app_$name.log" 2>&1 \
         || { tail -20 "$out/app_$name.log"; die "make app failed ($out/app_$name.log)"; }
     save sw/build/main.elf "$out/$name.elf"
@@ -54,6 +56,9 @@ row=$(echo "$VARIANTS" | awk -F'|' -v v="$V" '{k = $1; gsub(/ /, "", k)} k == v'
 kind=$(echo "$row" | cut -d'|' -f2 | xargs); root=$(echo "$row" | cut -d'|' -f3 | xargs)
 flags=$(echo "$row" | cut -d'|' -f4 | xargs); name=$(echo "$row" | cut -d'|' -f5 | xargs)
 fflags=$(for f in $flags; do printf -- '--flag=%s ' "$f"; done)
+# the generator configuration the variant needs (the RTL and the memory map come from it)
+case $V in *256) want=$XHEEP_CFG_256K;; *) want=$XHEEP_CFG;; esac
+[ "$(tree_cfg "$TREE")" = "$want" ] || die "$V needs a tree made with $want (xheep/setup.sh <dest> $want); $TREE has $(tree_cfg "$TREE")"
 t0=$SECONDS
 if [ "$kind" = fpga ]; then
     out=${OUT:-$(dirname "$TREE")/bitstreams}

@@ -6,10 +6,12 @@
 #   3. links into this repository: hw/ip/hopcim -> the RTL (FuseSoC finds hopcim.core through it),
 #      sw/applications/<app>/<file> -> sw/applications/<app>/<file> here (file by file, so the
 #      firmware's relative includes such as ../../../hw/ip/hopcim/sw/cim.h keep working),
-#   4. the generator: make mcu-gen X_HEEP_CFG=configs/kws_nexys.py,
+#   4. the generator: make mcu-gen X_HEEP_CFG=<config> (default configs/kws_nexys.py; recorded in
+#      <dest>/.hopcim-cfg, which check.sh and build.sh read),
 #   5. xheep/check.sh on the result.
 #
-# usage: xheep/setup.sh <dest>      <dest> must not exist yet (or be an unmodified clone of X-HEEP)
+# usage: xheep/setup.sh <dest> [<config>]   <dest> must not exist yet (or be an unmodified clone of X-HEEP);
+#        <config> defaults to $XHEEP_CFG; $XHEEP_CFG_256K (patch 0005) gives 256 KiB of RAM
 # env:   XHEEP_URL   where to clone from (default: upstream). Any clone holding the pinned commit will
 #                    do: the commit hash pins the content.
 #        XHEEP_VENV  a Python venv with X-HEEP's requirements, linked as <dest>/.venv
@@ -18,7 +20,8 @@
 set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-DEST=${1:?usage: xheep/setup.sh <dest>}
+DEST=${1:?usage: xheep/setup.sh <dest> [<config>]}
+CFG=${2:-$XHEEP_CFG}
 DEST=$(realpath -m "$DEST")
 case "$DEST/" in "$HOPCIM"/*) die "put the X-HEEP tree outside $HOPCIM (FuseSoC would scan it again through hw/ip/hopcim)";; esac
 
@@ -64,11 +67,13 @@ if [ -n "${XHEEP_VENV:-}" ]; then
 elif [ ! -e .venv ]; then
     make venv
 fi
+[ -f "$CFG" ] || die "no generator configuration $CFG in the patched tree"
+echo "$CFG" > .hopcim-cfg
 xheep_tools
 touch .hopcim-gen-start
 sleep 1    # file times have 1-s resolution on some filesystems; check.sh --record uses "newer than"
-make mcu-gen X_HEEP_CFG="$XHEEP_CFG" > mcu-gen.log 2>&1 || { tail -20 mcu-gen.log; die "make mcu-gen failed (mcu-gen.log)"; }
-echo "setup: make mcu-gen X_HEEP_CFG=$XHEEP_CFG done"
+make mcu-gen X_HEEP_CFG="$CFG" > mcu-gen.log 2>&1 || { tail -20 mcu-gen.log; die "make mcu-gen failed (mcu-gen.log)"; }
+echo "setup: make mcu-gen X_HEEP_CFG=$CFG done"
 
 # 5. check
 if [ "${HOPCIM_RECORD:-0}" = 1 ]; then "$XHEEP_HERE/check.sh" --record "$DEST"; fi

@@ -10,10 +10,12 @@ repository, and an X-HEEP tree is *built* from it rather than edited by hand:
 | `patches/0002-*.patch` | Nexys A7 board: debug over the on-board USB (BSCANE2 TCK on a BUFG, `bscan.xdc`), the on-board PDM microphone pins, `configs/kws_nexys.py`, OpenOCD configs |
 | `patches/0003-*.patch` | the HopCIM endpoint behind the FuseSoC flags `use_cim`, `use_cim_ded`, `use_cim_mic`, `use_cim_mic5`, `use_cim_s`, `use_cim_mic4`: the FPGA wrapper, the Verilator testharness (templates), the `x_heep_system` microphone ports, the clock wizards (15.36, 5.12, 8.192 MHz) |
 | `patches/0004-*.patch` | the flag `use_cim_b1`: StreamFuse B in block 1 (`docs/STREAMFUSE_B1.md`), in the wrapper and the testharness |
+| `patches/0005-*.patch` | `configs/kws_nexys_256k.py` (eight 32 KiB RAM banks instead of four, for the CPU-only TensorFlow Lite Micro baseline; the default configuration is unchanged) and C++17 for the firmware (TensorFlow Lite Micro needs it) |
 | `generated.sha256` | what `make mcu-gen X_HEEP_CFG=configs/kws_nexys.py` writes in a fresh tree (97 files) |
-| `setup.sh` | builds a tree: clone at the commit, `git am` the series (4 patches), check the result tree, link this repository in, run the generator, check |
+| `generated.kws_nexys_256k.sha256` | the same for `configs/kws_nexys_256k.py` |
+| `setup.sh` | builds a tree: clone at the commit, `git am` the series (5 patches), check the result tree, link this repository in, run the generator (default configuration, or the one given as a second argument, recorded in `<tree>/.hopcim-cfg`), check |
 | `check.sh` | checks a tree against the series, the generator output and the links, and reports any other change |
-| `build.sh` | bitstreams (`s`, `s4`, `b1`, `b1-4`, `r6b`, `r6b5`), Verilator SoC models (`sim`, `sim-ded`, `sim-s`, `sim-b1`), firmware (`app`) |
+| `build.sh` | bitstreams (`s`, `s4`, `b1`, `b1-4`, `r6b`, `r6b5`; `s256` needs a 256 KiB tree), Verilator SoC models (`sim`, `sim-ded`, `sim-s`, `sim-b1`), firmware (`app`) |
 
 The firmware is in `../sw/applications/` (19 apps). `setup.sh` links it into the tree file by file,
 so the apps' relative includes (`../../../hw/ip/hopcim/sw/cim.h`) resolve inside the X-HEEP tree.
@@ -44,6 +46,9 @@ XHEEP_VENV=~/APlus_Project/planenest/hw/x-heep/.venv xheep/setup.sh ~/xheep-hopc
 xheep/build.sh ~/xheep-hopcim s                     # bitstream of the baseline S, ~50 min
 xheep/build.sh ~/xheep-hopcim app hopcim_seq_nexys_15m36 hopcim_seq -DREFERENCE_CLOCK_Hz=15360000
 xheep/check.sh                                      # the working tree, planenest/hw/x-heep
+# the 256 KiB variant of S, for the CPU-only TensorFlow Lite Micro baseline
+XHEEP_VENV=~/APlus_Project/planenest/hw/x-heep/.venv xheep/setup.sh ~/xheep-256k configs/kws_nexys_256k.py
+xheep/build.sh ~/xheep-256k s256
 ```
 
 `setup.sh` needs the tools of `planenest/hw/xheep_env.sh` (RISC-V GCC 10.1, Verilator 5.040,
