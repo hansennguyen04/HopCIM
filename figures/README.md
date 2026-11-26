@@ -42,3 +42,10 @@ Colours: the first four slots of the data-viz reference palette, in its validate
 yellow). Node was not available here, so the palette validator was not re-run; the order is the palette's own
 documented passing order for adjacent pairs. Figure 3 labels each wide segment and has a legend, so no value
 depends on colour alone.
+
+## Literature figures (2026-11-25)
+
+`make_lit_figures.py` draws `lit1_capability`, `lit2_cycles` and `lit3_depthwise` from `lit_data.py`, where each value of
+another work has its source beside it. Other works' values are typed in from their papers or MLCommons' published
+results; HopCIM's come from `docs/DWU_RESULTS.md`, `model/dwu_rtl.json` and `docs/MLPERF_TINY.md`. They are not part of
+the freeze check. Text and captions: `docs/LITERATURE_REVIEW.md`.

@@ -1,5 +1,8 @@
 # The baseline S: sign-gated requantisation, a second requantisation lane, no L8 write
 
+**2026-11-25: S is the comparison baseline.** The default HopCIM design is S with the digital depthwise unit
+(`DWU_RESULTS.md`); `DESIGNS.md` has both side by side. Everything below is S and unchanged.
+
 Status (2026-11-08): **built in RTL behind a parameter, verified in simulation and on the board at 15.36 and 4.096 MHz (§8).** S is the
 mandatory baseline for every later optimisation (`HopCIM_Specific_Next_Steps_and_Professor_Advice.md` §5, §17). Its
 three changes were found and priced by the StreamFuse model study (`STREAMFUSE_STUDY.md`), before any RTL.

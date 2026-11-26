@@ -1,0 +1,17 @@
+[lint] verilator -Wall cim_endpoint, FE_DED=0, PDM_CLKDIV=4
+- V e r i l a t i o n   R e p o r t: Verilator 5.040 2025-08-30 rev v5.040
+- Verilator: Built from 0.805 MB sources in 10 modules, into 1.141 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.385 s (elab=0.048, cvt=0.273, bld=0.000); cpu 0.376 s on 1 threads; alloced 33.633 MB
+[build] testbench
+[run]
+audio path enabled (FE_DED = 0, PDM clock = clk / 4, network every 16 hops): 3072000 PDM bits, 7 decisions expected
+decisions: 0 of 7 wrong, 0 at a wrong hop; ring: 0 of 975 samples wrong; 150 hops; last decision at cycle 12096973
+restart: first decision at hop 49, count 1
+RESULT: 0 errors
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:208: Verilog $finish
+HOPMON 200 hops: worst 80020 cycles; with the network: worst 80020, mean 75198; without: worst 12233
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 165ms; walltime 35.499 s; speed 4.659 ms/s
+- Verilator: cpu 35.475 s on 1 threads; alloced 130 MB
+div4 k16 rc 0

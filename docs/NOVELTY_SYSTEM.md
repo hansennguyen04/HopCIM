@@ -129,6 +129,35 @@ IEEE-Xplore-targeted web search, not a logged-in manual Xplore search, so the th
 | Real-time processing of an audio stream | (✓: 16-ms frames; clips from the test platform) | | | ✓ (GSC over UART, or a PC microphone via an FPGA) | | ✓ (audio over I2S from an FPGA) | ✓ (on-board PDM microphone, FPGA) |
 | Measured energy | ✓ | (simulated) | (RTL) | ✓ | ✓ (macro) | ✓ | (estimate [E]; FPGA prototype) |
 
+## 3a. Comparison table for the paper: platform, front-end, model, accuracy (2026-11-14)
+
+Every entry re-checked against the full texts on 2026-11-14 (pdftotext of the PDFs in `Literature review/`; work 3 from
+`research_discovery/20261026_application_driven/Novelty affection/`). Added as row 7: CIMR-V, the group's own RISC-V +
+SRAM-CIM KWS work (Guo, Chang et al., arXiv 2503.22072), which the advisor will compare against (proposal §15.3); it is
+not one of the plan's six.
+
+| # | Work | Evaluated as | Front-end, and where it runs | Network and precision | What runs the network | Host | Published model kept unchanged? | Task and accuracy (how obtained) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Shan et al., ISSCC 2020 | measured chip, 28 nm, 0.41 V, 40 kHz | MFCC on a dedicated circuit: serial 256-point FFT, mel reduced to 2 MACs, log LUT, DCT; 10 × 8-bit coefficients per frame | custom 4-layer binarized DS-CNN, 3,456 weights; 1-bit activations, 8-bit input layer | two dedicated PEs and an FSM; no CIM | none (an FPGA drives the test board) | no: a model designed and trained for the chip | 1 or 2 keywords against fillers (6 : 1), GSC: about 98 % one-word, 94.6 % two-word (chip, Fig. 14.1.5) |
+| 2 | Jia et al., ISCAS 2022 | 28-nm layout, **simulated** (PTPX), 0.72 V, 250 kHz | 256-point FFT and CORDIC log in logic; **log moved before mel**, mel and DCT merged into one ternary 129 × 40 matrix **on the array**: not the standard MFCC | custom CNN (2 conv, max-pool, 2 FC); ternary weights, 2-bit activations | digital memory-boundary macro (COMB), one column per cycle | own controller, pre-compiled instructions | no: front-end and network trained jointly | 10 keywords: 90.54 % (float 93.50 %) (simulation) |
+| 3 | Kang et al., ASP-DAC 2025 (RV-Flash) | 65-nm place-and-route, RTL cycle counts; 150 MHz | not addressed (the model starts from features) | HRepFSMN (reparameterised FSMN): binary convolutions, FP16 element-wise | 2-KB binary eFlash CIM + FP16 vector unit | RV32I, 11 custom instructions, orchestrates | no: a new model | GSC v2-12: 96.52 % (v1-12: 96.46 %) (the model in software; no chip) |
+| 4 | Fu et al., TVLSI 2026 | measured chip, 65 nm, 0.65 V, 600 kHz | dedicated: 256-point FFT, \|Re\| + \|Im\|, mel as a sparse product, log2 LUT, **no DCT**: 16 log-mel features | BFNet (1-D depthwise + butterfly pointwise), 6-bit exponent-aware nonuniform weights | the FFT core, reused for the depthwise and butterfly layers; no CIM | none (an FPGA feeds the clips) | no: distilled from a DS-CNN teacher (96.5 → 95.8 → 95.29 %); the chip equals its own quantised model | 12 classes: 95.3 % (chip) |
+| 5 | Lee et al., TCAS-I 2026 (KWS-CIM) | measured macro, 65 nm, up to 250 MHz | mel spectrogram outside the array (software) | CIM-aware ternary DFSMN; embedding, Conv2D and classifier outside the array | charge-domain eDRAM CIM: ternary inputs, binary weights, 1-bit sense-amplifier readout | off-chip host (calibration table) | no: trained for the macro | 12 / 20 / 35 classes: 91.66 / 89.87 / 87.30 % (software 92.48 / 90.98 / 88.11 %) (**software inference with the macro's measured output statistics**, not end to end) |
+| 6 | Dong et al., JSSC 2026 | measured SoC, 55 nm; 96 MHz in KWS mode | MFCC on an in-house DSP (512-point FFT, 40 mel, log, 20 DCT), 12 MHz | **MLPerf Tiny's DS-CNN architecture** (also MicroNets' DSCNN-M, a custom DSCNN-S); quantisation not stated | in-house 16-MAC DNN accelerator, per-layer DMA; the digital CIM runs only the voice-activity detector | Cortex-M0 (control), Cortex-M4 | the architecture, retrained for 35 keywords; no equality with a reference stated | 35 keywords, GSC v2: "over 93 %" (how measured not stated per model) |
+| 7 | Guo, Chang et al., CIMR-V (NYCU/ITRI), arXiv 2503.22072 | synthesized (Design Compiler), simulated, 28 nm, 0.9 V, 50 MHz | raw audio: high-pass filter, batch norm, quantise; no MFCC | 1-D binary CNN (5 × conv/max-pool on the CIM, weight fusion) | 10T SRAM CIM, 1-bit inputs, weights and outputs | Ibex RISC-V (PULPissimo) with CIM instructions | no: a model designed for the CIM | GSC, 12 classes: 94.02 % (the paper's flow; no chip) |
+| | **HopCIM** | **FPGA prototype** (Nexys A7-100T), 15.36 MHz (real time down to 4.096 MHz); board = RTL cycle for cycle | **the standard MFCC** (512-point FFT in four steps, power, mel, log, DCT) in exact integer arithmetic **on the CIM** plus a hardware epilogue; equal to its golden model on all 239,610 test frames | **MLPerf Tiny's DS-CNN, int8** | digital bit-serial CIM, 128 tiles (emulated), and a hardware layer sequencer | X-HEEP CV32E20 (RISC-V), asleep while the network runs | **yes: the published pretrained int8 model, unchanged, bit-exact to TFLite's reference kernels** (4,890 clips; 1,000 of 1,000 under MLPerf's runner) | 12 classes, GSC v2 test set: 91.80 % (the same model on float MFCC: 91.66 %); MLPerf Tiny's runner: 90.1 % closed, 90.5 % open (**unverified**) (board) |
+
+How to read it:
+- **The accuracies are not a ranking.** The tasks differ (1–2 keywords against fillers, 10, 12, 35 classes), and so do
+  the models and the ways the numbers were obtained (chip, simulation, software with measured statistics). HopCIM's
+  accuracy is not a design result at all: it is the reference model's own, reproduced exactly; a better model would
+  run on the same hardware.
+- **"Model kept unchanged" is the column only HopCIM fills with a published pretrained model.** Works 1–5 and 7 design
+  or retrain their model for their hardware (which is how they reach 1-bit, ternary or 6-bit arithmetic); work 6 keeps
+  MLPerf Tiny's architecture but retrains it for 35 keywords.
+- **Energy is left out on purpose.** Works 1, 4, 5 and 6 report measured silicon; HopCIM's energies are model estimates
+  [E] for 28 nm (`ENERGY_ESTIMATE.md`), and a column would invite a comparison the evidence does not support.
+
 ## 4. What this means for the claim
 
 **The safer claim stands, with precise wording:** *the published, pretrained int8 MLPerf Tiny KWS model, unchanged and
@@ -159,6 +188,38 @@ the *pretrained int8 model* unchanged and *bit-exact*, *on the CIM*.
 
 **Citing work 5:** its KWS accuracies are software inference with the macro's measured output statistics, not
 end-to-end chip runs; cite them as such.
+
+## 4a. Works close to the digital depthwise unit, and one system work the list missed (2026-11-25)
+
+Read status: **F** full text at hand, searched for depthwise, KWS, MFCC and exactness and read at those places; **A** abstract or
+record page only. Numbers are the papers' own.
+
+| Work | Read | What it does with depthwise layers | Against HopCIM (S+DWU) |
+|---|---|---|---|
+| Garofalo et al., "A Heterogeneous In-Memory Computing Cluster for Flexible End-to-End Inference of Real-World Deep Neural Networks", IEEE JETCAS 12(2), 422–435, 2022 (arXiv 2201.01089) | F | **The same split**: pointwise layers on an analog PCM array (256 × 256), depthwise on a dedicated digital accelerator (36 multipliers, weights from memory, 29.7 MAC/cycle average), 8 RISC-V cores. 22-nm place and route, array model from 14-nm prototypes; MobileNetV2's bottleneck layer: 11.5 × the cores' performance, 2.6 × their software depthwise | **The idea is theirs** (their earlier work, Ottavi et al., arXiv 2109.01404, ran the depthwise layers on the cores). HopCIM: exact digital CIM, a KWS network, 12.4 kGE priced against three alternatives, 4,890 clips exact, FPGA |
+| Lin et al., "iMCU: A 28-nm Digital In-Memory Computing-Based Microcontroller Unit for TinyML", IEEE JSSC 59(8), 2684–2693, 2024 (accepted manuscript read) | F | Depthwise is not mentioned | **Measured silicon**: RISC-V, 32 KB digital IMC, TFLite-micro; ResNetv1 from MLPerf-Tiny (86.96 % on CIFAR-10, 60.9 ms, 102.18 µJ at 0.7 V) and tiny-conv for **4 keywords** (91.34 %). No DS-CNN, no MFCC, no bit-exactness statement |
+| Zhou et al., "AnalogNets: ML-HW Co-Design of Noise-Robust TinyML Models and Always-On Analog Compute-in-Memory Accelerator" (arXiv 2111.06503; IEEE Micro 2022) | F | **Replaces** depthwise-separable blocks by regular 3 × 3 convolutions and retrains: analog CIM wastes cells on depthwise (local array utilisation as low as 0.9 %) | Keeps the published model instead of redesigning it. AnalogNets is better on accuracy (95.6 % on 12 keywords, PCM, 8-bit) and efficiency (8.2 µJ per inference, its own estimate); not exact |
+| Song and Jeong, "Computing-In-Memory Dataflow for Minimal Buffer Traffic" (ConvDK; arXiv 2508.14375, 2025) | F | Keeps depthwise on an analog CIM by duplicating kernels: 77.4–87.0 % less buffer traffic, 15.6–27.8 % less latency on the depthwise layers; simulated, 28 nm | Different answer to the same problem. No accuracy result, depthwise layers only, no system |
+| Wang et al., ISSCC 2023, 7.5 | F | Feature-stationary analog macro for depthwise (FS in `DWSWAP_STUDY.md`) | Priced as FS: 28.48 µW at U against 27.96 |
+| Qiao et al., "MixCIM: A Hybrid Computing-in-Memory Macro With Less Data-Movement and Better Memory-Reuse for Depthwise Separable Neural Networks", IEEE JSSC 61(7), 3801–, 2026, DOI 10.1109/JSSC.2026.3651775 | F | Both halves **inside one macro**: depthwise on an eDRAM array (activation-stationary, sliding in place, 6-bit ADC), pointwise on an SRAM array (8-bit ADC); 28-nm measured macro, 15.31 TOPS/W depthwise, 40.99 pointwise, 17.2 for both, 8 bits; MobileNet-V2, 92.47 % on CIFAR-10, 69.53 % on ImageNet | Analog, retrained (QAT with the circuit's quantisation) and 2.37 % below the floating-point software model; a macro, with a Zynq supplying data: no processor, no KWS, no MFCC. HopCIM: exact, full system. MixCIM: measured silicon |
+| Houshmand et al., "DIANA: An End-to-End Hybrid DIgital and ANAlog Neural Network SoC for the Edge", IEEE JSSC 58(1), 203–215, 2023, run with HTVM (Van Delm et al., arXiv 2406.07453) and MATCH (Hamdi et al., TCAD 2025) | F | **The same split, in silicon**: 22-nm RISC-V SoC with a digital core ("pointwise layers, depthwise layers, and FC layers") and an analog core. HTVM **runs MLPerf Tiny's KWS DS-CNN** on it (1.75 ms at 260 MHz on the digital core, first filter changed to 7 × 5; depthwise uses one PE row, at most 3.75 MAC/cycle); MATCH reports HTVM at 7.26 ms for it | KWS on a RISC-V chip with a CIM is therefore **not HopCIM's claim**. HopCIM: the pretrained model unchanged and bit-exact, with the MFCC on the CIM, CPU asleep; no accuracy is stated for DIANA's DS-CNN. DIANA: measured |
+| Garofalo et al., "DARKSIDE: A Heterogeneous RISC-V Compute Cluster for Extreme-Edge On-Chip DNN Inference and Training", arXiv 2303.17954 (journal version to check) | F | Digital depthwise engine (up to 30 MAC/cycle) in an 8-core RISC-V cluster, measured 65-nm silicon | No CIM and no KWS; the same kind of engine as HopCIM's unit, with wider throughput |
+| Zheng et al., "MobiLattice: A Depth-wise DCNN Accelerator with Hybrid Digital/Analog Nonvolatile Processing-In-Memory Block", ICCAD 2020 (DOI 10.1145/3400302.3415666) | F | Depthwise on the ReRAM crossbars in a digital mode; simulated, Design Compiler 40 nm scaled to 32 nm; 2.2–3.2 × ISAAC on MobileNet, MobileNetV2, Xception | Layers and models without accuracy or a system; HopCIM is exact, KWS, and built. MobiLattice has far more compute |
+
+**What follows:**
+- **The unit's idea must not be claimed.** Offloading depthwise layers to a digital unit beside a CIM is published
+  (Garofalo et al.), and DIANA does it in silicon with a RISC-V host; a dedicated digital depthwise engine in a RISC-V
+  cluster is too (DARKSIDE). MixCIM keeps both convolutions in memory instead.
+- **What can be claimed:** on this exact, published KWS network, four ways of running the depthwise layers (swap-in,
+  feature-stationary, large digital, this unit) priced with one model and frozen gates, the chosen one built, and its
+  RTL equal to the model in cycles and counts and exact on 4,890 clips.
+- **Correction (2026-11-25).** An earlier note said none of the hybrid papers does KWS; HTVM runs the DS-CNN on DIANA.
+- **§4 is too wide on one point.** It did not know iMCU, which runs a published MLPerf-Tiny model on a digital CIM in a
+  RISC-V microcontroller, in silicon. The claim that holds is the *keyword-spotting* model: the pretrained int8 DS-CNN,
+  bit-exact, with a standard MFCC on the CIM. Say "KWS" in it.
+- **Not better, and not to be implied:** accuracy (it is the reference model's), power (an estimate against measured
+  silicon), speed.
+
 
 ## 5. Still to do
 

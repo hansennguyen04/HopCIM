@@ -713,6 +713,7 @@ table and paper figure traced to its command and output in `freeze/RESULTS_FREEZ
 | A decision every k hops (2026-11-05) | ✅ Bit-exact in RTL and on the board at 20, 40 and 80 ms; 18 LUT; 50–75 % fewer CIM passes. ✅ One speaker: 48, 47 and 42 of 50 keywords at 20, 40 and 80 ms, so 40 ms is the operating point (`LIVE_AUDIO.md` §9) |
 | Exact activation reuse (2026-11-05) | ✅ Evaluated in software, not built: exact on 174,216 decisions, 45.5–51.3 % fewer passes, about +72 KB of memory, the worst case unchanged (`REUSE_EVALUATION.md`) |
 | Baseline S (2026-11-08) | ✅ Built behind a parameter; RTL = schedule model in all ten layers and every access count; all 4,890 clips bit-exact; on the board 67,909 cycles go to interrupt, real time down to **4.096 MHz**; [E] 1,120.8 nJ per inference (`BASELINE_S.md`) |
+| Digital depthwise unit (2026-11-22; default design since 2026-11-25) | ✅ The four depthwise layers off the CIM (`SEQ_DWU = 4`): RTL = frozen model in every layer and counter (67,789 cycles); all 4,890 clips bit-exact; on the board 67,856 cycles go to interrupt, 60 runs exact, no overrun, real-microphone logits exact; 12,414 gate equivalents; [E] 27.96 µW at mode U (S 44.11), 50.28 µW at 40 ms (S 68.78). S is kept as the comparison baseline (`DWU_RESULTS.md`, `DESIGNS.md`) |
 | B1: one StreamFuse-B block (2026-11-08) | ✅ RTL = schedule model (67,817 cycles, every segment and access count); all 4,890 clips bit-exact; board exact, no overrun; +635 LUT, +202 FF against S; [E] −2.4 % network energy, nothing at 40 ms (`STREAMFUSE_B1.md`). ⏳ All four blocks only on the advisor's decision (§15.3) |
 | X-HEEP as a patch series (2026-11-08) | ✅ 4 patches on upstream X-HEEP, built by `xheep/setup.sh`, checked by `xheep/check.sh`; a clean clone gives the S bitstream bit for bit apart from the 4 bytes of its build time (`INTEGRATION.md`) |
 | Energy estimate (2026-11-07, extended 2026-11-08) | ✅ **[E]** 28 nm, exact activity with published tools: 1,389.3 nJ per inference for R6b, 1,120.8 nJ for S and 1,094.1 nJ for B1 from the RTL's counters; 110, 75 and 58 µW at 20, 40 and 80 ms for R6b, 97.0, 68.8 and 54.7 µW for S; reuse saves a net 13 µW at 40 ms (R6b). ✅ ZigZag-IMC run: ratio 1.000 on the pointwise layers, 1.029 overall at the measured activity. ⏳ The digital logic is still coarse: the ASIC flow needs permission to install (`ENERGY_ESTIMATE.md` §11) |
@@ -749,7 +750,8 @@ the default next step. Order set on 2026-11-13:
    the coarse digital logic; its download needs the student's approval. Everything keeps its estimate label.
 7. **Verification.** ✅ Assertions, coverage, mutation and extreme-input tests, a post-synthesis smoke test of the
    endpoint, and the regression from a clean clone (`VERIFICATION.md`).
-8. **Architecture extension.** ✅ The baseline S, built from the StreamFuse study's main finding. ✅ B1, one block
+8. **Architecture extension.** ✅ The baseline S, built from the StreamFuse study's main finding. ✅ The digital depthwise
+   unit on S (`DWU_RESULTS.md`), the default design since 2026-11-25, with S kept as the baseline. ✅ B1, one block
    of StreamFuse-B, equal to its model. ⏳ All four blocks of StreamFuse-B only if the advisor decides so. StreamFuse
    A and C and activation reuse in RTL are not planned (`STREAMFUSE_STUDY.md`, `REUSE_EVALUATION.md`).
 9. **Writing.** ✅ Paper figures from the freeze (`figures/`). ⏳ The paper once the venue is chosen; the thesis

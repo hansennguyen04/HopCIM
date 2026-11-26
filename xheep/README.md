@@ -46,7 +46,9 @@ re-vendor needs the network and was not run.
 ```bash
 # a new tree (outside this repository); XHEEP_VENV avoids `make venv`, which needs the network
 XHEEP_VENV=~/APlus_Project/planenest/hw/x-heep/.venv xheep/setup.sh ~/xheep-hopcim
-xheep/build.sh ~/xheep-hopcim s                     # bitstream of the baseline S, ~50 min
+xheep/build.sh ~/xheep-hopcim dwu                   # bitstream of the default design, S+DWU, ~40 min
+xheep/build.sh ~/xheep-hopcim app hopcim_seq_dwu_nexys hopcim_seq "-DREFERENCE_CLOCK_Hz=15360000 -DCIM_DWU=4"
+xheep/build.sh ~/xheep-hopcim s                     # bitstream of the comparison baseline S, ~50 min
 xheep/build.sh ~/xheep-hopcim app hopcim_seq_nexys_15m36 hopcim_seq -DREFERENCE_CLOCK_Hz=15360000
 xheep/check.sh                                      # the working tree, planenest/hw/x-heep
 # the 256 KiB variant of S, for the CPU-only TensorFlow Lite Micro baseline

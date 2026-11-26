@@ -174,3 +174,9 @@ source before S and B1):
 |---|---|
 | `cim_seq.sv:1213`, the last reader's row clamped to 24 | the replaced word's row is at most 22 (input rows ≤ 24, minus 2 or 3), so the clamp never applies; kept as the general rule |
 | `cim_seq.sv:1246`, a fusion-vector position change seen first on lane 1 | every position's first result is channel 0, which lane 0 carries |
+
+## 10. The digital depthwise unit (2026-11-22)
+
+`SEQ_DWU` (`DWU_RESULTS.md`) changed `cim_seq` behind another parameter, off by default. Regression, `sim/run_all.sh`:
+**53 of 53 pass**, the 46 above and 7 for the unit. All 4,890 clips: 0 errors. 3 of 3 unit mutants caught. The assertion
+set and the coverage merge were not extended to the unit.

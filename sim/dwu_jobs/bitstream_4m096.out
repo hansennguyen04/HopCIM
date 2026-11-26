@@ -1,0 +1,3 @@
+build: dwu-4 -> xheep_nexys_bscan_cim128mic4dwu.bit (use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_mic4 use_cim_dwu), build root build_mic4dwu/core, log /home/hansen0411/APlus_Project/planenest/hw/x-heep-dwu/build_mic4dwu.build.log
+build: /home/hansen0411/APlus_Project/planenest/hw/bitstreams/xheep_nexys_bscan_cim128mic4dwu.bit  sha256 3b4ec1c73dd34312
+build: dwu-4 done in 2518 s

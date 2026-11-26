@@ -9,6 +9,9 @@ a Vivado synthesis mismatch, which was found and fixed (§8a).
 the parameter `SEQ_S` and replaces R6b as the baseline: 67,841 cycles per inference instead of 85,352, exact on all
 4,890 test clips, on the board at 15.36 MHz (`BASELINE_S.md`). With `SEQ_S = 0` everything below is unchanged.
 
+**2026-11-25: the default design is S+DWU**, S with the digital depthwise unit (`SEQ_DWU = 4`, `DWU_RESULTS.md`): 67,789
+cycles, exact on all 4,890 clips. S stays as the comparison baseline (`DESIGNS.md`).
+
 ## 1. Result
 
 `rtl/cim_seq.sv` runs the whole MLPerf Tiny int8 DS-CNN on the CIM by itself. Per decision, the

@@ -138,7 +138,8 @@ From the RTL's counters (`sim/run_energy_counts.sh cim 5 1 d4`) against S's, wit
 
 Bitstream `planenest/hw/bitstreams/xheep_nexys_bscan_cim128kdwu.bit` (`xheep/build.sh <tree> dwu`, 39 min; sha256
 `87954077de759372…`): 44,022 LUTs (69.4 %), 41,178 registers, 83.5 block-RAM tiles, 148 DSPs. Timing met: system clock
-(15.36 MHz) WNS +16.18 ns, WHS +0.229 ns, no failing endpoint. Firmware in `planenest/hw/`, all built with
+(15.36 MHz) WNS +16.18 ns, WHS +0.229 ns, no failing endpoint in it. Vivado's design-wide summary is not met: −12.285 ns on
+64 endpoints, all on the crossing to X-HEEP's stock, unused SPI-slave clock, as in S (−12.581) and B1 (−12.050). Firmware in `planenest/hw/`, all built with
 `-DREFERENCE_CLOCK_Hz=15360000 -DCIM_DWU=4`: `hopcim_seq_dwu_nexys.elf`, `hopcim_live{,_k2,_k4}_dwu_nexys.elf`,
 `hopcim_micrec{,_k2,_k4}_dwu_nexys.elf`. The default builds (without `-DCIM_DWU`) still disassemble identically to the
 ELFs used before. The student ran the board on 2026-11-23.

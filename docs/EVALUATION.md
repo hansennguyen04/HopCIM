@@ -197,6 +197,26 @@ The one-block prototype the gates allow (`STREAMFUSE_B1.md`): L1 → line buffer
 B1 is not worth keeping for its own gain; it shows that the schedule model behind the four-block numbers (B: 0.837 × S,
 0.575 × the storage) predicts B's mechanisms in RTL exactly, and that their control costs +420 LUT, +197 FF.
 
+## 12a. The default design, S+DWU (2026-11-25)
+
+The depthwise layers moved off the CIM onto a digital unit (`DWU_RESULTS.md`; S and S+DWU side by side in
+`DESIGNS.md`). From 2026-11-25 it is the default design and S is the comparison baseline; §11 and the sections after it report S.
+
+| | S | S+DWU |
+|---|---:|---:|
+| Network, go → interrupt (board) | 67,909 | **67,856** |
+| Network cycles, RTL against the schedule model | 67,841 = model | **67,789 = model**, every layer and all 9 counters |
+| Exact on 4,890 clips | 0 errors | 0 errors |
+| Worst hop (RTL) | 80,072 | **80,020** |
+| CIM tiles (macros) | 69 (5) | **29 (2)** |
+| Network energy per inference [E] | 1,120.8 nJ | **1,013.2 nJ** (−9.6 %) |
+| Total power at mode U / 40 ms [E] | 44.11 / 68.78 µW | **27.96 / 50.28 µW** (−36.6 / −26.9 %) |
+| Endpoint, logic LUT / FF (out of context, same source) | 7,489 / 5,980 | 8,743 / 6,795 |
+| Live path on the board: overrun, real-audio logits | 0, exact | 0, exact |
+
+The gain is power, nearly all of it leakage, and not speed: feeding data in, not the multiplying, sets the pace of the
+depthwise layers. Real time at 4.096 MHz is shown in RTL only (worst hop 80,020 ≤ 81,920).
+
 ## 13. Figures (2026-11-13)
 
 `figures/out/` holds four paper figures drawn from the frozen evidence by `figures/make_figures.py`: the CPU-active
