@@ -8,7 +8,7 @@ source "$HOME/APlus_Project/planenest/hw/xheep_env.sh" >/dev/null
 PKG="$HOME/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv"
 OBJ="$ROOT/sim/obj_net2_all"; OUT="$ROOT/sim/net2_all_vec"; rm -rf "$OUT"; mkdir -p "$OUT"
 RTL=("$ROOT/rtl/cim_engine.sv" "$ROOT/rtl/cim_fe.sv" "$ROOT/rtl/mfcc_ded.sv" "$ROOT/rtl/cim_log2fix16.sv" "$ROOT/rtl/cim_seq.sv" "$ROOT/rtl/pdm_dec.sv" "$ROOT/rtl/cim_audio.sv" "$ROOT/rtl/cim_gseq.sv" "$ROOT/rtl/cim_endpoint.sv")
-verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_net2_all -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_net2_all.sv" > "$ROOT/sim/build_net2_all.log" 2>&1
+verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_net2_all -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_net2_all.sv" > "$ROOT/sim/logs/build_net2_all.log" 2>&1
 PY="$HOME/venvs/planenest/bin/python"
 cd "$ROOT/model"
 "$PY" - "$N" "$J" "$OUT" <<'PYEOF'
@@ -37,10 +37,10 @@ for s in range(J):
     open(os.path.join(d, "n"), "w").write(str(b - a)); tot += b - a
 print(tot, "images in", s + 1, "shards; golden logits from resnet_int.py")
 PYEOF
-cd "$ROOT"; rm -f sim/net2_all_*.log
+cd "$ROOT"; rm -f sim/logs/net2_all_*.log
 for s in $(seq 0 $((J - 1))); do
   [ -d "$OUT/s$s" ] || continue
-  ( "$OBJ/Vtb_cim_net2_all" +VDIR=sim/net2_all_vec/s$s +NIMG=$(cat "$OUT/s$s/n") > "sim/net2_all_$s.log" 2>&1 ) &
+  ( "$OBJ/Vtb_cim_net2_all" +VDIR=sim/net2_all_vec/s$s +NIMG=$(cat "$OUT/s$s/n") > "sim/logs/net2_all_$s.log" 2>&1 ) &
 done
 wait
-grep -h '^ALL' sim/net2_all_*.log | tee sim/net2_all.log
+grep -h '^ALL' sim/logs/net2_all_*.log | tee sim/logs/net2_all.log

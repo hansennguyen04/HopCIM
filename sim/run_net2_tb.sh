@@ -13,9 +13,9 @@ if [ ! -x "$OBJ/Vtb_cim_net2" ] || [ "${REBUILD:-0}" = 1 ]; then
   verilator --lint-only -Wall -I"$ROOT/rtl" -GSEQ_S=1 -GSEQ_DWU=$DWU -GSEQ_NET2=1 "$PKG" "${RTL[@]}" --top-module cim_endpoint
   echo "[build] testbench"
   verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_net2 -GDWU=$DWU -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-    -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_net2.sv" > "$ROOT/sim/build_net2_d$DWU.log" 2>&1 \
-    || { tail -30 "$ROOT/sim/build_net2_d$DWU.log"; exit 1; }
+    -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_net2.sv" > "$ROOT/sim/logs/build_net2_d$DWU.log" 2>&1 \
+    || { tail -30 "$ROOT/sim/logs/build_net2_d$DWU.log"; exit 1; }
 fi
 cd "$ROOT"
-"$OBJ/Vtb_cim_net2" +NIMG=$NIMG +IMG0=$IMG0 | tee "$ROOT/sim/net2_tb_d$DWU.log"
-grep -q "^PASS" "$ROOT/sim/net2_tb_d$DWU.log"
+"$OBJ/Vtb_cim_net2" +NIMG=$NIMG +IMG0=$IMG0 | tee "$ROOT/sim/logs/net2_tb_d$DWU.log"
+grep -q "^PASS" "$ROOT/sim/logs/net2_tb_d$DWU.log"

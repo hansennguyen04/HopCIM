@@ -11,7 +11,7 @@ starts, and tap k of the next group when chunk k of the group's last vector (p =
 
 Usage: dwu.py            cycles and counts of S, D1 and D4 (writes model/dwu_prediction.json; frozen with the gates)
        dwu.py rtl        after the RTL: R2 (bench cycles, energy counters), R4 (size), R5 (power from the RTL's own
-                         counters); needs sim/seq_tb_cim_d{1,4}.log, model/energy_counts_cim_{s,d4}.log and the two
+                         counters); needs sim/logs/seq_tb_cim_d{1,4}.log, model/energy_counts_cim_{s,d4}.log and the two
                          out-of-context runs of syn/ooc.tcl; writes model/dwu_rtl.json
 """
 import json
@@ -159,7 +159,7 @@ def utilisation(d):
 
 def bench_cycles(log):
     import re
-    txt = open(os.path.join(HERE, "..", "sim", log)).read()
+    txt = open(os.path.join(HERE, "..", "sim", "logs", log)).read()
     stops = [int(x) for x in re.findall(r"^layer L\d \(stop after it\): \d+ / 8000 mismatches, (\d+) cycles from go", txt, re.M)]
     full = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", txt)[1])
     assert re.search(r"^PASS", txt, re.M)

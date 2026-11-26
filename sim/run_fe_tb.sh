@@ -14,9 +14,9 @@ echo "[lint] verilator -Wall cim_endpoint, FE_DED=$DED"
 verilator --lint-only -Wall -I"$ROOT/rtl" -GFE_DED=$DED "$PKG" "${RTL[@]}" --top-module cim_endpoint
 echo "[build] testbench"
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_fe -GDED=$DED -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_fe.sv" > "$ROOT/sim/build_fe_$MODE.log" 2>&1 \
-  || { tail -30 "$ROOT/sim/build_fe_$MODE.log"; exit 1; }
+  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_fe.sv" > "$ROOT/sim/logs/build_fe_$MODE.log" 2>&1 \
+  || { tail -30 "$ROOT/sim/logs/build_fe_$MODE.log"; exit 1; }
 echo "[run]"
 cd "$ROOT"
-"$OBJ/Vtb_cim_fe" | tee "$ROOT/sim/fe_tb_$MODE.log"
-grep -q "^PASS" "$ROOT/sim/fe_tb_$MODE.log"
+"$OBJ/Vtb_cim_fe" | tee "$ROOT/sim/logs/fe_tb_$MODE.log"
+grep -q "^PASS" "$ROOT/sim/logs/fe_tb_$MODE.log"

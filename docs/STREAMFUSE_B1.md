@@ -32,13 +32,13 @@ line buffer, L3..L8 with the maps swapped) gave 67,817 cycles and the access cou
 | Per inference | Schedule model | RTL | |
 |---|---:|---:|---|
 | Cycles, whole network | 67,817 | **67,817** | equal (S 67,841) |
-| Cycles by segment: L0, fused L1 + L2, L3 .. L8, FC | 4,533, 15,780, 11,273, 4,531, 11,273, 4,531, 11,273, 4,531, 92 | the same, every one | `sim/seq_tb_cim_b1.log`, stop after each layer |
+| Cycles by segment: L0, fused L1 + L2, L3 .. L8, FC | 4,533, 15,780, 11,273, 4,531, 11,273, 4,531, 11,273, 4,531, 92 | the same, every one | `sim/logs/seq_tb_cim_b1.log`, stop after each layer |
 | ACT word reads (gather + fill) | 33,470 | 33,470 | S 42,960 |
 | Line-buffer reads / word writes | 9,490 / 1,250 | 9,490 / 1,250 | |
 | Fusion-vector chunk reads / byte writes | 1,000 / 8,000 | 1,000 / 8,000 | |
 | ACT byte writes | 56,000 | 56,000 | S 64,000 |
 | Passes, requantisations, multiplies, gated results | as S | as S | |
-| Exactness | 4,890 clips, 0 mismatches in L0..L8 and logits | **4,890 clips, 0 logit or class errors** | `sim/seq_allclips_b1.log` |
+| Exactness | 4,890 clips, 0 mismatches in L0..L8 and logits | **4,890 clips, 0 logit or class errors** | `sim/logs/seq_allclips_b1.log` |
 | Hazards / source stalls | 0 / 6 (all on the fusion vector) | assertions: 0 failures | |
 
 RTL counts from `sim/run_energy_counts.sh cim 5 1 b1` (101 decisions, `model/energy_counts_cim_b1.log`).
@@ -47,7 +47,7 @@ RTL counts from `sim/run_energy_counts.sh cim 5 1 b1` (101 decisions, `model/ene
 
 | Check | Result |
 |---|---|
-| `tb_cim_seq`, every layer of clip 0 (L1 from a monitor on the fusion-vector writes), 20 clips, FEAT ring, interplay, both synthetic parameter sets | PASS, 0 mismatches (`sim/seq_tb_cim_b1.log`); also with B3 (`seq ded b1`) |
+| `tb_cim_seq`, every layer of clip 0 (L1 from a monitor on the fusion-vector writes), 20 clips, FEAT ring, interplay, both synthetic parameter sets | PASS, 0 mismatches (`sim/logs/seq_tb_cim_b1.log`); also with B3 (`seq ded b1`) |
 | `tb_cim_stream`: 150 hops, 101 decisions | PASS |
 | `tb_cim_mic`, live path at 15.36 MHz and at 4.096 MHz (k = 1, 4) | PASS, no overrun; worst hop 80,048 (S 80,072) |
 | Verilator SoC (X-HEEP with `use_cim_s use_cim_b1`, from `xheep/setup.sh`), `hopcim_seq` | 60 runs bit-exact, **67,885 cycles go to interrupt** (RTL + 68, as for S), CPU-active unchanged |

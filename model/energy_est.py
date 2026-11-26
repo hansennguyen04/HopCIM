@@ -528,7 +528,7 @@ def s_rtl(out=print):
     assert all(cs[k] == cc[k] for k in cc if k.startswith("engine.pass_") or k.startswith("seq.gather")), "same passes and gathers"
     assert wp_cyc(cs) == wp_cyc(cc), "the window path is unchanged"
     saved = (cc["seq.run_cycles"] - cs["seq.run_cycles"]) / nd
-    seq_log = open(os.path.join(HERE, "..", "sim", "seq_tb_cim_s.log")).read()
+    seq_log = open(os.path.join(HERE, "..", "sim", "logs", "seq_tb_cim_s.log")).read()
     cyc = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", seq_log)[1])
     assert saved == 85352 - cyc, f"counters save {saved} cycles per inference, the sequencer bench {85352 - cyc}"
     gated = cs["seq.requant_gated"] / nd
@@ -603,9 +603,9 @@ def b1_rtl(out=print):
     per = {k: cb[f"seq.b1_{k}"] / nd for k in ("gather_lb", "gather_fv", "fill_act_reads", "lb_writes", "fv_byte_writes")}
     assert per == dict(gather_lb=9490, gather_fv=1000, fill_act_reads=1250, lb_writes=1250, fv_byte_writes=8000), per
     assert cb["seq.act_writes"] == 56000 * nd
-    log = open(os.path.join(HERE, "..", "sim", "seq_tb_cim_b1.log")).read()
+    log = open(os.path.join(HERE, "..", "sim", "logs", "seq_tb_cim_b1.log")).read()
     cyc = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", log)[1])
-    cyc_s = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", open(os.path.join(HERE, "..", "sim", "seq_tb_cim_s.log")).read())[1])
+    cyc_s = int(re.search(r"full inference (\d+)\.\.(\d+) cycles", open(os.path.join(HERE, "..", "sim", "logs", "seq_tb_cim_s.log")).read())[1])
     assert (cs["seq.run_cycles"] - cb["seq.run_cycles"]) / nd == cyc_s - cyc, "the counters and the sequencer bench agree on the saving"
     rows_net = (cb["engine.xw_rows"] - cb["seq.lraw_ring_reads"]) / nd
     act_r = (cb["seq.gather_tv_lt1"] + cb["seq.gather_tv_lt2"]) / nd - per["gather_lb"] - per["gather_fv"] + per["fill_act_reads"]

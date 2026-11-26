@@ -18,9 +18,9 @@ echo "[lint] verilator -Wall cim_endpoint, FE_DED=$DED SEQ_S=$S"
 verilator --lint-only -Wall -I"$ROOT/rtl" -GFE_DED=$DED -GSEQ_S=$S -GSEQ_B1=$B1 -GSEQ_DWU=$DWU "$PKG" "${RTL[@]}" --top-module cim_endpoint
 echo "[build] testbench"
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_seq -GDED=$DED -GS=$S -GB1=$B1 -GDWU=$DWU -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_seq.sv" > "$ROOT/sim/build_seq_$MODE$SUF.log" 2>&1 \
-  || { tail -30 "$ROOT/sim/build_seq_$MODE$SUF.log"; exit 1; }
+  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_seq.sv" > "$ROOT/sim/logs/build_seq_$MODE$SUF.log" 2>&1 \
+  || { tail -30 "$ROOT/sim/logs/build_seq_$MODE$SUF.log"; exit 1; }
 echo "[run]"
 cd "$ROOT"
-"$OBJ/Vtb_cim_seq" | tee "$ROOT/sim/seq_tb_$MODE$SUF.log"
-grep -q "^PASS" "$ROOT/sim/seq_tb_$MODE$SUF.log"
+"$OBJ/Vtb_cim_seq" | tee "$ROOT/sim/logs/seq_tb_$MODE$SUF.log"
+grep -q "^PASS" "$ROOT/sim/logs/seq_tb_$MODE$SUF.log"

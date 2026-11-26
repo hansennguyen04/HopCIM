@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The whole RTL regression, one summary line per bench. Exit status 0 only if all pass.
-#   run_all.sh [jobs, default 4]    about 12 min on 16 cores; writes sim/regression.log
+#   run_all.sh [jobs, default 4]    about 12 min on 16 cores; writes sim/logs/regression.log
 # Not included: run_soc.sh (needs an X-HEEP Verilator build), run_audio_nl.sh (about 70 min, needs Vivado).
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -38,6 +38,6 @@ i=0; for b in "${BENCHES[@]}"; do
   while [ "$(jobs -rp | wc -l)" -ge "$JOBS" ]; do wait -n; done
   one "$b" "$i" >> "$TMP/summary" & i=$((i + 1))
 done; wait
-sort -k2 "$TMP/summary" | tee "$ROOT/sim/regression.log"
-n=$(grep -c "^PASS" "$ROOT/sim/regression.log"); echo "$n of ${#BENCHES[@]} benches pass" | tee -a "$ROOT/sim/regression.log"
+sort -k2 "$TMP/summary" | tee "$ROOT/sim/logs/regression.log"
+n=$(grep -c "^PASS" "$ROOT/sim/logs/regression.log"); echo "$n of ${#BENCHES[@]} benches pass" | tee -a "$ROOT/sim/logs/regression.log"
 [ "$n" -eq "${#BENCHES[@]}" ]

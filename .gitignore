@@ -11,8 +11,8 @@ vivado*.log
 /sim/work_*/
 /sim/xsim_*/*
 !/sim/xsim_*/run.log
-/sim/build_*.log
-/sim/lint_*.log
+/sim/logs/build_*.log
+/sim/logs/lint_*.log
 /sim/obj_*
 # Vivado out-of-context runs: keep the scripts and reports only
 /syn/**
@@ -24,7 +24,7 @@ vivado*.log
 !/syn/**/*.sh
 !/syn/vivado_miscompile/**
 /syn/netlist/
-sim/regression.log
+sim/logs/regression.log
 /model/rule_sweep/
 /model/wholeword/
 /sim/cov/

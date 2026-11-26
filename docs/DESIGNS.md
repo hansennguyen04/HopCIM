@@ -108,8 +108,8 @@ Firmware built 2026-11-25 with `xheep/build.sh <tree> app`, all with `-DCIM_DWU=
 | Live mode U, 4.096 MHz (`hopcim_live_u_dwu_nexys_4m096.elf`) | 31 decisions per 10 s, overrun 0 |
 | Microphone recording, 4.096 MHz (`hopcim_micrec_dwu_nexys_4m096.elf`) | 25 of 25 decisions equal to the golden model |
 
-RTL evidence for these rows: `sim/mic_tb_cim_k16_d4.log`, `sim/mic_tb_cim_div4_k16_d4_hm.log` (mode U's k, 7 of 7
-decisions, worst hop 80,020), `sim/mic_tb_cim_div4_d4_hm.log` (k = 1).
+RTL evidence for these rows: `sim/logs/mic_tb_cim_k16_d4.log`, `sim/logs/mic_tb_cim_div4_k16_d4_hm.log` (mode U's k, 7 of 7
+decisions, worst hop 80,020), `sim/logs/mic_tb_cim_div4_d4_hm.log` (k = 1).
 
 **The 4.096-MHz bitstream** (`xheep/build.sh <tree> dwu-4`, 42 min; `xheep_nexys_bscan_cim128mic4dwu.bit`, sha256
 `3b4ec1c73dd34312…`): 44,022 LUTs, 41,176 registers, 83.5 block-RAM tiles, 148 DSPs. Timing, analysed at 8.192 MHz, stricter

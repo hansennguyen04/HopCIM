@@ -24,9 +24,9 @@ echo "[lint] verilator -Wall cim_endpoint, FE_DED=$DED, PDM_CLKDIV=$DIV"
 verilator --lint-only -Wall -I"$ROOT/rtl" -GFE_DED=$DED -GPDM_CLKDIV=$DIV -GSEQ_S=$S -GSEQ_B1=$B1 -GSEQ_DWU=$DWU "$PKG" "${RTL[@]}" --top-module cim_endpoint
 echo "[build] testbench"
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_mic -GDED=$DED -GCLKDIV=$DIV -GNET_K=$K -GS=$S -GB1=$B1 -GDWU=$DWU -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_mic.sv" ${EXTRA[@]+"${EXTRA[@]}"} > "$ROOT/sim/build_mic_$TAG.log" 2>&1 \
-  || { tail -30 "$ROOT/sim/build_mic_$TAG.log"; exit 1; }
+  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_mic.sv" ${EXTRA[@]+"${EXTRA[@]}"} > "$ROOT/sim/logs/build_mic_$TAG.log" 2>&1 \
+  || { tail -30 "$ROOT/sim/logs/build_mic_$TAG.log"; exit 1; }
 echo "[run]"
 cd "$ROOT"
-"$OBJ/Vtb_cim_mic" | tee "$ROOT/sim/mic_tb_$TAG.log"
-grep -q "^PASS" "$ROOT/sim/mic_tb_$TAG.log"
+"$OBJ/Vtb_cim_mic" | tee "$ROOT/sim/logs/mic_tb_$TAG.log"
+grep -q "^PASS" "$ROOT/sim/logs/mic_tb_$TAG.log"

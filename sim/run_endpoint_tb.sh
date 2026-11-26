@@ -10,7 +10,7 @@ verilator --lint-only -Wall -I"$ROOT/rtl" "$PKG" "$ROOT/rtl/cim_engine.sv" "$ROO
 echo "[build] testbench"
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_endpoint -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
   -I"$ROOT/rtl" "$PKG" "$ROOT/rtl/cim_engine.sv" "$ROOT/rtl/cim_fe.sv" "$ROOT/rtl/mfcc_ded.sv" "$ROOT/rtl/cim_log2fix16.sv" "$ROOT/rtl/cim_seq.sv" "$ROOT/rtl/pdm_dec.sv" "$ROOT/rtl/cim_audio.sv" "$ROOT/rtl/cim_endpoint.sv" "$ROOT/tb/tb_cim_endpoint.sv" \
-  > "$ROOT/sim/build_endpoint.log" 2>&1 || { tail -30 "$ROOT/sim/build_endpoint.log"; exit 1; }
+  > "$ROOT/sim/logs/build_endpoint.log" 2>&1 || { tail -30 "$ROOT/sim/logs/build_endpoint.log"; exit 1; }
 echo "[run]"
-"$OBJ/Vtb_cim_endpoint" | tee "$ROOT/sim/endpoint_tb.log"
-grep -q "^PASS" "$ROOT/sim/endpoint_tb.log"
+"$OBJ/Vtb_cim_endpoint" | tee "$ROOT/sim/logs/endpoint_tb.log"
+grep -q "^PASS" "$ROOT/sim/logs/endpoint_tb.log"

@@ -13,10 +13,10 @@ S=0; B1=0; DWU=0; SUF=""; [ "${1:-}" = s ] && { S=1; SUF=_s; }; [ "${1:-}" = b1 
 OBJ="$ROOT/sim/obj_seq_all$SUF"
 RTL=("$ROOT/rtl/cim_engine.sv" "$ROOT/rtl/cim_fe.sv" "$ROOT/rtl/mfcc_ded.sv" "$ROOT/rtl/cim_log2fix16.sv" "$ROOT/rtl/cim_seq.sv" "$ROOT/rtl/pdm_dec.sv" "$ROOT/rtl/cim_audio.sv" "$ROOT/rtl/cim_endpoint.sv")
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_seq -GS=$S -GB1=$B1 -GDWU=$DWU +define+ALLCLIPS -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_seq.sv" > "$ROOT/sim/build_seq_all$SUF.log" 2>&1 \
-  || { tail -30 "$ROOT/sim/build_seq_all$SUF.log"; exit 1; }
+  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_seq.sv" > "$ROOT/sim/logs/build_seq_all$SUF.log" 2>&1 \
+  || { tail -30 "$ROOT/sim/logs/build_seq_all$SUF.log"; exit 1; }
 cd "$ROOT"
-LOG="$ROOT/sim/seq_allclips$SUF.log"
+LOG="$ROOT/sim/logs/seq_allclips$SUF.log"
 { echo "vectors:"; sed 's/^/  /' tb/seq_vec_all/SHA256SUMS; } > "$LOG"
 "$OBJ/Vtb_cim_seq" | tee -a "$LOG" | grep -E "clips|RESULT|PASS|FAIL|MISMATCH" | head -40
 grep -q "^PASS" "$LOG"

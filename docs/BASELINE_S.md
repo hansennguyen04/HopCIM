@@ -73,7 +73,7 @@ Small positive x can also give −128, but the gate does not use that: it needs 
 go through the endpoint in Verilator one by one, and every clip's 12 logits and its class are compared with
 `dscnn_int` (= TFLite's reference kernels). The vectors are pinned by hash in the log.
 
-**S: 4,890 clips, 0 with a logit or class error, 67,841 cycles on every clip** (`sim/seq_allclips_s.log`). The RTL's
+**S: 4,890 clips, 0 with a logit or class error, 67,841 cycles on every clip** (`sim/logs/seq_allclips_s.log`). The RTL's
 classes are therefore the golden ones: 4,489 of 4,890 correct, **91.80 %**, the accuracy of claim A2. The cycle count
 does not depend on the data.
 

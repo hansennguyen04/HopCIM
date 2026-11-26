@@ -296,7 +296,7 @@ def timing_s_check():
 def b1_check():
     m = json.loads((ROOT / "model" / "streamfuse_results.json").read_text())["B1"]
     e = json.loads((ROOT / "model" / "energy_b1_rtl.json").read_text())
-    log = (ROOT / "sim" / "seq_tb_cim_b1.log").read_text()
+    log = (ROOT / "sim" / "logs" / "seq_tb_cim_b1.log").read_text()
     stops = [int(v) for v in re.findall(r"stop after it\): 0 / 8000 mismatches, (\d+) cycles from go", log)]
     cum, acc = [], 0
     for x in m["B1"]["segments"]:
@@ -308,7 +308,7 @@ def b1_check():
             and e["cycles"] == 67817 and e["cycles_S"] == 67841 and e["act_reads"] == mc["reads"]["act"]
             and e["counts"] == dict(gather_lb=mc["reads"]["lb"], gather_fv=mc["reads"]["fv"], fill_act_reads=mc["word_writes"]["lb"],
                                      lb_writes=mc["word_writes"]["lb"], fv_byte_writes=mc["byte_writes"]["fv"])
-            and has("sim/seq_allclips_b1.log", r"4890 clips, 0 with a logit or class error, 0 errors; 67817\.\.67817") and has("sim/seq_tb_cim_b1.log", r"(?m)^PASS"))
+            and has("sim/logs/seq_allclips_b1.log", r"4890 clips, 0 with a logit or class error, 0 errors; 67817\.\.67817") and has("sim/logs/seq_tb_cim_b1.log", r"(?m)^PASS"))
 
 
 def claims():
@@ -429,15 +429,15 @@ def claims():
              docs=[("docs/STREAMFUSE_STUDY.md", "**1,119.8**"), ("docs/STREAMFUSE_STUDY.md", "80,544 (0.575)")],
              how="`python3 model/energy_est.py streamfuse` (after streamfuse_sched.py all)"),
         dict(id="S3", label="[M]", text="Baseline S in RTL: 67,841 cycles per inference, every layer as the schedule model predicted; all 4,890 test clips bit-exact (logits and class, 91.80 %), as is R6b",
-             evidence="sim/seq_allclips_s.log",
-             check=lambda: has("sim/seq_allclips_s.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 67841\.\.67841 cycles")
-             and has("sim/seq_allclips.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 85352\.\.85352 cycles")
-             and has("sim/seq_tb_cim_s.log", r"RESULT: 0 errors; full inference 67841\.\.67841") and has("sim/seq_tb_cim_s.log", r"synthetic parameters 2 \(zero point -128\), logits and class: 0 errors"),
+             evidence="sim/logs/seq_allclips_s.log",
+             check=lambda: has("sim/logs/seq_allclips_s.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 67841\.\.67841 cycles")
+             and has("sim/logs/seq_allclips.log", r"RESULT \(all clips\): 4890 clips, 0 with a logit or class error, 0 errors; 85352\.\.85352 cycles")
+             and has("sim/logs/seq_tb_cim_s.log", r"RESULT: 0 errors; full inference 67841\.\.67841") and has("sim/logs/seq_tb_cim_s.log", r"synthetic parameters 2 \(zero point -128\), logits and class: 0 errors"),
              docs=[("docs/BASELINE_S.md", "**67,841**"), ("docs/BASELINE_S.md", "**91.80 %**")], how="`sim/run_seq_allclips.sh s`, about 15 min"),
         dict(id="S4", label="[M]", text="Worst hop with S: 80,072 cycles (R6b 97,583); the live path at 4.096 MHz is bit-exact with no overrun in RTL, where R6b overruns",
-             evidence="sim/mic_tb_cim_div4_s_hm.log",
-             check=lambda: has("sim/mic_tb_cim_div4_s_hm.log", r"HOPMON 150 hops: worst 80072 cycles") and has("sim/mic_tb_cim_div4_s_hm.log", r"(?m)^PASS")
-             and has("sim/mic_tb_cim_div5_hm.log", r"HOPMON 150 hops: worst 97583 cycles") and has("sim/mic_tb_cim_div4.log", r"ERROR: overrun at decision 0"),
+             evidence="sim/logs/mic_tb_cim_div4_s_hm.log",
+             check=lambda: has("sim/logs/mic_tb_cim_div4_s_hm.log", r"HOPMON 150 hops: worst 80072 cycles") and has("sim/logs/mic_tb_cim_div4_s_hm.log", r"(?m)^PASS")
+             and has("sim/logs/mic_tb_cim_div5_hm.log", r"HOPMON 150 hops: worst 97583 cycles") and has("sim/logs/mic_tb_cim_div4.log", r"ERROR: overrun at decision 0"),
              docs=[("docs/BASELINE_S.md", "**80,072 cycles**")], how="`HOPMON=1 sim/run_mic_tb.sh cim 4 1 s`; `sim/run_mic_tb.sh cim 4 1`"),
         dict(id="S5", label="[E]", text="Estimate: S priced from its RTL counters, 1,120.8 nJ per inference (19.3 % below R6b), 68.8 µW at 40 ms; the model said 1,119.8 nJ",
              evidence="model/energy_s_rtl.json",
@@ -470,7 +470,7 @@ def claims():
              and has("xheep/cleanclone_s.log", "original   : " + jget("freeze/MANIFEST.json", "bitstreams", "xheep_nexys_bscan_cim128ks.bit", "sha256")),
              docs=[("docs/INTEGRATION.md", "apart from the 4 bytes of the build time"), ("docs/HOPCIM_PROPOSAL.md", "bit for bit apart from")], how="`xheep/setup.sh <dir>; xheep/build.sh <dir> s`, about 40 min"),
         dict(id="U1", label="[M]", text="B1 (StreamFuse B in block 1) in RTL equals its schedule model: 67,817 cycles (S 67,841), every segment and every access count; all 4,890 test clips bit-exact",
-             evidence="sim/seq_allclips_b1.log", check=b1_check,
+             evidence="sim/logs/seq_allclips_b1.log", check=b1_check,
              docs=[("docs/STREAMFUSE_B1.md", "**67,817**"), ("docs/STREAMFUSE_B1.md", "**4,890 clips, 0 logit or class errors**"), ("docs/HOPCIM_PROPOSAL.md", "67,817")],
              how=f"{py} model/streamfuse_sched.py b1; `sim/run_seq_tb.sh cim b1`; `sim/run_seq_allclips.sh b1`; `sim/run_energy_counts.sh cim 5 1 b1`"),
         dict(id="U2", label="[E]", text="Estimate: B1 priced from its RTL counters, 1,094.1 nJ per inference (2.4 % below S), 68.7 µW at 40 ms (S 68.8); equal to its model",

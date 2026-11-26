@@ -18,10 +18,10 @@ echo "[lint] verilator -Wall cim_endpoint, FE_DED=$DED"
 verilator --lint-only -Wall -I"$ROOT/rtl" -GFE_DED=$DED -GSEQ_S=$S -GSEQ_B1=$B1 -GSEQ_DWU=$DWU "$PKG" "${RTL[@]}" --top-module cim_endpoint
 echo "[build] testbench"
 verilator --binary --timing -Wno-fatal -j 8 -O2 --top-module tb_cim_stream -GDED=$DED -GS=$S -GB1=$B1 -GDWU=$DWU -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
-  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_stream.sv" > "$ROOT/sim/build_stream_$MODE$EDGE$SUF.log" 2>&1 \
-  || { tail -30 "$ROOT/sim/build_stream_$MODE$EDGE$SUF.log"; exit 1; }
+  -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "$ROOT/tb/tb_cim_stream.sv" > "$ROOT/sim/logs/build_stream_$MODE$EDGE$SUF.log" 2>&1 \
+  || { tail -30 "$ROOT/sim/logs/build_stream_$MODE$EDGE$SUF.log"; exit 1; }
 echo "[run]"
 cd "$ROOT"
-if [ "$EDGE" = edge ]; then LOG="$ROOT/sim/stream_tb_${MODE}_edge$SUF.log"; "$OBJ/Vtb_cim_stream" "+VEC=tb/stream_vec_edge_$MODE" | tee "$LOG"
-else LOG="$ROOT/sim/stream_tb_$MODE$SUF.log"; "$OBJ/Vtb_cim_stream" | tee "$LOG"; fi
+if [ "$EDGE" = edge ]; then LOG="$ROOT/sim/logs/stream_tb_${MODE}_edge$SUF.log"; "$OBJ/Vtb_cim_stream" "+VEC=tb/stream_vec_edge_$MODE" | tee "$LOG"
+else LOG="$ROOT/sim/logs/stream_tb_$MODE$SUF.log"; "$OBJ/Vtb_cim_stream" | tee "$LOG"; fi
 grep -q "^PASS" "$LOG"

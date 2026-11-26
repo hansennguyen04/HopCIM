@@ -11,7 +11,7 @@ SIMVAR="${SIMVAR:-cim}"
 BIN="$ROOT/sim/bin/Vtestharness_$SIMVAR"
 WORK="$ROOT/sim/work_$SIMVAR"
 APP="${1:-cim_smoke}"
-LOG="$ROOT/sim/soc_${APP}_$SIMVAR"
+LOG="$ROOT/sim/logs/soc_${APP}_$SIMVAR"
 source "$HOME/APlus_Project/planenest/hw/xheep_env.sh" >/dev/null
 cd "$XH"
 source .venv/bin/activate

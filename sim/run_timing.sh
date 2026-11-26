@@ -59,7 +59,7 @@ if [ "$SB" = 1 ]; then
   case "$BENCH" in seq|mic) EXTRA+=(-GS=1); SUF="${SUF}_s" ;; *) echo "S=1 is for the seq and mic benches"; exit 1 ;; esac
 fi
 OBJ="$ROOT/sim/$OBJ$SUF"
-LOG="$ROOT/sim/build_${OBJ##*/}.log"
+LOG="$ROOT/sim/logs/build_${OBJ##*/}.log"
 verilator --binary --timing -Wno-fatal -j "${JOBS:-6}" -O2 --top-module "$TOP" ${EXTRA[@]+"${EXTRA[@]}"} -Mdir "$OBJ" -MAKEFLAGS "OBJCACHE=" \
   -I"$ROOT/rtl" "$PKG" "${RTL[@]}" "${TB[@]}" > "$LOG" 2>&1 || { tail -30 "$LOG"; exit 1; }
 echo "$OBJ/V$TOP"
