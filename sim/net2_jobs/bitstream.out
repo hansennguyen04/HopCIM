@@ -1,0 +1,3 @@
+build: net2-256 -> xheep_nexys_bscan_cim128knet2.bit (use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_dwu use_cim_net2), build root build_micks_net2/core, log /home/hansen0411/APlus_Project/planenest/hw/x-heep-net2/build_micks_net2.build.log
+build: /home/hansen0411/APlus_Project/planenest/hw/bitstreams/xheep_nexys_bscan_cim128knet2.bit  sha256 b72d12421c64ecbe
+build: net2-256 done in 2102 s

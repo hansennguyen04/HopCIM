@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hansen0411 <hansennguyen04@gmail.com>
+Date: Wed, 25 Nov 2026 22:30:00 +0800
+Subject: [PATCH 7/7] HopCIM: the second network (ResNet8) behind use_cim_net2
+
+- core-v-mini-mcu.core: flag use_cim_net2 (define CIM_NET2) in the sim and Nexys targets.
+- tb/testharness.sv.tpl, hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv: the endpoint's SEQ_NET2 = 1 under CIM_NET2
+  (docs/NET2_GATES.md: MLPerf Tiny's int8 ResNet8 on the CIM with cim_gseq).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ core-v-mini-mcu.core                      | 9 +++++++++
+ hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv | 3 +++
+ tb/testharness.sv.tpl                     | 3 +++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/core-v-mini-mcu.core b/core-v-mini-mcu.core
+index 9129f57..0aff8e1 100644
+--- a/core-v-mini-mcu.core
++++ b/core-v-mini-mcu.core
+@@ -335,6 +335,13 @@ parameters:
+       their weights in a 360 x 56-bit store instead of 40 CIM tiles. Enable with `--flag use_cim_dwu` in addition to
+       `--flag use_cim_s`; the firmware fills the store (-DCIM_DWU=4).
+     default: false
++  CIM_NET2:
++    datatype: bool
++    paramtype: vlogdefine
++    description: |
++      HopCIM's second network sequencer (cim_endpoint SEQ_NET2, cim_gseq, docs/NET2_GATES.md): MLPerf Tiny's int8 ResNet8 on
++      the CIM engine, with its own activation, image and parameter memories. Enable with `--flag use_cim_net2`.
++    default: false
+ 
+ scripts:
+   # Build utils
+@@ -431,6 +438,7 @@ targets:
+     - use_cim_s ? (CIM_SEQ_S=true)
+     - use_cim_b1 ? (CIM_SEQ_B1=true)
+     - use_cim_dwu ? (CIM_SEQ_DWU=true)
++    - use_cim_net2 ? (CIM_NET2=true)
+     tools:
+       modelsim:
+         vlog_options:
+@@ -559,6 +567,7 @@ targets:
+     - use_cim_mic4 ? (CIM_MIC_4M096=true)
+     - use_cim_b1 ? (CIM_SEQ_B1=true)
+     - use_cim_dwu ? (CIM_SEQ_DWU=true)
++    - use_cim_net2 ? (CIM_NET2=true)
+     tools:
+       vivado:
+         part: xc7a100tcsg324-1
+diff --git a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+index 0ec45cb..96e87a0 100644
+--- a/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
++++ b/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+@@ -901,6 +901,9 @@ module xilinx_core_v_mini_mcu_wrapper
+ `ifdef CIM_SEQ_DWU
+       .SEQ_DWU(4),                                    // with S: the digital depthwise unit, every depthwise layer
+ `endif
++`ifdef CIM_NET2
++      .SEQ_NET2(1'b1),                                // the second network, ResNet8 on cim_gseq (use_cim_net2)
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else
+diff --git a/tb/testharness.sv.tpl b/tb/testharness.sv.tpl
+index 78174b3..5ca274f 100644
+--- a/tb/testharness.sv.tpl
++++ b/tb/testharness.sv.tpl
+@@ -450,6 +450,9 @@ module testharness #(
+ `ifdef CIM_SEQ_DWU
+       .SEQ_DWU(4),                                    // with S: the digital depthwise unit (use_cim_dwu)
+ `endif
++`ifdef CIM_NET2
++      .SEQ_NET2(1'b1),                                // the second network, ResNet8 on cim_gseq (use_cim_net2)
++`endif
+ `ifdef CIM_FE_DED
+       .FE_DED(1'b1)                                   // baseline B3: dedicated front-end
+ `else

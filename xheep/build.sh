@@ -21,11 +21,13 @@ dwu-4 | fpga | build_mic4dwu | use_bscane_xilinx use_cim use_cim_mic use_cim_s u
 s256  | fpga | build_micks256 | use_bscane_xilinx use_cim use_cim_mic use_cim_s           | xheep_nexys_bscan_cim128ks256k.bit | baseline S with 256 KiB of RAM (tree from setup.sh <dest> configs/kws_nexys_256k.py)
 r6b   | fpga | build_mick  | use_bscane_xilinx use_cim use_cim_mic                        | xheep_nexys_bscan_cim128k.bit     | R6b sequencer, live audio, 15.36 MHz
 r6b5  | fpga | build_mic5  | use_bscane_xilinx use_cim use_cim_mic use_cim_mic5           | xheep_nexys_bscan_cim128mic5.bit  | R6b at its lowest real-time clock, 5.12 MHz
+net2-256 | fpga | build_micks_net2 | use_bscane_xilinx use_cim use_cim_mic use_cim_s use_cim_dwu use_cim_net2 | xheep_nexys_bscan_cim128knet2.bit | S with the depthwise unit and the second network (ResNet8, docs/NET2_GATES.md), live audio, 15.36 MHz, 256 KiB of RAM (tree from setup.sh <dest> configs/kws_nexys_256k.py)
 sim   | sim  | -           | use_cim                                                      | Vtestharness_cim                  | Verilator SoC, R6b, CIM front-end
 sim-ded | sim | -          | use_cim use_cim_ded                                          | Vtestharness_ded                  | Verilator SoC, R6b, dedicated front-end B3
 sim-s | sim  | -           | use_cim use_cim_s                                            | Vtestharness_cim_s                | Verilator SoC, baseline S
 sim-b1 | sim | -           | use_cim use_cim_s use_cim_b1                                 | Vtestharness_cim_b1               | Verilator SoC, S with B in block 1
 sim-dwu | sim | -          | use_cim use_cim_s use_cim_dwu                                | Vtestharness_cim_dwu              | Verilator SoC, S with the digital depthwise unit
+sim-net2-256 | sim | -    | use_cim use_cim_s use_cim_dwu use_cim_net2                    | Vtestharness_cim_net2             | Verilator SoC, S with the unit and the second network, 256 KiB
 '
 usage() { echo "usage: xheep/build.sh <tree> <variant> | <tree> app <name> <project> [<compiler flags>]"; echo "variants:"; echo "$VARIANTS" | sed '/^$/d; s/|[^|]*|[^|]*|[^|]*|[^|]*|/:/; s/^/  /'; exit 1; }
 

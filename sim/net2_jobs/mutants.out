@@ -1,0 +1,9 @@
+N7a residual operands' multipliers swapped: CAUGHT ['RESULT: 41192 errors']
+N7b bank rewritten one cycle early (with REL = 0): CAUGHT ['RESULT: 7016176 errors']
+N7b stronger: bank released when its vector is complete, before its pass starts: CAUGHT []
+N7c stride ignored in the gather: CAUGHT ['RESULT: 38640 errors']
+N7d accumulate flag dropped: CAUGHT ['RESULT: 85169 errors']
+sanity: zero point not subtracted: CAUGHT ['RESULT: 87413 errors']
+sanity: relu clamp ignored: NOT CAUGHT - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 16ms; walltime 4.066 s; speed 3.927 ms/s
+exit=0

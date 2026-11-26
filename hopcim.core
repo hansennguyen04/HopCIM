@@ -22,6 +22,7 @@ filesets:
     - rtl/cim_seq.sv
     - rtl/pdm_dec.sv
     - rtl/cim_audio.sv
+    - rtl/cim_gseq.sv
     - rtl/cim_endpoint.sv
     file_type: systemVerilogSource
 

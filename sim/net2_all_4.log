@@ -1,0 +1,6 @@
+ALL 625 images: 0 with wrong logits, class or lost result; cycles per inference 155814..155814
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_net2_all.sv:79: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 981ms; walltime 525.288 s; speed 2.011 ms/s
+- Verilator: cpu 487.625 s on 1 threads; alloced 130 MB

@@ -49,6 +49,12 @@
 //   0x0_5000 LOGITS    R  12 words: int8 logits of the last full run, sign-extended
 //   0x0_6000 DWSTORE   W  SEQ_DWU only: the digital depthwise unit's weight store, word w (0..359) bits [31:0]
 //                         at 0x6000 + 8w, bits [55:32] at 0x6004 + 8w (docs/DWU_GATES.md)
+//   0x0_7000 NET2      RW SEQ_NET2 only (cim_gseq, docs/NET2_GATES.md): 0x7000 + 32 op + 4 w: record word w (0..7) of operation op (0..15);
+//                         0x7200 NET_CTRL W [31] go, [3:0] number of operations (held like SEQ_CTRL); 0x7204 NET_STATUS
+//                         R [0] busy, [1] done (sticky, W1C, also cleared by go), [2] result lost, [7:4] class; 0x7208 NET_DBG RW
+//                         [0] ACT reads come from cim_gseq (0x1_0000: byte offset {bank, word, byte}, 4 bytes per read)
+//   0x0_C000 NPARAMS   W  SEQ_NET2 only: entry 64 L + c = off[13:4], field off[3:2] (0..639, as PARAMS)
+//   0x0_F000 NIMG      W  SEQ_NET2 only: pixel y 32 + x = off[11:2], [23:0] = channels 0, 1, 2
 //   0x0_8000 PARAMS    W  entry 64 L + c = off[13:4], field off[3:2]: 0 bias, 1 qm, 2 e = -shift
 //   0x1_0000 ACT       R  debug: activation of buffer off[15], position off[14:8], channel off[7:2]
 //   0x2_0000 WEIGHTS   W  128 KiB: tile = off[16:10], row = off[9:4], word = off[3:2]; 4 int8 per word
@@ -68,8 +74,9 @@ module cim_endpoint
     parameter bit          SEQ_S  = 1'b0,              // baseline S in the sequencer: sign-gated requantisation,
                                                        //   a second requantisation lane, no L8 write to ACT
     parameter bit          SEQ_B1 = 1'b0,              // with SEQ_S: StreamFuse B in block 1 (docs/STREAMFUSE_B1.md)
-    parameter int unsigned SEQ_DWU = 0                 // with SEQ_S: digital depthwise unit, 1 = L1, 4 = every
+    parameter int unsigned SEQ_DWU = 0,                // with SEQ_S: digital depthwise unit, 1 = L1, 4 = every
                                                        //   depthwise layer (docs/DWU_GATES.md)
+    parameter bit          SEQ_NET2 = 1'b0             // second network: ResNet8 on cim_gseq (docs/NET2_GATES.md)
 ) (
     input  logic           clk_i,
     input  logic           rst_ni,
@@ -88,7 +95,7 @@ module cim_endpoint
 
   // ------------------------------------------------------------------ decode
   logic [17:0] off;
-  logic        is_w, is_x, is_reg, is_samp, is_lraw, is_feat, is_logit, is_prm, is_act, is_dws;
+  logic        is_w, is_x, is_reg, is_samp, is_lraw, is_feat, is_logit, is_prm, is_act, is_dws, is_nreg, is_nprm, is_nimg;
   assign off      = obi_req_i.addr[17:0];
   assign is_w     = off[17];
   assign is_x     = (off[17:12] == 6'h01);
@@ -100,8 +107,12 @@ module cim_endpoint
   assign is_prm   = (off[17:14] == 4'b0010);
   assign is_act   = (off[17:16] == 2'b01);
   assign is_dws   = (off[17:12] == 6'h06);
+  assign is_nreg  = SEQ_NET2 && (off[17:10] == 8'h1C);     // 0x7000
+  assign is_nprm  = SEQ_NET2 && (off[17:14] == 4'b0011) && (off[13:12] != 2'b11);
+  assign is_nimg  = SEQ_NET2 && (off[17:12] == 6'h0F);
 
-  logic wr, go, fe_go, seq_go, data_wr, seq_mem, samp_rd, gnt;
+  logic wr, go, fe_go, seq_go, net_go, data_wr, seq_mem, samp_rd, gnt;
+  logic gs_busy, gs_done, gs_err, gs_dbg;
   // live audio path (R7): AUD_CTRL and cim_audio's outputs
   logic [14:0]   aud_ctrl;
   logic [3:0]    aud_net_km1;
@@ -115,22 +126,27 @@ module cim_endpoint
   logic [3:0]    aud_class;
   assign aud_en = aud_ctrl[0];
   logic eng_ready, eng_done, eng_busy, fe_busy, fe_done, fe_owns, seq_busy;
+  logic sq_busy;                                       // a layer sequencer owns the engine (cim_seq or cim_gseq)
+  assign sq_busy = seq_busy || gs_busy;
   assign fe_owns = fe_busy && !FE_DED;                 // the front-end drives the engine
   logic [3:0] lock;                                    // cycles left in which X/W writes are held
   assign wr      = obi_req_i.req && obi_req_i.we;
   assign go      = wr && is_reg && (off[7:0] == 8'h00) && obi_req_i.wdata[31];
   assign fe_go   = wr && is_reg && (off[7:0] == 8'h10) && obi_req_i.wdata[31];
   assign seq_go  = wr && is_reg && (off[7:0] == 8'h20) && obi_req_i.wdata[31];
+  assign net_go  = wr && is_nreg && (off[9:0] == 10'h200) && obi_req_i.wdata[31];
   assign data_wr = wr && (is_x || is_w);
-  assign seq_mem = obi_req_i.req && (obi_req_i.we ? (is_feat || is_prm || is_dws) : (is_act || is_feat || is_lraw));
+  assign seq_mem = obi_req_i.req && (obi_req_i.we ? (is_feat || is_prm || is_dws || is_nreg || is_nprm || is_nimg) :
+                                                      (is_act || is_feat || is_lraw));
   assign samp_rd = obi_req_i.req && !obi_req_i.we && is_samp;
   always_comb begin
-    if (go)           gnt = obi_req_i.req && eng_ready && !fe_owns && !seq_busy;
-    else if (fe_go)   gnt = obi_req_i.req && !fe_busy && (FE_DED || (!eng_busy && !seq_busy));
-    else if (seq_go)  gnt = obi_req_i.req && !seq_busy && !fe_owns && !eng_busy &&
+    if (go)           gnt = obi_req_i.req && eng_ready && !fe_owns && !sq_busy;
+    else if (fe_go)   gnt = obi_req_i.req && !fe_busy && (FE_DED || (!eng_busy && !sq_busy));
+    else if (seq_go)  gnt = obi_req_i.req && !sq_busy && !fe_owns && !eng_busy &&
                             !(obi_req_i.wdata[28] && fe_busy);
-    else if (data_wr) gnt = obi_req_i.req && (lock == 4'd0) && !fe_owns && !seq_busy;
-    else if (seq_mem) gnt = obi_req_i.req && !seq_busy;
+    else if (net_go)  gnt = obi_req_i.req && !sq_busy && !fe_owns && !eng_busy;
+    else if (data_wr) gnt = obi_req_i.req && (lock == 4'd0) && !fe_owns && !sq_busy;
+    else if (seq_mem) gnt = obi_req_i.req && !sq_busy;
     else if (samp_rd) gnt = obi_req_i.req && !fe_busy;  // the ring's read port is the front-end's
     else              gnt = obi_req_i.req;
   end
@@ -235,11 +251,11 @@ module cim_endpoint
       .ring_addr_o(aud_ring_addr),
       .ring_data_o(aud_ring_data),
       .bmax_o     (aud_bmax),
-      .fe_ok_i    (!fe_busy && (FE_DED || (!eng_busy && !seq_busy))),
+      .fe_ok_i    (!fe_busy && (FE_DED || (!eng_busy && !sq_busy))),
       .fe_done_i  (fe_done),
       .fe_go_o    (aud_fe_go),
       .fe_base_o  (aud_fe_base),
-      .seq_ok_i   (!seq_busy && !fe_busy && !eng_busy),
+      .seq_ok_i   (!sq_busy && !fe_busy && !eng_busy),
       .seq_done_i (seq_done),
       .seq_class_i(seq_class),
       .seq_go_o   (aud_seq_go),
@@ -314,6 +330,66 @@ module cim_endpoint
       .res_i       (res)
   );
 
+  // ------------------------------------------------------------------ second network (cim_gseq)
+  logic          gs_xw_we, gs_xw_bank, gs_pass, gs_xbank, gs_accum;
+  logic [5:0]    gs_xw_row;
+  logic [7:0]    gs_xw_mask;
+  logic [23:0]   gs_xw_data [8];
+  logic [TW-1:0] gs_tile;
+  logic [4:0]    gs_xbits;
+  logic [3:0]    gs_class;
+  logic [31:0]   gs_dbg_rdata;
+  logic [7:0]    gs_logit;
+  if (SEQ_NET2) begin : g_net2
+    cim_gseq #(.TW(TW), .XB(24)) i_gseq (
+        .clk_i,
+        .rst_ni,
+        .start_i     (gnt && net_go),
+        .nops_i      (obi_req_i.wdata[3:0]),
+        .busy_o      (gs_busy),
+        .done_o      (gs_done),
+        .err_o       (gs_err),
+        .class_o     (gs_class),
+        .dsc_we_i    (gnt && wr && is_nreg && (off[9] == 1'b0)),
+        .dsc_addr_i  (off[8:2]),
+        .dsc_data_i  (obi_req_i.wdata),
+        .prm_we_i    (gnt && wr && is_nprm),
+        .prm_addr_i  (off[13:4]),
+        .prm_field_i (off[3:2]),
+        .prm_data_i  (obi_req_i.wdata),
+        .img_we_i    (gnt && wr && is_nimg),
+        .img_addr_i  (off[11:2]),
+        .img_data_i  (obi_req_i.wdata[23:0]),
+        .dbg_re_i    (gnt && !obi_req_i.we && is_act && gs_dbg),
+        .dbg_addr_i  ({off[15:14], off[13:3], off[2]}),
+        .dbg_rdata_o (gs_dbg_rdata),
+        .logit_addr_i(off[5:2]),
+        .logit_o     (gs_logit),
+        .xw_we_o     (gs_xw_we),
+        .xw_bank_o   (gs_xw_bank),
+        .xw_row_o    (gs_xw_row),
+        .xw_mask_o   (gs_xw_mask),
+        .xw_data_o   (gs_xw_data),
+        .go_o        (gs_pass),
+        .tile_o      (gs_tile),
+        .accum_o     (gs_accum),
+        .xbank_o     (gs_xbank),
+        .xbits_o     (gs_xbits),
+        .eng_ready_i (eng_ready),
+        .eng_done_i  (eng_done),
+        .res_i       (res)
+    );
+  end else begin : g_no_net2
+    assign gs_busy = 1'b0;  assign gs_done = 1'b0;  assign gs_err = 1'b0;  assign gs_class = '0;
+    assign gs_dbg_rdata = '0;  assign gs_logit = '0;
+    assign gs_xw_we = 1'b0;  assign gs_xw_bank = 1'b0;  assign gs_xw_row = '0;  assign gs_xw_mask = '0;
+    assign gs_pass = 1'b0;  assign gs_tile = '0;  assign gs_accum = 1'b0;  assign gs_xbank = 1'b0;  assign gs_xbits = '0;
+    always_comb for (int l = 0; l < 8; l++) gs_xw_data[l] = '0;
+  end
+
+  logic [23:0] eng_xw_data [8];
+  always_comb for (int l = 0; l < 8; l++) eng_xw_data[l] = gs_busy ? gs_xw_data[l] : seq_xw_data[l];
+
   // ------------------------------------------------------------------ engine (CPU, front-end or sequencer)
   cim_engine #(.TILES(TILES), .XB(24), .ACCW(48)) i_engine (
       .clk_i,
@@ -326,16 +402,16 @@ module cim_endpoint
       .x_we_i   (fe_owns ? fe_x_we : (gnt && wr && is_x)),
       .x_idx_i  (fe_owns ? fe_x_idx : off[7:2]),
       .x_data_i (fe_owns ? fe_x_data : obi_req_i.wdata[23:0]),
-      .xw_we_i  (seq_xw_we),
-      .xw_bank_i(seq_xw_bank),
-      .xw_row_i (seq_xw_row),
-      .xw_mask_i(seq_xw_mask),
-      .xw_data_i(seq_xw_data),
-      .start_i  (seq_busy ? seq_pass : (fe_owns ? fe_pass : (gnt && go))),
-      .tile_i   (seq_busy ? seq_tile : (fe_owns ? fe_tile : obi_req_i.wdata[TW-1:0])),
-      .xbits_i  (seq_busy ? seq_xbits : (fe_owns ? fe_xbits : obi_req_i.wdata[12:8])),
-      .accum_i  (seq_busy ? 1'b0 : (fe_owns ? fe_accum : obi_req_i.wdata[16])),
-      .xbank_i  (seq_busy && seq_xbank),
+      .xw_we_i  (gs_busy ? gs_xw_we : seq_xw_we),
+      .xw_bank_i(gs_busy ? gs_xw_bank : seq_xw_bank),
+      .xw_row_i (gs_busy ? gs_xw_row : seq_xw_row),
+      .xw_mask_i(gs_busy ? gs_xw_mask : seq_xw_mask),
+      .xw_data_i(eng_xw_data),
+      .start_i  (gs_busy ? gs_pass : (seq_busy ? seq_pass : (fe_owns ? fe_pass : (gnt && go)))),
+      .tile_i   (gs_busy ? gs_tile : (seq_busy ? seq_tile : (fe_owns ? fe_tile : obi_req_i.wdata[TW-1:0]))),
+      .xbits_i  (gs_busy ? gs_xbits : (seq_busy ? seq_xbits : (fe_owns ? fe_xbits : obi_req_i.wdata[12:8]))),
+      .accum_i  (gs_busy ? gs_accum : (seq_busy ? 1'b0 : (fe_owns ? fe_accum : obi_req_i.wdata[16]))),
+      .xbank_i  (gs_busy ? gs_xbank : (seq_busy && seq_xbank)),
       .ready_o  (eng_ready),
       .done_o   (eng_done),
       .busy_o   (eng_busy),
@@ -344,11 +420,11 @@ module cim_endpoint
 
   // ------------------------------------------------------------------ registers
   logic signed [47:0] res_lat [16];
-  logic        done_sticky, fe_done_sticky, seq_done_sticky, cpu_done;
+  logic        done_sticky, fe_done_sticky, seq_done_sticky, gs_done_sticky, cpu_done;
   logic [3:0]  irq_en;
   logic [31:0] done_cnt, ctrl_q, cycles, seq_ctrl_q;
 
-  assign cpu_done = eng_done && !fe_owns && !seq_busy; // passes while cim_fe or the sequencer runs are theirs
+  assign cpu_done = eng_done && !fe_owns && !sq_busy;  // passes while cim_fe or a sequencer runs are theirs
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -364,6 +440,8 @@ module cim_endpoint
       cycles         <= 32'd0;
       seq_ctrl_q     <= 32'd0;
       seq_zp         <= 32'd0;
+      gs_dbg         <= 1'b0;
+      gs_done_sticky <= 1'b0;
       for (int n = 0; n < 16; n++) res_lat[n] <= '0;
     end else begin
       cycles <= cycles + 32'd1;
@@ -393,12 +471,16 @@ module cim_endpoint
       end
       if (gnt && wr && is_reg && (off[7:0] == 8'h24) && obi_req_i.wdata[1]) seq_done_sticky <= 1'b0;
       if (gnt && wr && is_reg && (off[7:0] == 8'h28)) seq_zp <= {8'd0, obi_req_i.wdata[23:0]};
+      if (SEQ_NET2 && gnt && wr && is_nreg && (off[9:0] == 10'h208)) gs_dbg <= obi_req_i.wdata[0];
+      if (gnt && net_go) gs_done_sticky <= 1'b0;
+      if (gnt && wr && is_nreg && (off[9:0] == 10'h204) && obi_req_i.wdata[1]) gs_done_sticky <= 1'b0;
+      if (gs_done) gs_done_sticky <= 1'b1;
       if (seq_done) seq_done_sticky <= 1'b1;
     end
   end
 
   assign irq_o = (done_sticky && irq_en[0]) || (fe_done_sticky && irq_en[1]) || (seq_done_sticky && irq_en[2]) ||
-                 (aud_pend && irq_en[3]);
+                 (gs_done_sticky && irq_en[2]) || (aud_pend && irq_en[3]);
 
   // ------------------------------------------------------------------ read data / response
   logic [31:0] rdata_d, rdata_q;
@@ -425,6 +507,10 @@ module cim_endpoint
         8'b10??_??00: rdata_d = {{16{res_lat[off[5:2]][47]}}, res_lat[off[5:2]][47:32]};
         default:    rdata_d = 32'd0;
       endcase
+    end else if (is_nreg) begin
+      if (off[9:0] == 10'h204) rdata_d = {24'd0, gs_class, 1'b0, gs_err, gs_done_sticky, gs_busy};
+      else if (off[9:0] == 10'h208) rdata_d = {31'd0, gs_dbg};
+      else if (off[9:8] == 2'b11 && off[7:6] == 2'b00) rdata_d = {{24{gs_logit[7]}}, gs_logit};  // 0x7300 + 4 n: logits
     end else if (is_lraw) rdata_d = lraw_rdata;
     else if (is_logit) rdata_d = {{24{logit_rdata[7]}}, logit_rdata};
   end
@@ -458,7 +544,7 @@ module cim_endpoint
 
   assign obi_rsp_o.gnt    = gnt;
   assign obi_rsp_o.rvalid = rvalid_q;
-  assign obi_rsp_o.rdata  = act_rd_q ? {{24{act_rdata[7]}}, act_rdata} :
+  assign obi_rsp_o.rdata  = (act_rd_q && gs_dbg) ? gs_dbg_rdata : act_rd_q ? {{24{act_rdata[7]}}, act_rdata} :
                             feat_rd_q ? feat_rdata : samp_rd_q ? {{16{samp_q[15]}}, samp_q} : rdata_q;
 
 endmodule

@@ -111,5 +111,5 @@ RESULT: 202 errors
 FAIL
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_mic.sv:208: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 206ms; walltime 49.244 s; speed 4.186 ms/s
-- Verilator: cpu 49.237 s on 1 threads; alloced 130 MB
+- Verilator: $finish at 206ms; walltime 44.699 s; speed 4.611 ms/s
+- Verilator: cpu 44.692 s on 1 threads; alloced 130 MB

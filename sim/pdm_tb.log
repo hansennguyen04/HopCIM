@@ -2,5 +2,5 @@ RESULT: 0 of 16000 samples wrong; 1024000 bits used, PDM clock 1/15 of the syste
 PASS
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_pdm_dec.sv:39: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 154ms; walltime 8.082 s; speed 19.004 ms/s
-- Verilator: cpu 8.083 s on 1 threads; alloced 127 MB
+- Verilator: $finish at 154ms; walltime 7.396 s; speed 20.773 ms/s
+- Verilator: cpu 7.394 s on 1 threads; alloced 127 MB

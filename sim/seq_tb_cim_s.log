@@ -55,5 +55,5 @@ RESULT: 0 errors; full inference 67841..67841 cycles (go -> interrupt) = 4.52..4
 PASS
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_seq.sv:451: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 35ms; walltime 7.996 s; speed 4.357 ms/s
-- Verilator: cpu 7.995 s on 1 threads; alloced 129 MB
+- Verilator: $finish at 35ms; walltime 7.942 s; speed 4.386 ms/s
+- Verilator: cpu 7.942 s on 1 threads; alloced 129 MB

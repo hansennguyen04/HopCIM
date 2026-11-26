@@ -20,6 +20,8 @@ BENCHES=(
   "run_seq_tb.sh cim b1" "run_seq_tb.sh ded b1" "run_stream_tb.sh cim b1" "run_mic_tb.sh cim 15 1 b1" "run_mic_tb.sh cim 4 1 b1" "run_mic_tb.sh cim 4 4 b1"
   # DWU: S with the digital depthwise unit (SEQ_DWU = 1: L1; 4: every depthwise layer; docs/DWU_GATES.md)
   "run_seq_tb.sh cim d1" "run_seq_tb.sh cim d4" "run_seq_tb.sh ded d4" "run_stream_tb.sh cim d4" "run_mic_tb.sh cim 15 1 d4" "run_mic_tb.sh cim 4 1 d4" "run_mic_tb.sh cim 4 4 d4"
+  # second network: ResNet8 on cim_gseq (docs/NET2_GATES.md)
+  "run_net2_tb.sh 4 0"
   # expected to fail: R6b overruns at 4.096 MHz
   "!run_mic_tb.sh cim 4 1"
 )

@@ -12,13 +12,15 @@ repository, and an X-HEEP tree is *built* from it rather than edited by hand:
 | `patches/0004-*.patch` | the flag `use_cim_b1`: StreamFuse B in block 1 (`docs/STREAMFUSE_B1.md`), in the wrapper and the testharness |
 | `patches/0005-*.patch` | `configs/kws_nexys_256k.py` (eight 32 KiB RAM banks instead of four, for the CPU-only TensorFlow Lite Micro baseline; the default configuration is unchanged) and C++17 for the firmware (TensorFlow Lite Micro needs it) |
 | `patches/0006-*.patch` | the flag `use_cim_dwu`: the digital depthwise unit in every depthwise layer (`docs/DWU_GATES.md`), in the wrapper and the testharness; the firmware fills its store (`-DCIM_DWU=4`) |
+| `patches/0007-*.patch` | the flag `use_cim_net2`: the second network's sequencer `cim_gseq` (MLPerf Tiny's ResNet8, `docs/NET2_GATES.md`), the endpoint's `SEQ_NET2 = 1`, in the wrapper and the testharness (build variants `net2-256`, `sim-net2-256`) |
+| `patches/0008-*.patch` | `configs/kws_nexys_256k_c180.py`: the 256 KiB configuration with a 180 KiB code section (data 76 KiB), for the second network's CPU-only TensorFlow Lite Micro baseline (`mlperf/build_tflm_resnet.sh`); only the linker scripts differ from `kws_nexys_256k.py`'s output, so its bitstreams run the firmware |
 | `generated.sha256` | what `make mcu-gen X_HEEP_CFG=configs/kws_nexys.py` writes in a fresh tree (97 files) |
 | `generated.kws_nexys_256k.sha256` | the same for `configs/kws_nexys_256k.py` |
-| `setup.sh` | builds a tree: clone at the commit, `git am` the series (6 patches), check the result tree, link this repository in, run the generator (default configuration, or the one given as a second argument, recorded in `<tree>/.hopcim-cfg`), check |
+| `setup.sh` | builds a tree: clone at the commit, `git am` the series (8 patches), check the result tree, link this repository in, run the generator (default configuration, or the one given as a second argument, recorded in `<tree>/.hopcim-cfg`), check |
 | `check.sh` | checks a tree against the series, the generator output and the links, and reports any other change |
 | `build.sh` | bitstreams (`s`, `s4`, `b1`, `b1-4`, `dwu`, `dwu-4`, `r6b`, `r6b5`; `s256` needs a 256 KiB tree), Verilator SoC models (`sim`, `sim-ded`, `sim-s`, `sim-b1`, `sim-dwu`), firmware (`app`) |
 
-The firmware is in `../sw/applications/` (19 apps). `setup.sh` links it into the tree file by file,
+The firmware is in `../sw/applications/` (22 apps). `setup.sh` links it into the tree file by file,
 so the apps' relative includes (`../../../hw/ip/hopcim/sw/cim.h`) resolve inside the X-HEEP tree.
 `hw/ip/hopcim` is a link to this repository; FuseSoC finds `hopcim.core` through it.
 

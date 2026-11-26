@@ -10,7 +10,7 @@ foreach g $gens { append tag "_" [string map {= ""} $g] }
 set out  $root/syn/ooc_$tag
 file mkdir $out
 read_verilog -sv $::env(HOME)/APlus_Project/planenest/hw/x-heep/hw/core-v-mini-mcu/include/xheep_obi_pkg.sv
-read_verilog -sv [list $root/rtl/cim_engine.sv $root/rtl/cim_fe.sv $root/rtl/mfcc_ded.sv $root/rtl/cim_log2fix16.sv $root/rtl/cim_seq.sv $root/rtl/pdm_dec.sv $root/rtl/cim_audio.sv $root/rtl/cim_endpoint.sv]
+read_verilog -sv [list $root/rtl/cim_engine.sv $root/rtl/cim_fe.sv $root/rtl/mfcc_ded.sv $root/rtl/cim_log2fix16.sv $root/rtl/cim_seq.sv $root/rtl/pdm_dec.sv $root/rtl/cim_audio.sv $root/rtl/cim_gseq.sv $root/rtl/cim_endpoint.sv]
 set gargs {}
 foreach g $gens { lappend gargs -generic $g }
 synth_design -top $top -part xc7a100tcsg324-1 -mode out_of_context -include_dirs $root/rtl {*}$gargs

@@ -1,0 +1,24 @@
+image 0: class 3 (label 3), logits exact, network 155882 cycles, CPU-active 18688
+image 1: class 8 (label 8), logits exact, network 155882 cycles, CPU-active 18688
+image 2: class 8 (label 8), logits exact, network 155882 cycles, CPU-active 18688
+image 3: class 8 (label 0), logits exact, network 155882 cycles, CPU-active 18688
+image 4: class 6 (label 6), logits exact, network 155882 cycles, CPU-active 18688
+image 5: class 6 (label 6), logits exact, network 155882 cycles, CPU-active 18688
+image 6: class 1 (label 1), logits exact, network 155882 cycles, CPU-active 18688
+image 7: class 6 (label 6), logits exact, network 155882 cycles, CPU-active 18688
+image 8: class 3 (label 3), logits exact, network 155882 cycles, CPU-active 18688
+image 9: class 1 (label 1), logits exact, network 155882 cycles, CPU-active 18688
+image 10: class 0 (label 0), logits exact, network 155882 cycles, CPU-active 18688
+image 11: class 9 (label 9), logits exact, network 155882 cycles, CPU-active 18688
+image 12: class 5 (label 5), logits exact, network 155882 cycles, CPU-active 18688
+image 13: class 7 (label 7), logits exact, network 155882 cycles, CPU-active 18688
+image 14: class 9 (label 9), logits exact, network 155882 cycles, CPU-active 18688
+image 15: class 8 (label 8), logits exact, network 155882 cycles, CPU-active 18688
+image 16: class 7 (label 5), logits exact, network 155882 cycles, CPU-active 18688
+image 17: class 7 (label 7), logits exact, network 155882 cycles, CPU-active 18688
+image 18: class 8 (label 8), logits exact, network 155882 cycles, CPU-active 18688
+image 19: class 6 (label 6), logits exact, network 155882 cycles, CPU-active 18688
+setup (86 tiles built and loaded, 640 parameter entries, 14 records): 2147154 cycles, once
+network per inference (go -> interrupt): 155882..155882 cycles; CPU-active mean 18688
+20 images: 0 with wrong logits or class; golden predictions = label 18/20
+HopCIM resnet: 20 images bit-exact -> PASS

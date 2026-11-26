@@ -5,5 +5,5 @@ RESULT: 3001 passes checked, 0 value mismatches, 0 done-timing errors; 1748 back
 PASS
 - /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_engine.sv:251: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
-- Verilator: $finish at 1ms; walltime 0.251 s; speed 5.220 ms/s
-- Verilator: cpu 0.251 s on 1 threads; alloced 127 MB
+- Verilator: $finish at 1ms; walltime 0.209 s; speed 6.283 ms/s
+- Verilator: cpu 0.209 s on 1 threads; alloced 127 MB

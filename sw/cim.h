@@ -46,6 +46,16 @@
 #define CIM_PARAM(e, f) (CIM_BASE + 0x8000u + ((uint32_t)(e) << 4) + ((uint32_t)(f) << 2))   // entry 64 L + c; f: 0 bias, 1 qm, 2 e
 #define CIM_ACT(b, p, c) (CIM_BASE + 0x10000u + ((uint32_t)(b) << 15) + ((uint32_t)(p) << 8) + ((uint32_t)(c) << 2))
 #define CIM_DWSTORE(w, h) (CIM_BASE + 0x6000u + ((uint32_t)(w) << 3) + ((uint32_t)(h) << 2))   // DWU store word w, bits 31..0 (h 0) or 55..32 (h 1)
+// second network (cim_gseq, built with SEQ_NET2; docs/NET2_GATES.md): layer records, parameters and images; its own control
+#define CIM_NET_DESC(o, w) (CIM_BASE + 0x7000u + 32u * (o) + 4u * (w))   // record word w of operation o
+#define CIM_NET_CTRL    (CIM_BASE + 0x7200u)    // W [31] go, [3:0] number of operations
+#define CIM_NET_STATUS  (CIM_BASE + 0x7204u)    // [0] busy, [1] done (W1C), [2] result lost, [7:4] class
+#define CIM_NET_DBG     (CIM_BASE + 0x7208u)    // [0] ACT reads come from the second network
+#define CIM_NET_LOGIT(n) (CIM_BASE + 0x7300u + 4u * (n))
+#define CIM_NET_PARAM(e, f) (CIM_BASE + 0xC000u + 16u * (e) + 4u * (f))  // f: 0 bias, 1 qm, 2 e = -shift
+#define CIM_NET_IMG(p)  (CIM_BASE + 0xF000u + 4u * (p))                  // pixel p: [23:0] = channels 0, 1, 2
+#define CIM_NET_DONE    0x2u
+#define CIM_NET_CLASS(st) (((st) >> 4) & 0xFu)
 #define CIM_SEQ_BUSY    0x1u
 #define CIM_SEQ_DONE    0x2u     // sticky; cleared by a sequencer go or by writing 1 (W1C)
 #define CIM_SEQ_ERR     0x4u     // a result was lost (never expected)

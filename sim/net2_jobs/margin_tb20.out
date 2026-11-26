@@ -1,0 +1,47 @@
+[lint] verilator -Wall cim_endpoint, SEQ_NET2
+- V e r i l a t i o n   R e p o r t: Verilator 5.040 2025-08-30 rev v5.040
+- Verilator: Built from 1.000 MB sources in 11 modules, into 1.478 MB in 6 C++ files needing 0.000 MB
+- Verilator: Walltime 0.417 s (elab=0.049, cvt=0.292, bld=0.000); cpu 0.417 s on 1 threads; alloced 37.375 MB
+[build] testbench
+loaded 86 tiles, 640 parameter entries, 14 descriptors
+IMG 0: 0 errors
+  op 0: run of 1 ops 9262 cycles, increment 9262
+  op 1: run of 2 ops 36946 cycles, increment 27684
+  op 2: run of 3 ops 64630 cycles, increment 27684
+  op 3: run of 4 ops 72836 cycles, increment 8206
+  op 4: run of 5 ops 86696 cycles, increment 13860
+  op 5: run of 6 ops 109772 cycles, increment 23076
+  op 6: run of 7 ops 114410 cycles, increment 4638
+  op 7: run of 8 ops 118520 cycles, increment 4110
+  op 8: run of 9 ops 130076 cycles, increment 11556
+  op 9: run of 10 ops 150848 cycles, increment 20772
+  op 10: run of 11 ops 153184 cycles, increment 2336
+  op 11: run of 12 ops 155246 cycles, increment 2062
+  op 12: run of 13 ops 155772 cycles, increment 526
+  op 13: run of 14 ops 155814 cycles, increment 42
+IMG 1: 0 errors
+IMG 2: 0 errors
+IMG 3: 0 errors
+IMG 4: 0 errors
+IMG 5: 0 errors
+IMG 6: 0 errors
+IMG 7: 0 errors
+IMG 8: 0 errors
+IMG 9: 0 errors
+IMG 10: 0 errors
+IMG 11: 0 errors
+IMG 12: 0 errors
+IMG 13: 0 errors
+IMG 14: 0 errors
+IMG 15: 0 errors
+IMG 16: 0 errors
+IMG 17: 0 errors
+IMG 18: 0 errors
+IMG 19: 0 errors
+rewrite margin: 0 violations
+RESULT: 0 errors
+PASS
+- /home/hansen0411/APlus_Project/hopcim/tb/tb_cim_net2.sv:168: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.040 2025-08-30
+- Verilator: $finish at 315ms; walltime 74.201 s; speed 4.242 ms/s
+- Verilator: cpu 74.191 s on 1 threads; alloced 138 MB
