@@ -1,0 +1,28 @@
+U today (D4, k=16, all powered): 27.96 uW; D4 k=1 75.80, k=2 50.28
+D4 + clock enables only: k=1 74.37, k=2 48.86, k=16 26.53
+design      duty 1.0     duty 0.5     duty 0.2     duty 0.069   duty 0.02  
+D4-AP20          63.99       37.10       20.97       13.93       11.30
+D4-AP40          37.10       23.66       15.60       12.08       10.76
+D4-APU           13.58       11.90       10.89       10.45       10.29
+break-even launch duties (baseline): {'AP20 below U today': 0.33, 'AP20 at 0.5 x U today': 0.07, 'APU at 0.5 x U today': 1.0}
+D4-AP20 at duty 0.069 over residual leakage and wake time: {'r=0.02 wake=10.0us': 13.49, 'r=0.02 wake=50.0us': 13.52, 'r=0.02 wake=500.0us': 13.79, 'r=0.05 wake=10.0us': 13.91, 'r=0.05 wake=50.0us': 13.93, 'r=0.05 wake=500.0us': 14.2, 'r=0.1 wake=10.0us': 14.59, 'r=0.1 wake=50.0us': 14.62, 'r=0.1 wake=500.0us': 14.89, 'r=0.2 wake=10.0us': 15.97, 'r=0.2 wake=50.0us': 15.99, 'r=0.2 wake=500.0us': 16.26}
+by energy-model variant: D4-AP20 duty 0.069 / D4-APU duty 0.069 / U today; AP20 ratio, APU ratio; break-evens
+  baseline                       13.93 /   10.45 /   27.96; 0.498, 0.374; AP20 below U today 0.330, AP20 at 0.5 x U today 0.070, APU at 0.5 x U today 1.000
+  alpha 0.25 (validated)         14.22 /   10.74 /   28.25; 0.503, 0.380; AP20 below U today 0.330, AP20 at 0.5 x U today 0.067, APU at 0.5 x U today 1.000
+  Colonnade array, 0.8 V         14.98 /   11.50 /   29.01; 0.516, 0.397; AP20 below U today 0.330, AP20 at 0.5 x U today 0.060, APU at 0.5 x U today 0.963
+  multipliers: Horowitz          13.26 /    9.79 /   27.29; 0.486, 0.359; AP20 below U today 0.330, AP20 at 0.5 x U today 0.076, APU at 0.5 x U today 1.000
+  logic activity 0.05            13.56 /   10.09 /   27.43; 0.494, 0.368; AP20 below U today 0.327, AP20 at 0.5 x U today 0.072, APU at 0.5 x U today 1.000
+  logic activity 0.2             14.67 /   11.19 /   29.03; 0.505, 0.385; AP20 below U today 0.336, AP20 at 0.5 x U today 0.066, APU at 0.5 x U today 1.000
+  6 -> 4 GE per LUT              13.62 /   10.14 /   27.28; 0.499, 0.372; AP20 below U today 0.323, AP20 at 0.5 x U today 0.069, APU at 0.5 x U today 1.000
+  6 -> 10 GE per LUT             14.55 /   11.07 /   29.32; 0.496, 0.377; AP20 below U today 0.343, AP20 at 0.5 x U today 0.071, APU at 0.5 x U today 1.000
+  logic leak 20 pW/GE            12.19 /    8.81 /   19.75; 0.617, 0.446; AP20 below U today 0.213, AP20 at 0.5 x U today 0.025, APU at 0.5 x U today 0.396
+  logic leak 100 pW/GE           16.83 /   13.20 /   41.64; 0.404, 0.317; AP20 below U today 0.511, AP20 at 0.5 x U today 0.140, APU at 0.5 x U today 1.000
+  SRAM 7.4 pW/bit (silicon)      12.12 /    8.66 /   25.15; 0.482, 0.344; AP20 below U today 0.312, AP20 at 0.5 x U today 0.077, APU at 0.5 x U today 1.000
+  SRAM 25 pW/bit                 18.98 /   15.48 /   34.72; 0.547, 0.446; AP20 below U today 0.360, AP20 at 0.5 x U today 0.039, APU at 0.5 x U today 0.626
+  tiles per macro 1              24.98 /   19.88 /  147.78; 0.169, 0.135; AP20 below U today 1.000, AP20 at 0.5 x U today 0.689, APU at 0.5 x U today 1.000
+  tiles per macro 4              16.36 /   12.52 /   54.56; 0.300, 0.229; AP20 below U today 0.713, AP20 at 0.5 x U today 0.253, APU at 0.5 x U today 1.000
+  tiles per macro 8              14.72 /   11.12 /   36.81; 0.400, 0.302; AP20 below U today 0.466, AP20 at 0.5 x U today 0.135, APU at 0.5 x U today 1.000
+  tiles per macro 32             13.58 /   10.16 /   23.58; 0.576, 0.431; AP20 below U today 0.258, AP20 at 0.5 x U today 0.035, APU at 0.5 x U today 0.562
+  reuse: flat array              13.93 /   10.45 /   27.96; 0.498, 0.374; AP20 below U today 0.330, AP20 at 0.5 x U today 0.070, APU at 0.5 x U today 1.000
+  5.12 MHz clock                 14.72 /   10.89 /   26.90; 0.547, 0.405; AP20 below U today 0.275, AP20 at 0.5 x U today 0.048, APU at 0.5 x U today 0.761
+  4.096 MHz clock                15.05 /   11.09 /   26.80; 0.562, 0.414; AP20 below U today 0.261, AP20 at 0.5 x U today 0.042, APU at 0.5 x U today 0.673

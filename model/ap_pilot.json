@@ -1,0 +1,74 @@
+{
+ "F20": {
+  "words r30": 91.63179916317992,
+  "words r100": 87.75510204081633,
+  "words r300": 81.79916317991632,
+  "words launches per hop": 1.0,
+  "speech launches per hop": 1.0,
+  "noise launches per hop": 1.0,
+  "speech reports/h": 482.0,
+  "noise reports/h": 2.0,
+  "room launches per hop": 1.0,
+  "room reports/h": 3.578682978392045
+ },
+ "F20 + gate": {
+  "words r30": 91.63179916317992,
+  "words r100": 87.75510204081633,
+  "words r300": 81.79916317991632,
+  "words launches per hop": 0.6764381823645287,
+  "speech launches per hop": 0.8697650607102713,
+  "noise launches per hop": 0.49460948663630855,
+  "speech reports/h": 482.0,
+  "noise reports/h": 2.0,
+  "room launches per hop": 0.06911298366066133,
+  "room reports/h": 1.9086309218090907
+ },
+ "F40": {
+  "words r30": 92.46861924686193,
+  "words r100": 89.18367346938776,
+  "words r300": 83.05439330543933,
+  "words launches per hop": 0.5,
+  "speech launches per hop": 0.5,
+  "noise launches per hop": 0.5,
+  "speech reports/h": 476.50000000000006,
+  "noise reports/h": 6.0,
+  "room launches per hop": 0.5,
+  "room reports/h": 4.115485425150852
+ },
+ "F40 + gate": {
+  "words r30": 92.46861924686193,
+  "words r100": 89.18367346938776,
+  "words r300": 83.05439330543933,
+  "words launches per hop": 0.33821909118226434,
+  "speech launches per hop": 0.43488253035513563,
+  "noise launches per hop": 0.24730474331815427,
+  "speech reports/h": 476.50000000000006,
+  "noise reports/h": 6.0,
+  "room launches per hop": 0.03455649183033067,
+  "room reports/h": 2.5050780848744316
+ },
+ "U": {
+  "words r30": 90.40271966527197,
+  "words r100": 86.10969387755102,
+  "words r300": 80.36087866108787,
+  "words launches per hop": 0.0625,
+  "speech launches per hop": 0.0625,
+  "noise launches per hop": 0.0625,
+  "speech reports/h": 121.0,
+  "noise reports/h": 1.8125,
+  "room launches per hop": 0.0625,
+  "room reports/h": 2.206854503341761
+ },
+ "U + gate": {
+  "words r30": 90.40271966527197,
+  "words r100": 86.05867346938776,
+  "words r300": 80.2039748953975,
+  "words launches per hop": 0.04227738639778304,
+  "speech launches per hop": 0.054360316294391954,
+  "noise launches per hop": 0.030913092914769284,
+  "speech reports/h": 120.8125,
+  "noise reports/h": 1.8125,
+  "room launches per hop": 0.004319561478791333,
+  "room reports/h": 1.4240176018185013
+ }
+}
